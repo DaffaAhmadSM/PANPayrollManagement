@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('classification_of_tax_payers', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
+            $table->string('description');
             $table->timestamps();
         });
     }

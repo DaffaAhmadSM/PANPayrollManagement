@@ -34,12 +34,10 @@ class UserController extends Controller
                     'status'  => 'error'
                 ], 400);
         }
-        $role = $user->getRoleNames()->first();
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             "message" => 'Login Success',
             "token" => $token,
-            "role" => $role,
         ],200);
     }
 

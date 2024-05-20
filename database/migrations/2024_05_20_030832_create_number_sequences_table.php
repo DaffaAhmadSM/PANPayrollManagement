@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('number_sequences', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
+            $table->text('description');
+            $table->enum('manual', ['Y', 'N'])->default('N');
+            $table->integer('starting_number')->default(1);
+            $table->integer('ending_number')->default(999999);
+            $table->integer('current_number')->default(1);
+            $table->date('last_date_used')->nullable();
             $table->timestamps();
         });
     }

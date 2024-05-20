@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('unit_of_measures', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
+            $table->text('description');
             $table->timestamps();
         });
     }

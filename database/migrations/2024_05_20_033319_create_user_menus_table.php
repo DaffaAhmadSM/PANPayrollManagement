@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('working_hours', function (Blueprint $table) {
+        Schema::create('user_menus', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->string('description');
+            $table->foreignId('user_id')->constrained("users");
+            $table->foreignId('menu_id')->constrained("menus");
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('working_hours');
+        Schema::dropIfExists('user_menus');
     }
 };

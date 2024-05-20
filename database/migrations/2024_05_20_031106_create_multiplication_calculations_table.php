@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('multiplication_calculations', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
+            $table->text('description');
+            $table->decimal('multiplier', 10, 2);
             $table->timestamps();
         });
     }
