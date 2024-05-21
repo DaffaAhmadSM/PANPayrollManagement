@@ -27,7 +27,6 @@ class UserController extends Controller
         $user = User::where('email', $request['email'])->first();
         if ($user) {
             $passwordUser = Hash::check($request->password, $user->password);
-            $menu = UserMenu::where('user_id', $user->id)->with('menu:id,name,url,parent_id,level')->get(['menu_id']);
         }
         if (!$user || !$passwordUser) {
             return response()
@@ -37,33 +36,11 @@ class UserController extends Controller
                 ], 400);
         }
         $token = $user->createToken('auth_token')->plainTextToken;
-        $transformedMenu = [];
-        foreach ($menu as $item) {
-            $transformedMenu[] = $item["menu"];
-        }
-
-        $menu = $this->recursiveMenu($transformedMenu);
-
 
         return response()->json([
             "message" => 'Login Success',
             "token" => $token,
-            "menu" => $menu,
         ],200);
-    }
-
-    function recursiveMenu($menu, $parent = 0) {
-        $result = [];
-        foreach ($menu as $item) {
-            if ($item['parent_id'] == $parent) {
-                $children = $this->recursiveMenu($menu, $item['id']);
-                if ($children) {
-                    $item['children'] = $children;
-                }
-                $result[] = $item;
-            }
-        }
-        return $result;
     }
 
     function createUser(Request $request) {
