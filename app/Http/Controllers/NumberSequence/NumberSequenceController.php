@@ -11,19 +11,23 @@ class NumberSequenceController extends Controller
 {
     function create (Request $request) {
         $validate = Validator::make($request->all(), [
-            "code" => "required|string",
+            "code" => "required|string|unique:number_sequences,code",
             "description" => "required|string",
         ]);
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
         NumberSequence::create([
             "code" => $request->code,
             "description" => $request->description,
+        ], 201);
+
+        return response()->json([
+            "message" => "Number sequence created"
         ], 201);
     }
 
@@ -35,7 +39,7 @@ class NumberSequenceController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -83,7 +87,7 @@ class NumberSequenceController extends Controller
     }
 
     function getAll () {
-        $numberSequences = NumberSequence::all();
+        $numberSequences = NumberSequence::all(['id', 'code', 'description']);
         return response()->json([
             "message" => "Number sequence list",
             "data" => $numberSequences
