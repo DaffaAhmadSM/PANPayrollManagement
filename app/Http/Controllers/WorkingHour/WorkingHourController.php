@@ -2,10 +2,81 @@
 
 namespace App\Http\Controllers\WorkingHour;
 
-use App\Http\Controllers\Controller;
+use App\Models\WorkingHour;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class WorkingHourController extends Controller
 {
-    //
+    function create (Request $request) {
+        $validate = Validator::make($request->all(), [
+            "code" => "required|string",
+            "description" => "required|string",
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                "message" => $validate->errors()
+            ], 400);
+        }
+
+        WorkingHour::create([
+            "code" => $request->code,
+            "description" => $request->description,
+        ]);
+
+        return response()->json([
+            "message" => "Working hour created"
+        ], 201);
+    }
+
+    function update (Request $request, $id) {
+        $validate = Validator::make($request->all(), [
+            "code" => "string",
+            "description" => "string",
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                "message" => $validate->errors()
+            ], 400);
+        }
+
+        $workingHour = WorkingHour::find($id);
+        if (!$workingHour) {
+            return response()->json([
+                "message" => "Working hour not found"
+            ], 404);
+        }
+
+        $workingHour->update($request->all());
+
+        return response()->json([
+            "message" => "Working hour updated"
+        ], 200);
+    }
+
+    function delete ($id) {
+        $workingHour = WorkingHour::find($id);
+        if (!$workingHour) {
+            return response()->json([
+                "message" => "Working hour not found"
+            ], 404);
+        }
+
+        $workingHour->delete();
+
+        return response()->json([
+            "message" => "Working hour deleted"
+        ], 200);
+    }
+
+    function getAll() {
+        $workingHour = WorkingHour::all();
+
+        return response()->json([
+            "data" => $workingHour
+        ], 200);
+    }
 }

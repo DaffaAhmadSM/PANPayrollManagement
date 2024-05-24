@@ -24,13 +24,13 @@ class NumberSequenceController extends Controller
         NumberSequence::create([
             "code" => $request->code,
             "description" => $request->description,
-        ]);
+        ], 201);
     }
 
     function update (Request $request, $id) {
         $validate = Validator::make($request->all(), [
-            "code" => "required|string",
-            "description" => "required|string",
+            "code" => "string",
+            "description" => "string",
         ]);
 
         if ($validate->fails()) {
@@ -46,10 +46,11 @@ class NumberSequenceController extends Controller
             ], 404);
         }
 
-        $numberSequence->update([
-            "code" => $request->code,
-            "description" => $request->description,
-        ]);
+        $numberSequence->update($request->all());
+
+        return response()->json([
+            "message" => "Number sequence updated"
+        ], 200);
     }
 
     function delete ($id) {
@@ -61,6 +62,10 @@ class NumberSequenceController extends Controller
         }
 
         $numberSequence->delete();
+
+        return response()->json([
+            "message" => "Number sequence deleted"
+        ], 200);
     }
 
     function detail ($id) {
@@ -72,14 +77,16 @@ class NumberSequenceController extends Controller
         }
 
         return response()->json([
-            "number_sequence" => $numberSequence
+            "message" => "Number sequence detail",
+            "data" => $numberSequence
         ], 200);
     }
 
     function getAll () {
         $numberSequences = NumberSequence::all();
         return response()->json([
-            "number_sequences" => $numberSequences
+            "message" => "Number sequence list",
+            "data" => $numberSequences
         ], 200);
     }
 }
