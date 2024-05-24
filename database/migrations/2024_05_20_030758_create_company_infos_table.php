@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('img_logo');
             $table->string('bank_name');
             $table->string('bank_address');
+            $table->string('bank_account_no');
             $table->timestamps();
         });
     }
