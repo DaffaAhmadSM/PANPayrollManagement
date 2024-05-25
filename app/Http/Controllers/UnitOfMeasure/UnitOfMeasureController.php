@@ -12,13 +12,13 @@ class UnitOfMeasureController extends Controller
 {
     function create (Request $request) {
         $validate = Validator::make($request->all(), [
-            "code" => "required|string",
+            "code" => "required|string|unique:unit_of_measures,code",
             "description" => "required|string",
         ]);
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -26,6 +26,10 @@ class UnitOfMeasureController extends Controller
             "code" => $request->code,
             "description" => $request->description,
         ]);
+
+        return response()->json([
+            "message" => "Unit of measure created"
+        ], 201);
     }
 
     function update (Request $request, $id) {
@@ -51,7 +55,7 @@ class UnitOfMeasureController extends Controller
 
         return response()->json([
             "message" => "Unit of measure updated"
-        ]);
+        ], 200);
     }
 
     function delete ($id) {
@@ -66,7 +70,7 @@ class UnitOfMeasureController extends Controller
 
         return response()->json([
             "message" => "Unit of measure deleted"
-        ]);
+        ], 200);
     }
 
     function detail ($id) {
@@ -80,15 +84,15 @@ class UnitOfMeasureController extends Controller
         return response()->json([
             "message" => "Unit of measure detail",
             "data" => $unitOfMeasure
-        ]);
+        ], 200);
     }
 
     function list () {
-        $unitOfMeasures = UnitOfMeasure::all();
+        $unitOfMeasures = UnitOfMeasure::all(['id', 'code', 'description']);
 
         return response()->json([
             "message" => "Unit of measure list",
             "data" => $unitOfMeasures
-        ]);
+        ], 200);
     }
 }

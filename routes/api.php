@@ -7,6 +7,7 @@ use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Menu\UserMenuController;
 use App\Http\Controllers\Company\CompanyInfoController;
 use App\Http\Controllers\NumberSequence\NumberSequenceController;
+use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -30,6 +31,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [NumberSequenceController::class, 'detail']);
         Route::post('update/{id}', [NumberSequenceController::class, 'update']);
         Route::post('delete/{id}', [NumberSequenceController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'unit-of-measure'], function () {
+        Route::post('create', [UnitOfMeasureController::class, 'create']);
+        Route::get('all', [UnitOfMeasureController::class, 'list']);
+        Route::get('detail/{id}', [UnitOfMeasureController::class, 'detail']);
+        Route::post('update/{id}', [UnitOfMeasureController::class, 'update']);
+        Route::post('delete/{id}', [UnitOfMeasureController::class, 'delete']);
     });
 });
 
