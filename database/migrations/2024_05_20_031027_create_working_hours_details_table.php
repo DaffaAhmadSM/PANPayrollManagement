@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('working_hours_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('working_hours_id')->constrained('working_hours');
+            $table->foreignId('working_hours_id')->constrained('working_hours')->onDelete('cascade');
             $table->enum('day', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
             $table->decimal('hours', 8, 2);
             $table->timestamps();

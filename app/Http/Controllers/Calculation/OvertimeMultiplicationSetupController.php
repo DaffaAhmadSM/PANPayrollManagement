@@ -13,15 +13,15 @@ class OvertimeMultiplicationSetupController extends Controller
         $validate = Validator::make($request->all(), [
             'day_type' => 'required|in:Normal,Holiday',
             'day' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-            'from_hours' => 'required|decimal',
-            'to_hours' => 'required|decimal',
-            'multiplication_calculation_id' => 'required|exists:multiplication_calculations,id'
+            'from_hours' => 'required|decimal:0,2',
+            'to_hours' => 'required|decimal:0,2',
+            'multiplication_calc_id' => 'required|exists:multiplication_calculations,id'
         ]);
 
         if ($validate->fails()) {
             return response()->json([
                 'message' => 'Validation error',
-                'errors' => $validate->errors()
+                'errors' => $validate->errors()->first()
             ], 400);
         }
 
@@ -37,15 +37,15 @@ class OvertimeMultiplicationSetupController extends Controller
         $validate = Validator::make($request->all(), [
             'day_type' => 'in:Normal,Holiday',
             'day' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-            'from_hours' => 'decimal',
-            'to_hours' => 'decimal',
-            'multiplication_calculation_id' => 'exists:multiplication_calculations,id'
+            'from_hours' => 'decimal:0,2',
+            'to_hours' => 'decimal:0,2',
+            'multiplication_calc_id' => 'exists:multiplication_calculations,id'
         ]);
 
         if ($validate->fails()) {
             return response()->json([
                 'message' => 'Validation error',
-                'errors' => $validate->errors()
+                'errors' => $validate->errors()->first()
             ], 400);
         }
 
@@ -80,8 +80,9 @@ class OvertimeMultiplicationSetupController extends Controller
         ]);
     }
 
-    function get ($id) {
-        $setup = OvertimeMultiplicationSetup::find($id);
+
+    function detail ($id) {
+        $setup = OvertimeMultiplicationSetup::with('calculation')->find($id);
 
         if (!$setup) {
             return response()->json([
@@ -96,7 +97,7 @@ class OvertimeMultiplicationSetupController extends Controller
     }
 
     function list () {
-        $setups = OvertimeMultiplicationSetup::all();
+        $setups = OvertimeMultiplicationSetup::all(['id', 'day_type', 'day', 'from_hours', 'to_hours']);
 
         return response()->json([
             'message' => 'Overtime multiplication setups found',

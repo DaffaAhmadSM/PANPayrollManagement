@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('general_setups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('number_sequence_id')->nullable()->constrained('number_sequences');
+            $table->foreignId('number_sequence_id')->nullable()->constrained('number_sequences')->onDelete('cascade');
             $table->string("customer");
             $table->string('customer_contract');
             $table->string('customer_timesheet');

@@ -11,14 +11,14 @@ class MultiplicationCalculationController extends Controller
 {
     function create (Request $request) {
         $validate = Validator::make($request->all(), [
-            "code" => "required|string",
+            "code" => "required|string|unique:multiplication_calculations,code",
             "description" => "required|string",
-            "multiplier" => "required|decimal"
+            "multiplier" => "required|decimal:0,2"
         ]);
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -37,12 +37,12 @@ class MultiplicationCalculationController extends Controller
         $validate = Validator::make($request->all(), [
             "code" => "string",
             "description" => "string",
-            "multiplier" => "decimal"
+            "multiplier" => "decimal:0,2"
         ]);
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -89,7 +89,11 @@ class MultiplicationCalculationController extends Controller
     }
 
     function getList () {
-        $multiplicationCalculation = MultiplicationCalculation::all();
+        $multiplicationCalculation = MultiplicationCalculation::all([
+            "id",
+            "code",
+            "description"
+        ]);
 
         return response()->json([
             "data" => $multiplicationCalculation

@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\Calculation\MultiplicationCalculationController;
+use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Menu\UserMenuController;
 use App\Http\Controllers\Company\CompanyInfoController;
@@ -39,6 +41,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [UnitOfMeasureController::class, 'detail']);
         Route::post('update/{id}', [UnitOfMeasureController::class, 'update']);
         Route::post('delete/{id}', [UnitOfMeasureController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'multiplication-calculation'], function () {
+        Route::post('create', [MultiplicationCalculationController::class, 'create']);
+        Route::get('all', [MultiplicationCalculationController::class, 'getList']);
+        Route::get('detail/{id}', [MultiplicationCalculationController::class, 'detail']);
+        Route::post('update/{id}', [MultiplicationCalculationController::class, 'update']);
+        Route::post('delete/{id}', [MultiplicationCalculationController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'overtime-multiplication-setup'], function() {
+        Route::post('create', [OvertimeMultiplicationSetupController::class, 'create']);
+        Route::get('all', [OvertimeMultiplicationSetupController::class, 'list']);
+        Route::get('detail/{id}', [OvertimeMultiplicationSetupController::class, 'detail']);
+        Route::post('update/{id}', [OvertimeMultiplicationSetupController::class, 'update']);
+        Route::post('delete/{id}', [OvertimeMultiplicationSetupController::class, 'delete']);
     });
 });
 
