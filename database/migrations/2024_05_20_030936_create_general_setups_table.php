@@ -16,15 +16,15 @@ return new class extends Migration
             $table->foreignId('number_sequence_id')->nullable()->constrained('number_sequences')->onDelete('cascade');
             $table->string("customer");
             $table->string('customer_contract');
-            $table->string('customer_timesheet');
+            $table->string('customer_timesheet')->nullable();
             $table->string('customer_invoice');
-            $table->string('employee');
-            $table->string('leave_request');
-            $table->string('leave_adjustment');
-            $table->string('timesheet');
-            $table->string('invent_journal_id');
-            $table->string('invent_trans_id');
-            $table->string('vacancy_no');
+            $table->string('employee')->nullable();
+            $table->string('leave_request')->nullable();
+            $table->string('leave_adjustment')->nullable();
+            $table->string('timesheet')->nullable();
+            $table->string('invent_journal_id')->nullable();
+            $table->string('invent_trans_id')->nullable();
+            $table->string('vacancy_no')->nullable();
             $table->timestamps();
         });
     }

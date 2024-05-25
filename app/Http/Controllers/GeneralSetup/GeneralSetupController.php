@@ -11,18 +11,18 @@ class GeneralSetupController extends Controller
 {
     function create (Request $request) {
         $validate = Validator::make($request->all(), [
-            "number_sequence_id" => "required|string",
+            "number_sequence_id" => "required|string|exists:number_sequences,id",
             "customer" => "required|string",
-            "customer_contract" => "required|string",
-            "customer_timesheet" => "required|string",
             "customer_invoice" => "required|string",
-            "employee" => "required|string",
-            "leave_request" => "required|string",
-            "leave_adjustment" => "required|string",
-            "timesheet" => "required|string",
-            "invent_journal_id" => "required|string",
-            "invent_trans_id" => "required|string",
-            "vacancy_no" => "required|string",
+            "customer_contract" => "required|string",
+            "customer_timesheet" => "string",
+            "employee" => "string",
+            "leave_request" => "string",
+            "leave_adjustment" => "string",
+            "timesheet" => "string",
+            "invent_journal_id" => "string",
+            "invent_trans_id" => "string",
+            "vacancy_no" => "string",
         ]);
 
         if ($validate->fails()) {
@@ -32,20 +32,7 @@ class GeneralSetupController extends Controller
         }
 
 
-        GeneralSetup::create([
-            "number_sequence_id" => $request->number_sequence_id,
-            "customer" => $request->customer,
-            "customer_contract" => $request->customer_contract,
-            "customer_timesheet" => $request->customer_timesheet,
-            "customer_invoice" => $request->customer_invoice,
-            "employee" => $request->employee,
-            "leave_request" => $request->leave_request,
-            "leave_adjustment" => $request->leave_adjustment,
-            "timesheet" => $request->timesheet,
-            "invent_journal_id" => $request->invent_journal_id,
-            "invent_trans_id" => $request->invent_tras_id,
-            "vacancy_no" => $request->vacancy_no,
-        ]);
+        GeneralSetup::create($request->all());
 
         return response()->json([
             "message" => "General setup created"
@@ -103,7 +90,7 @@ class GeneralSetupController extends Controller
     }
 
     function detail($id) {
-        $generalSetup = GeneralSetup::find($id);
+        $generalSetup = GeneralSetup::with('numberSequence')->find($id);
         if (!$generalSetup) {
             return response()->json([
                 "message" => "General setup not found"
@@ -116,7 +103,7 @@ class GeneralSetupController extends Controller
     }
 
     function getAll () {
-        $generalSetup = GeneralSetup::all();
+        $generalSetup = GeneralSetup::all(['id', 'customer', 'customer_contract','customer_invoice']);
 
         return response()->json([
             "data" => $generalSetup

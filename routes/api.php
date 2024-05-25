@@ -8,6 +8,7 @@ use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Menu\UserMenuController;
 use App\Http\Controllers\Company\CompanyInfoController;
+use App\Http\Controllers\GeneralSetup\GeneralSetupController;
 use App\Http\Controllers\NumberSequence\NumberSequenceController;
 use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
 
@@ -57,6 +58,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [OvertimeMultiplicationSetupController::class, 'detail']);
         Route::post('update/{id}', [OvertimeMultiplicationSetupController::class, 'update']);
         Route::post('delete/{id}', [OvertimeMultiplicationSetupController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'general-setup'], function () {
+        Route::post('create', [GeneralSetupController::class, 'create']);
+        Route::get('all', [GeneralSetupController::class, 'getAll']);
+        Route::get('detail/{id}', [GeneralSetupController::class, 'detail']);
+        Route::post('update/{id}', [GeneralSetupController::class, 'update']);
+        Route::post('delete/{id}', [GeneralSetupController::class, 'delete']);
     });
 });
 
