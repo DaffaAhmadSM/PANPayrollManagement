@@ -57,6 +57,20 @@ class WorkingHourController extends Controller
         ], 200);
     }
 
+    function detail($id){
+        $workingHour = WorkingHour::find($id);
+        if (!$workingHour) {
+            return response()->json([
+                "message" => "Working hour not found"
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Working hour detail",
+            "data" => $workingHour
+        ], 200);
+    }
+
     function delete ($id) {
         $workingHour = WorkingHour::find($id);
         if (!$workingHour) {
@@ -73,7 +87,7 @@ class WorkingHourController extends Controller
     }
 
     function getAll() {
-        $workingHour = WorkingHour::all();
+        $workingHour = WorkingHour::all(['id', 'code', 'description']);
 
         return response()->json([
             "data" => $workingHour

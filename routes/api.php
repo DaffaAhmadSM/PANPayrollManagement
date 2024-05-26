@@ -11,6 +11,8 @@ use App\Http\Controllers\Company\CompanyInfoController;
 use App\Http\Controllers\GeneralSetup\GeneralSetupController;
 use App\Http\Controllers\NumberSequence\NumberSequenceController;
 use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
+use App\Http\Controllers\WorkingHour\WorkingHourController;
+use App\Models\WorkingHour;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -66,6 +68,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [GeneralSetupController::class, 'detail']);
         Route::post('update/{id}', [GeneralSetupController::class, 'update']);
         Route::post('delete/{id}', [GeneralSetupController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'working-hour'], function () {
+        Route::post('create', [WorkingHourController::class, 'create']);
+        Route::get('all', [WorkingHourController::class, 'getAll']);
+        Route::get('detail/{id}', [WorkingHourController::class, 'detail']);
+        Route::post('update/{id}', [WorkingHourController::class, 'update']);
+        Route::post('delete/{id}', [WorkingHourController::class, 'delete']);
     });
 });
 
