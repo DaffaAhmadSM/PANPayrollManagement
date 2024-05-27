@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained("users");
             $table->foreignId('menu_id')->constrained("menus");
+            $table->boolean('create')->default(false);
+            $table->boolean('update')->default(false);
+            $table->boolean('delete')->default(false);
             $table->timestamps();
         });
     }

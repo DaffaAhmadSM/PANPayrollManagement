@@ -67,4 +67,13 @@ class UserController extends Controller
             'status' => 'success'
         ], 201);
     }
+
+    function listUser() {
+        $users = User::paginate(10);
+        return response()->json([
+            'message' => 'List of users',
+            'header' => 'List of users',
+            'data' => $users
+        ]);
+    }
 }
