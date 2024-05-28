@@ -9,12 +9,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class AuthController extends Controller
 {
     function Login(Request $request) {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
-            'password' => 'required',
+            'password' => 'required:min:6',
         ]);
 
         if ($validator->fails()) {
@@ -43,37 +43,11 @@ class UserController extends Controller
         ],200);
     }
 
-    function createUser(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => $validator->errors()->first(),
-                'status' => 'error'
-            ], 400);
-        }
-
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->save();
+    function logout(Request $request) {
+        $request->user()->currentAccessToken()->delete();
         return response()->json([
-            'message' => 'User created successfully',
+            'message' => 'Logout success',
             'status' => 'success'
-        ], 201);
-    }
-
-    function listUser() {
-        $users = User::paginate(10);
-        return response()->json([
-            'message' => 'List of users',
-            'header' => 'List of users',
-            'data' => $users
         ]);
     }
 }

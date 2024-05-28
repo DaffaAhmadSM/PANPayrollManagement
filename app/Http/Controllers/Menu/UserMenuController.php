@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Menu;
 use App\Models\UserMenu;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class UserMenuController extends Controller
@@ -40,8 +41,23 @@ class UserMenuController extends Controller
             'message' => 'Menu added successfully',
             'status' => 'success'
         ], 200);
-
-
-
     }
+
+    function UserMenuPermission($menuid) {
+        $user = Auth::user();
+        $menu = UserMenu::where('user_id', $user->id)->where('menu_id', $menuid)->first(['create', 'update', 'delete']);
+        if ($menu) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User has permission to access this menu',
+                'permission' => $menu
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User does not have permission to access this menu'
+            ], 403);
+        }
+    }
+
 }

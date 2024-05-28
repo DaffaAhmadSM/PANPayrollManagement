@@ -1,18 +1,20 @@
 <?php
 
+use App\Models\WorkingHour;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\UserController;
-use App\Http\Controllers\Calculation\MultiplicationCalculationController;
-use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Menu\MenuController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Menu\UserMenuController;
 use App\Http\Controllers\Company\CompanyInfoController;
-use App\Http\Controllers\GeneralSetup\GeneralSetupController;
-use App\Http\Controllers\NumberSequence\NumberSequenceController;
-use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
 use App\Http\Controllers\WorkingHour\WorkingHourController;
-use App\Models\WorkingHour;
+use App\Http\Controllers\GeneralSetup\GeneralSetupController;
+use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
+use App\Http\Controllers\NumberSequence\NumberSequenceController;
+use App\Http\Controllers\Calculation\MultiplicationCalculationController;
+use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -20,6 +22,7 @@ Route::get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('menu', [MenuController::class, 'getMenu']);
+    Route::get('menu-user-permission/menu/{id}', [UserMenuController::class, 'UserMenuPermission']);
     Route::post('update-menu', [UserMenuController::class, 'UpdateUserMenu']);
 
     Route::group(['prefix' => 'company'], function () {
@@ -77,6 +80,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [WorkingHourController::class, 'update']);
         Route::post('delete/{id}', [WorkingHourController::class, 'delete']);
     });
+
+    Route::group(['prefix'=> 'user'], function() {
+        Route::post('create', [UserController::class, 'createUser']);
+        Route::post('update/{id}', [UserController::class, 'updateUser']);
+        Route::post('delete/{id}', [UserController::class, 'deleteUser']);
+        Route::get('list', [UserController::class, 'listUser']);
+    });
+
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('update-self', [UserController::class, 'updateUserSelf']);
 });
 
-Route::post('login', [UserController::class, 'login']);
+Route::post('login', [AuthController::class, 'login']);

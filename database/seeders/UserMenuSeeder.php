@@ -24,7 +24,7 @@ class UserMenuSeeder extends Seeder
             ],
                 [
                     "name" => "User",
-                    "url" => "/user",
+                    "url" => "/admin/setup/user",
                     "order" => 2,
                     "level" => 0,
                 ],
