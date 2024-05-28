@@ -121,7 +121,9 @@ class CompanyInfoController extends Controller
     function list() {
         $companyInfo = CompanyInfo::paginate(10, ['id', 'code', 'name']);
         return response()->json([
-            'company_info' => $companyInfo
+            'message' => 'Company info list',
+            'header' => ['code', 'name'],
+            'data' => $companyInfo
         ], 200);
     }
 }
