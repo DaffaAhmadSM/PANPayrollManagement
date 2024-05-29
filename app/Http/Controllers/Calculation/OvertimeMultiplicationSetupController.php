@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Calculation;
 use App\Http\Controllers\Controller;
 use App\Models\OvertimeMultiplicationSetup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 
 class OvertimeMultiplicationSetupController extends Controller
@@ -97,11 +98,29 @@ class OvertimeMultiplicationSetupController extends Controller
     }
 
     function list () {
-        $setups = OvertimeMultiplicationSetup::all(['id', 'day_type', 'day', 'from_hours', 'to_hours']);
+        $setups = OvertimeMultiplicationSetup::with('calculation:id,code')->cursorPaginate(10, ['id', 'day_type', 'day', 'from_hours', 'to_hours', 'multiplication_calc_id']);
+
+        $data = new Collection();
+        // merge array
+        foreach ($setups->items() as $setup) {
+            $data->push([
+                'day_type' => $setup->day_type,
+                'day' => $setup->day,
+                'from_hours' => $setup->from_hours,
+                'to_hours' => $setup->to_hours,
+                'multiplication_calc_code' => $setup->calculation->code,
+                'id' => ["calc_id" => $setup->calculation->id, "main_id" => $setup->id]
+            ]);
+        }
 
         return response()->json([
             'message' => 'Overtime multiplication setups found',
-            'data' => $setups
+            'header' => ['Day Type', 'Day', 'From Hours', 'To Hours', 'Code'],
+            'data' => ["data" => $data],
+            'next_page' => $setups->nextCursor(),
+            'prev_page' => $setups->previousCursor(),
+            'next_page_url' => $setups->nextPageUrl(),
+            'prev_page_url' => $setups->previousPageUrl()
         ]);
     }
 

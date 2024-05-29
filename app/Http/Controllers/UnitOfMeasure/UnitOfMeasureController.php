@@ -88,10 +88,11 @@ class UnitOfMeasureController extends Controller
     }
 
     function list () {
-        $unitOfMeasures = UnitOfMeasure::all(['id', 'code', 'description']);
+        $unitOfMeasures = UnitOfMeasure::cursorPaginate(10,['id', 'code', 'description']);
 
         return response()->json([
             "message" => "Unit of measure list",
+            "header" => ["code", "description"],
             "data" => $unitOfMeasures
         ], 200);
     }

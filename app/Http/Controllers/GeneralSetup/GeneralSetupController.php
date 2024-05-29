@@ -103,9 +103,11 @@ class GeneralSetupController extends Controller
     }
 
     function getAll () {
-        $generalSetup = GeneralSetup::all(['id', 'customer', 'customer_contract','customer_invoice']);
+        $generalSetup = GeneralSetup::cursorPaginate(10, ['id', 'customer', 'customer_contract','customer_invoice']);
 
         return response()->json([
+            "message" => "General setup list",
+            "header" => ["customer", "customer_contract", "customer_invoice"],
             "data" => $generalSetup
         ], 200);
     }

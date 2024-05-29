@@ -89,13 +89,14 @@ class MultiplicationCalculationController extends Controller
     }
 
     function getList () {
-        $multiplicationCalculation = MultiplicationCalculation::all([
+        $multiplicationCalculation = MultiplicationCalculation::cursorPaginate(10, [
             "id",
             "code",
             "description"
         ]);
 
         return response()->json([
+            "header" => ["code", "description"],
             "data" => $multiplicationCalculation
         ], 200);
     }
