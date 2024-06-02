@@ -29,9 +29,12 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->save();
+
+        $all = User::cursorPaginate(10, ['id','name', 'email']);
         return response()->json([
             'message' => 'User created successfully',
-            'status' => 'success'
+            'status' => 'success',
+            'data' => $all
         ], 201);
     }
 
@@ -44,14 +47,17 @@ class UserController extends Controller
             ], 404);
         }
         $user->delete();
+        $all = User::cursorPaginate(10, ['id','name', 'email']);
         return response()->json([
             'message' => 'User deleted successfully',
-            'status' => 'success'
+            'status' => 'success',
+            'data' => $all
         ]);
     }
 
     function updateUserId(Request $request, $id) {
         $validator = Validator::make($request->all(), [
+            'emai' => 'email|unique:users',
             'name' => 'string',
             'password' => 'string:min:6',
         ]);
@@ -71,6 +77,9 @@ class UserController extends Controller
             ], 404);
         }
 
+        if ($request->email) {
+            $user->email = $request->email;
+        }
         if ($request->name) {
             $user->name = $request->name;
         }
@@ -78,9 +87,11 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
         }
         $user->save();
+        $all = User::cursorPaginate(10, ['id','name', 'email']);
         return response()->json([
             'message' => 'User updated successfully',
-            'status' => 'success'
+            'status' => 'success',
+            'data' => $all
         ]);
     }
 

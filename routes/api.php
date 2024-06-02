@@ -83,7 +83,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['prefix'=> 'user'], function() {
         Route::post('create', [UserController::class, 'createUser']);
-        Route::post('update/{id}', [UserController::class, 'updateUser']);
+        Route::post('update/{id}', [UserController::class, 'updateUserId']);
         Route::post('delete/{id}', [UserController::class, 'deleteUser']);
         Route::get('list', [UserController::class, 'listUser']);
     });
@@ -93,3 +93,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 Route::post('login', [AuthController::class, 'login']);
+Route::get('validation-error', function () {
+    return response()->json([
+        "message" => "Validation error"
+    ], 401);
+});
