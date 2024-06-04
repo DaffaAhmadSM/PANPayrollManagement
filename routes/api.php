@@ -22,7 +22,9 @@ Route::get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('menu', [MenuController::class, 'getMenu']);
+    Route::get('menu/all/{user_id}', [MenuController::class, 'getAllMenu']);
     Route::get('menu-user-permission/menu/{id}', [UserMenuController::class, 'UserMenuPermission']);
+
     Route::post('update-menu', [UserMenuController::class, 'UpdateUserMenu']);
 
     Route::group(['prefix' => 'company'], function () {
@@ -82,6 +84,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::group(['prefix'=> 'user'], function() {
+        Route::get('current', function(){
+            return response()->json(Auth::user(), 200);
+        });
         Route::post('create', [UserController::class, 'createUser']);
         Route::post('update/{id}', [UserController::class, 'updateUserId']);
         Route::post('delete/{id}', [UserController::class, 'deleteUser']);

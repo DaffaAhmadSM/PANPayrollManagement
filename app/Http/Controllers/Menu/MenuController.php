@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Menu;
 
+use App\Models\Menu;
 use App\Models\UserMenu;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -35,5 +36,20 @@ class MenuController extends Controller
             }
         }
         return $result;
+    }
+
+    function getAllmenu($user_id) {
+        $menu_unprocessed = Menu::all(["id", "name as content", "parent_id"]);
+        $menu = $this->recursiveMenu($menu_unprocessed);
+        $usermenu = UserMenu::where('user_id', $user_id)->get(['menu_id']);
+        $menuIds = array_map(function($item) {
+            return $item['menu_id'];
+        }, $usermenu->toArray());
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User has permission to access this menu',
+            'menu' => $menu,
+            'menuChecked' => $menuIds
+        ], 200);
     }
 }
