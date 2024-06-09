@@ -30,7 +30,7 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        $all = User::cursorPaginate(10, ['id','name', 'email']);
+        $all = User::orderBy('id', 'DESC')->cursorPaginate(5, ['id','name', 'email']);
         return response()->json([
             'message' => 'User created successfully',
             'status' => 'success',
@@ -47,12 +47,10 @@ class UserController extends Controller
             ], 404);
         }
         $user->delete();
-        $all = User::cursorPaginate(10, ['id','name', 'email']);
         return response()->json([
             'message' => 'User deleted successfully',
             'status' => 'success',
-            'data' => $all
-        ]);
+        ], 200);
     }
 
     function updateUserId(Request $request, $id) {
@@ -87,12 +85,10 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
         }
         $user->save();
-        $all = User::cursorPaginate(10, ['id','name', 'email']);
         return response()->json([
             'message' => 'User updated successfully',
-            'status' => 'success',
-            'data' => $all
-        ]);
+            'status' => 'success'
+        ], 200);
     }
 
     function updateUserSelf(){
@@ -126,12 +122,24 @@ class UserController extends Controller
     }
 
     function listUser() {
-        $users = User::cursorPaginate(10, ['id','name', 'email']);
+        $validate = Validator::make(request()->all(), [
+            'perpage' => 'integer',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $validate->errors()->first()
+            ], 400);
+        }
+
+        $page = request()->perpage ? request()->perpage : 20;
+        $users = User::orderBy('id', 'DESC')->cursorPaginate($page, ['id','name', 'email']);
         return response()->json([
             'message' => 'List of users',
             'header' => ['name','email'],
             'data' => $users
-        ]);
+        ], 200);
     }
 
     function detailUser($id) {
