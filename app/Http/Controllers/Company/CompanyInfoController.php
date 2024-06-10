@@ -25,7 +25,8 @@ class CompanyInfoController extends Controller
             'homepage' => 'required|string',
             'img' => 'required|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'bank_name' => 'required|string',
-            'bank_account_no' => 'required|string'
+            'bank_account_no' => 'required|string',
+            'bank_address' => 'required|string',
         ]);
 
         if ($validate->fails()) {
@@ -119,7 +120,7 @@ class CompanyInfoController extends Controller
     }
 
     function list() {
-        $companyInfo = CompanyInfo::paginate(10, ['id', 'code', 'name']);
+        $companyInfo = CompanyInfo::cursorPaginate(10, ['id', 'code', 'name']);
         return response()->json([
             'message' => 'Company info list',
             'header' => ['code', 'name'],

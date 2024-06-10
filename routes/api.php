@@ -9,6 +9,7 @@ use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Menu\UserMenuController;
 use App\Http\Controllers\Company\CompanyInfoController;
+use App\Http\Controllers\AppSetting\AppSettingController;
 use App\Http\Controllers\WorkingHour\WorkingHourController;
 use App\Http\Controllers\GeneralSetup\GeneralSetupController;
 use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
@@ -81,6 +82,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [WorkingHourController::class, 'detail']);
         Route::post('update/{id}', [WorkingHourController::class, 'update']);
         Route::post('delete/{id}', [WorkingHourController::class, 'delete']);
+    });
+
+    Route::group(['prefix'=> 'app-setting'], function() {
+        Route::get('all', [AppSettingController::class, 'getAll']);
+        Route::post('create', [AppSettingController::class, 'create']);
+        Route::post('update/{id}', [AppSettingController::class, 'update']);
+        Route::post('delete/{id}', [AppSettingController::class, 'delete']);
     });
 
     Route::group(['prefix'=> 'user'], function() {
