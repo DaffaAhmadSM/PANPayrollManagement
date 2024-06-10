@@ -127,4 +127,18 @@ class CompanyInfoController extends Controller
             'data' => $companyInfo
         ], 200);
     }
+
+    function detail($id){
+        $companyInfo = CompanyInfo::find($id)->setHidden(['created_at', 'updated_at']);
+        if (!$companyInfo) {
+            return response()->json([
+                'message' => 'Company info not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Company info detail',
+            'data' => $companyInfo
+        ], 200);
+    }
 }
