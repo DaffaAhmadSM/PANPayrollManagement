@@ -50,7 +50,7 @@ class NumberSequenceController extends Controller
             ], 404);
         }
 
-        $numberSequence->update($request->all());
+        $numberSequence->update($request->all('code', 'description'));
 
         return response()->json([
             "message" => "Number sequence updated"

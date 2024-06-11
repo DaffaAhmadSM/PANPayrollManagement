@@ -44,13 +44,13 @@ class GeneralSetupController extends Controller
             "customer_contract" => "string",
             "customer_timesheet" => "string",
             "customer_invoice" => "string",
-            "employee" => "string",
-            "leave_request" => "string",
-            "leave_adjustment" => "string",
-            "timesheet" => "string",
-            "invent_journal_id" => "string",
-            "invent_trans_id" => "string",
-            "vacancy_no" => "string",
+            "employee" => "string|nullable",
+            "leave_request" => "string|nullable",
+            "leave_adjustment" => "string|nullable",
+            "timesheet" => "string|nullable",
+            "invent_journal_id" => "string|nullable",
+            "invent_trans_id" => "string|nullable",
+            "vacancy_no" => "string|nullable",
         ]);
 
         if ($validate->fails()) {
@@ -66,7 +66,7 @@ class GeneralSetupController extends Controller
             ], 404);
         }
 
-        $generalSetup->update($request->except(["number_sequence_id", "customer"]));
+        $generalSetup->update($request->except(["number_sequence_id"]));
 
         return response()->json([
             "message" => "General setup updated"
@@ -107,7 +107,7 @@ class GeneralSetupController extends Controller
 
         return response()->json([
             "message" => "General setup list",
-            "header" => ["customer", "customer_contract", "customer_invoice"],
+            "header" => ["customer", "Customer Contract", "Customer Invoice"],
             "data" => $generalSetup
         ], 200);
     }

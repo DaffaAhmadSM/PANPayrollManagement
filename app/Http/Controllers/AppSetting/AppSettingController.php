@@ -11,11 +11,14 @@ use Illuminate\Support\Facades\Validator;
 class AppSettingController extends Controller
 {
     function getAll() {
-        $appSettings = AppSetting::all();
-        return response()->json([
-            'message' => 'Success',
-            'data' => $appSettings
-        ], 200);
+        $transformedAppSettings = [];
+        $appSettings = AppSetting::all(['name', 'value']);
+        foreach ($appSettings as $appSetting) {
+            $transformedAppSettings[$appSetting->name] = $appSetting->value;
+        }
+        return response()->json(
+             $transformedAppSettings
+        , 200);
     }
 
     function create(Request $request) {

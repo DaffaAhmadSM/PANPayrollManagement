@@ -70,7 +70,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['prefix' => 'general-setup'], function () {
         Route::post('create', [GeneralSetupController::class, 'create']);
-        Route::get('all', [GeneralSetupController::class, 'getAll']);
+        Route::get('list', [GeneralSetupController::class, 'getAll']);
         Route::get('detail/{id}', [GeneralSetupController::class, 'detail']);
         Route::post('update/{id}', [GeneralSetupController::class, 'update']);
         Route::post('delete/{id}', [GeneralSetupController::class, 'delete']);
