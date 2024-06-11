@@ -12,8 +12,8 @@ class CalendarHolidayController extends Controller
     function create (Request $request) {
         $validate = Validator::make($request->all(), [
             "code" => "required|string",
-            "date" => "required|date",
-            "remark" => "required|string",
+            "date" => "required|date:Y-m-d",
+            "remarks" => "required|string",
         ]);
 
         if ($validate->fails()) {
@@ -22,10 +22,13 @@ class CalendarHolidayController extends Controller
             ], 400);
         }
 
+        // parse date using carbon
+        $date = \Carbon\Carbon::parse($request->date)->format('Y-m-d');
+
         CalendarHoliday::create([
             "code" => $request->code,
-            "date" => $request->date,
-            "remark" => $request->remark,
+            "date" => $date,
+            "remarks" => $request->remarks,
         ]);
 
         return response()->json([
@@ -37,7 +40,7 @@ class CalendarHolidayController extends Controller
         $validate = Validator::make($request->all(), [
             "code" => "string",
             "date" => "date",
-            "remark" => "string",
+            "remarks" => "string",
         ]);
 
         if ($validate->fails()) {
@@ -51,6 +54,11 @@ class CalendarHolidayController extends Controller
             return response()->json([
                 "message" => "Calendar holiday not found"
             ], 404);
+        }
+
+        if ($request->date) {
+            $date = \Carbon\Carbon::parse($request->date)->format('Y-m-d');
+            $request->merge(['date' => $date]);
         }
 
         $calendarHoliday->update($request->all());
@@ -84,14 +92,29 @@ class CalendarHolidayController extends Controller
         }
 
         return response()->json([
+            "message" => "Success get calendar holiday detail",
             "data" => $calendarHoliday
         ], 200);
     }
 
     function getList () {
-        $calendarHoliday = CalendarHoliday::all();
+        $validate = Validator::make(request()->all(), [
+            "perpage" => "integer",
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                "message" => $validate->errors()
+            ], 400);
+        }
+
+        $page = request()->perpage ? request()->perpage : 20;
+
+        $calendarHoliday = CalendarHoliday::cursorPaginate($page, ['id', 'code', 'date', 'remarks']);
 
         return response()->json([
+            'message' => 'Success get calendar holiday list',
+            'header' => ['code', 'date', 'remarks'],
             "data" => $calendarHoliday
         ], 200);
     }

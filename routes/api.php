@@ -11,6 +11,7 @@ use App\Http\Controllers\Menu\UserMenuController;
 use App\Http\Controllers\Company\CompanyInfoController;
 use App\Http\Controllers\AppSetting\AppSettingController;
 use App\Http\Controllers\WorkingHour\WorkingHourController;
+use App\Http\Controllers\Calendar\CalendarHolidayController;
 use App\Http\Controllers\GeneralSetup\GeneralSetupController;
 use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
 use App\Http\Controllers\NumberSequence\NumberSequenceController;
@@ -82,6 +83,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [WorkingHourController::class, 'detail']);
         Route::post('update/{id}', [WorkingHourController::class, 'update']);
         Route::post('delete/{id}', [WorkingHourController::class, 'delete']);
+    });
+
+    // route calendar holiday
+    Route::group(['prefix' => 'calendar-holiday'], function () {
+        Route::post('create', [CalendarHolidayController::class, 'create']);
+        Route::get('list', [CalendarHolidayController::class, 'getList']);
+        Route::get('detail/{id}', [CalendarHolidayController::class, 'detail']);
+        Route::post('update/{id}', [CalendarHolidayController::class, 'update']);
+        Route::post('delete/{id}', [CalendarHolidayController::class, 'delete']);
     });
 
     Route::group(['prefix'=> 'app-setting'], function() {
