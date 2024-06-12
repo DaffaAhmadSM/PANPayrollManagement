@@ -17,6 +17,7 @@ use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
 use App\Http\Controllers\NumberSequence\NumberSequenceController;
 use App\Http\Controllers\Calculation\MultiplicationCalculationController;
 use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
+use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -92,6 +93,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [CalendarHolidayController::class, 'detail']);
         Route::post('update/{id}', [CalendarHolidayController::class, 'update']);
         Route::post('delete/{id}', [CalendarHolidayController::class, 'delete']);
+    });
+
+    // route classification of tax payer
+    Route::group(['prefix' => 'classification-of-tax-payer'], function () {
+        Route::post('create', [ClassificationOfTaxPayerController::class, 'create']);
+        Route::get('list', [ClassificationOfTaxPayerController::class, 'getList']);
+        Route::get('detail/{id}', [ClassificationOfTaxPayerController::class, 'detail']);
+        Route::post('update/{id}', [ClassificationOfTaxPayerController::class, 'update']);
+        Route::post('delete/{id}', [ClassificationOfTaxPayerController::class, 'delete']);
     });
 
     Route::group(['prefix'=> 'app-setting'], function() {
