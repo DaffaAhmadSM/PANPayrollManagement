@@ -17,7 +17,7 @@ class WorkingHourController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -39,7 +39,7 @@ class WorkingHourController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -88,6 +88,27 @@ class WorkingHourController extends Controller
 
     function getAll() {
         $workingHour = WorkingHour::cursorPaginate(10, ['id', 'code', 'description']);
+
+        return response()->json([
+            "message" => "Working hour list",
+            "header" => ["code", "description"],
+            "data" => $workingHour
+        ], 200);
+    }
+
+    function search(Request $request) {
+        $validate = Validator::make($request->all(), [
+            "search" => "required|string"
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                "message" => $validate->errors()->first()
+            ], 400);
+        }
+
+        $workingHour = WorkingHour::where("code", "like", "%$request->search%")
+            ->cursorPaginate(10, ['id', 'code', 'description']);
 
         return response()->json([
             "message" => "Working hour list",

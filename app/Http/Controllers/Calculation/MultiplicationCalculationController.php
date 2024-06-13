@@ -100,4 +100,22 @@ class MultiplicationCalculationController extends Controller
             "data" => $multiplicationCalculation
         ], 200);
     }
+
+    function search (Request $request) {
+        $validate = Validator::make($request->all(), [
+            "search" => "required|string"
+        ]);
+
+        $multiplicationCalculation = MultiplicationCalculation::where("code", "like", "%$request->search%")
+            ->cursorPaginate(10, [
+                "id",
+                "code",
+                "description"
+            ]);
+
+        return response()->json([
+            "header" => ["code", "description"],
+            "data" => $multiplicationCalculation
+        ], 200);
+    }
 }

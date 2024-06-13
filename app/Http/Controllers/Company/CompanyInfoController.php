@@ -31,7 +31,7 @@ class CompanyInfoController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 400);
         }
         
@@ -88,7 +88,7 @@ class CompanyInfoController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                'message' => $validate->errors()
+                'message' => $validate->errors()->first()
             ], 400);
         }
 
@@ -138,6 +138,28 @@ class CompanyInfoController extends Controller
 
         return response()->json([
             'message' => 'Company info detail',
+            'data' => $companyInfo
+        ], 200);
+    }
+
+    function search(Request $request) {
+        $validate = Validator::make($request()->all(), [
+            'search' => 'required|string'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first()
+            ], 400);
+        }
+
+        $companyInfo = CompanyInfo::where('code', 'like', '%'.$request->search.'%')
+            ->orWhere('name', 'like', '%'.$request->search.'%')
+            ->cursorPaginate(20, ['id', 'code', 'name']);
+
+        return response()->json([
+            'message' => 'Company info search result',
+            'header' => ['code', 'name'],
             'data' => $companyInfo
         ], 200);
     }

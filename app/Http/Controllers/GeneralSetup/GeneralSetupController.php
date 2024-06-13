@@ -29,7 +29,7 @@ class GeneralSetupController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -119,6 +119,29 @@ class GeneralSetupController extends Controller
 
         return response()->json([
             "message" => "General setup list",
+            "header" => ["customer", "Customer Contract", "Customer Invoice"],
+            "data" => $generalSetup
+        ], 200);
+    }
+
+    function search (Request $request) {
+        $validate = Validator::make($request->all(), [
+            "search" => "required|string"
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                "message" => $validate->errors()->first()
+            ], 400);
+        }
+
+        $generalSetup = GeneralSetup::where('customer', 'like', "%$request->search%")
+            ->orWhere('customer_contract', 'like', "%$request->search%")
+            ->orWhere('customer_invoice', 'like', "%$request->search%")
+            ->cursorPaginate(10, ['id', 'customer', 'customer_contract','customer_invoice']);
+
+        return response()->json([
+            "message" => "General setup search result",
             "header" => ["customer", "Customer Contract", "Customer Invoice"],
             "data" => $generalSetup
         ], 200);

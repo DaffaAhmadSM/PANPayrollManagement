@@ -18,7 +18,7 @@ class ClassificationOfTaxPayerController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -40,7 +40,7 @@ class ClassificationOfTaxPayerController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -80,7 +80,7 @@ class ClassificationOfTaxPayerController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -106,6 +106,27 @@ class ClassificationOfTaxPayerController extends Controller
         return response()->json([
             "message" => "Success get classification of tax payer detail",
             "data" => $classificationOfTaxPayer
+        ], 200);
+    }
+
+    function search (Request $request){
+        $validate = Validator::make($request->all(), [
+            "search" => "string|required"
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                "message" => $validate->errors()->first()
+            ], 400);
+        }
+
+        $classificationOfTaxPayers = ClassificationOfTaxPayer::where("code", "like", "%$request->search%")
+            ->cursorPaginate(10, ['id', 'code', 'description']);
+
+        return response()->json([
+            "message" => "Success get classification of tax payer list",
+            "header" => ["code", "description"],
+            "data" => $classificationOfTaxPayers
         ], 200);
     }
 }

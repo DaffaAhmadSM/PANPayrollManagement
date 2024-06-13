@@ -94,4 +94,20 @@ class NumberSequenceController extends Controller
             "data" => $numberSequences
         ], 200);
     }
+
+    function search (Request $request) {
+        $validate = Validator::make($request->all(), [
+            "search" => "required|string"
+        ]);
+
+        $numberSequences = NumberSequence::where('code', 'like', "%$request->search%")
+            ->orWhere('description', 'like', "%$request->q%")
+            ->cursorPaginate(10, ['id', 'code', 'description']);
+
+        return response()->json([
+            "message" => "Number sequence search result",
+            "header" => ["code", "description"],
+            "data" => $numberSequences
+        ], 200);
+    }
 }

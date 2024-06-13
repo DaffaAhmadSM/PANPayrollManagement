@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Calendar;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\CalendarHoliday;
 use App\Http\Controllers\Controller;
@@ -18,7 +19,7 @@ class CalendarHolidayController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -45,7 +46,7 @@ class CalendarHolidayController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -104,7 +105,7 @@ class CalendarHolidayController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -115,6 +116,26 @@ class CalendarHolidayController extends Controller
         return response()->json([
             'message' => 'Success get calendar holiday list',
             'header' => ['code', 'date', 'remarks'],
+            "data" => $calendarHoliday
+        ], 200);
+    }
+
+    function search(Request $request){
+        $validate = Validator::make($request->all(), [
+            "search" => "required|string"
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                "message" => $validate->errors()->first()
+            ], 400);
+        }
+        $calendarHoliday = CalendarHoliday::where('code', 'like', '%'.$request->search.'%')
+            ->orWhere('remarks', 'like', '%'.$request->search.'%')
+            ->cursorPaginate(20, ['id', 'code', 'date', 'remarks']);
+
+        return response()->json([
+            "message" => "Success search calendar holiday",
             "data" => $calendarHoliday
         ], 200);
     }

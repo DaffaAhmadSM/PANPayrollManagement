@@ -36,6 +36,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [CompanyInfoController::class, 'detail']);
         Route::post('update/{id}', [CompanyInfoController::class, 'update']);
         Route::post('delete/{id}', [CompanyInfoController::class, 'delete']);
+        Route::post('search', [CompanyInfoController::class, 'search']);
     });
 
     Route::group(['prefix' => 'number-sequence'], function () {
@@ -44,6 +45,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [NumberSequenceController::class, 'detail']);
         Route::post('update/{id}', [NumberSequenceController::class, 'update']);
         Route::post('delete/{id}', [NumberSequenceController::class, 'delete']);
+        Route::post('search', [NumberSequenceController::class, 'search']);
     });
 
     Route::group(['prefix' => 'unit-of-measure'], function () {
@@ -52,6 +54,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [UnitOfMeasureController::class, 'detail']);
         Route::post('update/{id}', [UnitOfMeasureController::class, 'update']);
         Route::post('delete/{id}', [UnitOfMeasureController::class, 'delete']);
+        Route::post('search', [UnitOfMeasureController::class, 'search']);
     });
 
     Route::group(['prefix' => 'multiplication-calculation'], function () {
@@ -60,6 +63,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [MultiplicationCalculationController::class, 'detail']);
         Route::post('update/{id}', [MultiplicationCalculationController::class, 'update']);
         Route::post('delete/{id}', [MultiplicationCalculationController::class, 'delete']);
+        Route::post('search', [MultiplicationCalculationController::class, 'search']);
     });
 
     Route::group(['prefix' => 'overtime-multiplication-setup'], function() {
@@ -68,6 +72,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [OvertimeMultiplicationSetupController::class, 'detail']);
         Route::post('update/{id}', [OvertimeMultiplicationSetupController::class, 'update']);
         Route::post('delete/{id}', [OvertimeMultiplicationSetupController::class, 'delete']);
+        Route::post('search', [OvertimeMultiplicationSetupController::class, 'search']);
     });
 
     Route::group(['prefix' => 'general-setup'], function () {
@@ -76,6 +81,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [GeneralSetupController::class, 'detail']);
         Route::post('update/{id}', [GeneralSetupController::class, 'update']);
         Route::post('delete/{id}', [GeneralSetupController::class, 'delete']);
+        Route::post('search', [GeneralSetupController::class, 'search']);
     });
 
     Route::group(['prefix' => 'working-hour'], function () {
@@ -84,6 +90,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [WorkingHourController::class, 'detail']);
         Route::post('update/{id}', [WorkingHourController::class, 'update']);
         Route::post('delete/{id}', [WorkingHourController::class, 'delete']);
+        Route::post('search', [WorkingHourController::class, 'search']);
     });
 
     // route calendar holiday
@@ -93,6 +100,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [CalendarHolidayController::class, 'detail']);
         Route::post('update/{id}', [CalendarHolidayController::class, 'update']);
         Route::post('delete/{id}', [CalendarHolidayController::class, 'delete']);
+        Route::post('search', [CalendarHolidayController::class, 'search']);
     });
 
     // route classification of tax payer
@@ -102,6 +110,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [ClassificationOfTaxPayerController::class, 'detail']);
         Route::post('update/{id}', [ClassificationOfTaxPayerController::class, 'update']);
         Route::post('delete/{id}', [ClassificationOfTaxPayerController::class, 'delete']);
+        Route::post('search', [ClassificationOfTaxPayerController::class, 'search']);
     });
 
     Route::group(['prefix'=> 'app-setting'], function() {
@@ -119,6 +128,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [UserController::class, 'updateUserId']);
         Route::post('delete/{id}', [UserController::class, 'deleteUser']);
         Route::get('list', [UserController::class, 'listUser']);
+        Route::get('detail/{id}', [UserController::class, 'detailUser']);
+        Route::post('search', [UserController::class, 'searchUser']);
     });
 
     Route::post('logout', [AuthController::class, 'logout']);

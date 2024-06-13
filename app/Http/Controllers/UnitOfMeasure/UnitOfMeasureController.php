@@ -40,7 +40,7 @@ class UnitOfMeasureController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                "message" => $validate->errors()
+                "message" => $validate->errors()->first()
             ], 400);
         }
 
@@ -92,6 +92,22 @@ class UnitOfMeasureController extends Controller
 
         return response()->json([
             "message" => "Unit of measure list",
+            "header" => ["code", "description"],
+            "data" => $unitOfMeasures
+        ], 200);
+    }
+
+    function search (Request $request) {
+        $validate = Validator::make($request->all(), [
+            "search" => "required|string"
+        ]);
+
+        $unitOfMeasures = UnitOfMeasure::where("code", "like", "%$request->search%")
+            ->orWhere("description", "like", "%$request->q%")
+            ->cursorPaginate(10, ['id', 'code', 'description']);
+
+        return response()->json([
+            "message" => "Unit of measure search result",
             "header" => ["code", "description"],
             "data" => $unitOfMeasures
         ], 200);
