@@ -143,8 +143,8 @@ class CompanyInfoController extends Controller
     }
 
     function search(Request $request) {
-        $validate = Validator::make($request()->all(), [
-            'search' => 'required|string'
+        $validate = Validator::make($request->all(), [
+            "search" => "required|string"
         ]);
 
         if ($validate->fails()) {
