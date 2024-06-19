@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('employment_types', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
+            $table->text('description');
+            $table->enum('permanent', ['Yes', 'No'])->default('No');
             $table->timestamps();
         });
     }

@@ -36,8 +36,6 @@ class GeneralSetupController extends Controller
         DB::beginTransaction();
         try {
             GeneralSetup::create($request->all());
-            $number_sequence = NumberSequence::find($request->number_sequence_id);
-            $number_sequence->increment('current_number', 1);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

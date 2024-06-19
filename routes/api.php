@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Menu\UserMenuController;
+use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\Company\CompanyInfoController;
 use App\Http\Controllers\AppSetting\AppSettingController;
 use App\Http\Controllers\WorkingHour\WorkingHourController;
@@ -130,6 +131,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('list', [UserController::class, 'listUser']);
         Route::get('detail/{id}', [UserController::class, 'detailUser']);
         Route::post('search', [UserController::class, 'searchUser']);
+    });
+
+    Route::group(['prefix'=> 'customer'], function() {
+        Route::post('create', [CustomerController::class, 'create']);
+        Route::post('update/{id}', [CustomerController::class, 'update']);
+        Route::post('delete/{id}', [CustomerController::class, 'delete']);
+        Route::get('list', [CustomerController::class, 'list']);
+        Route::get('detail/{id}', [CustomerController::class, 'detail']);
+        Route::post('search', [CustomerController::class, 'search']);
     });
 
     Route::post('logout', [AuthController::class, 'logout']);

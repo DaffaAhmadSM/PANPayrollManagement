@@ -89,46 +89,79 @@ class UserMenuSeeder extends Seeder
             [
                 'user_id' => 1,
                 'menu_id' => 1,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 2,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 3,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 4,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 5,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 6,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 7,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 8,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 9,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 10,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
             [
                 'user_id' => 1,
                 'menu_id' => 11,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1
             ],
         ];
 

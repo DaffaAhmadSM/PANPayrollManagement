@@ -122,16 +122,6 @@ class UserController extends Controller
     }
 
     function listUser() {
-        $validate = Validator::make(request()->all(), [
-            'perpage' => 'integer',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $validate->errors()->first()
-            ], 400);
-        }
 
         $page = request()->perpage ? request()->perpage : 20;
         $users = User::orderBy('id', 'DESC')->cursorPaginate($page, ['id','name', 'email']);
