@@ -100,8 +100,15 @@ class NumberSequenceController extends Controller
             "search" => "required|string"
         ]);
 
+        
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first()
+            ], 400);
+        }
+
         $numberSequences = NumberSequence::where('code', 'like', "%$request->search%")
-            ->orWhere('description', 'like', "%$request->q%")
+            ->orWhere('description', 'like', "%$request->search%")
             ->cursorPaginate(10, ['id', 'code', 'description']);
 
         return response()->json([

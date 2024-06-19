@@ -156,4 +156,27 @@ class UserController extends Controller
         ]);
     }
 
+    function searchUser(Request $request){
+        $validate = Validator::make($request->all(), [
+            "search" => "required|string"
+        ]);
+
+        
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first()
+            ], 400);
+        }
+
+        $user =  User::where('name', 'like', "%$request->search%")
+                ->orWhere('email', 'like', "%$request->search%")
+                ->cursorPaginate(10, ['id', 'name', 'email']);
+
+        return response()->json([
+            "message" => "User search result",
+            "header" => ["name", "email"],
+            "data" => $user
+        ], 200);
+    }
+
 }
