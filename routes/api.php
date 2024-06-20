@@ -13,6 +13,7 @@ use App\Http\Controllers\Company\CompanyInfoController;
 use App\Http\Controllers\AppSetting\AppSettingController;
 use App\Http\Controllers\WorkingHour\WorkingHourController;
 use App\Http\Controllers\Calendar\CalendarHolidayController;
+use App\Http\Controllers\Customer\CustomerContractController;
 use App\Http\Controllers\GeneralSetup\GeneralSetupController;
 use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
 use App\Http\Controllers\NumberSequence\NumberSequenceController;
@@ -140,6 +141,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('list', [CustomerController::class, 'list']);
         Route::get('detail/{id}', [CustomerController::class, 'detail']);
         Route::post('search', [CustomerController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'customer-contract'], function () {
+        Route::post('create', [CustomerContractController::class, 'create']);
+        Route::post('update/{id}', [CustomerContractController::class, 'update']);
+        Route::post('delete/{id}', [CustomerContractController::class, 'delete']);
+        Route::get('list', [CustomerContractController::class, 'list']);
+        Route::get('detail/{id}', [CustomerContractController::class, 'detail']);
+        Route::post('search', [CustomerContractController::class, 'search']);
     });
 
     Route::post('logout', [AuthController::class, 'logout']);

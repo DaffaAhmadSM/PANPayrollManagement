@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained('customers');
             $table->string('code');
-            $table->string('contact_number');
+            $table->string('contract_number');
             $table->string('description');
             $table->timestamps();
         });
