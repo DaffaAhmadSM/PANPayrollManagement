@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('certificate_types', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
+            $table->string('type')->default('N/A');
             $table->foreignId('certificate_classification_id')->constrained('certificate_classifications');
-            $table->text('description')->nullable();
-            $table->enum('required_renewal', ['yes', 'no']);
+            $table->text('description')->default('N/A');
+            $table->enum('required_renewal', ['yes', 'no', 'none'])->default('none');
             $table->timestamps();
         });
     }

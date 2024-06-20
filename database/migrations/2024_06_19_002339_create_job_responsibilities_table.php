@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('job_responsibilities', function (Blueprint $table) {
             $table->id();
-            $table->string('responsibility');
-            $table->text('description');
-            $table->string('note')->nullable();
+            $table->string('responsibility')->default('N/A');
+            $table->text('description')->default('N/A');
+            $table->string('note')->default('N/A')->nullable();
             $table->timestamps();
         });
     }

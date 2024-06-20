@@ -17,6 +17,7 @@ use App\Http\Controllers\Customer\CustomerContractController;
 use App\Http\Controllers\GeneralSetup\GeneralSetupController;
 use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
 use App\Http\Controllers\NumberSequence\NumberSequenceController;
+use App\Http\Controllers\Customer\CustomerCalendarHolidayController;
 use App\Http\Controllers\Calculation\MultiplicationCalculationController;
 use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
 use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
@@ -150,6 +151,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('list', [CustomerContractController::class, 'list']);
         Route::get('detail/{id}', [CustomerContractController::class, 'detail']);
         Route::post('search', [CustomerContractController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'customer-calendar-holiday'], function () {
+        Route::post('create', [CustomerCalendarHolidayController::class, 'create']);
+        Route::post('update/{id}', [CustomerCalendarHolidayController::class, 'update']);
+        Route::post('delete/{id}', [CustomerCalendarHolidayController::class, 'delete']);
+        Route::get('list', [CustomerCalendarHolidayController::class, 'list']);
+        Route::get('detail/{id}', [CustomerCalendarHolidayController::class, 'detail']);
+        Route::post('search', [CustomerCalendarHolidayController::class, 'search']);
     });
 
     Route::post('logout', [AuthController::class, 'logout']);

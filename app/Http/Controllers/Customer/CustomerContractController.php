@@ -13,7 +13,7 @@ class CustomerContractController extends Controller
     public function list(Request $request)
     {
         $page = $request->perpage ?? 70;
-        $list = CustomerContract::with('customer:id,no,name')->cursorPaginate($page, ['id', 'code', 'contract_number', 'description', 'customer_id']);
+        $list = CustomerContract::with('customer:id,no,name')->orderBy('id', 'desc')->cursorPaginate($page, ['id', 'code', 'contract_no', 'description', 'customer_id']);
 
         return response()->json([
             'message' => 'Success',
@@ -26,7 +26,7 @@ class CustomerContractController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required|string',
-            'contract_number' => 'required|string',
+            'contract_no' => 'required|string',
             'description' => 'required|string',
             'customer_id' => 'required|integer|exists:customers,id',
         ]);
@@ -49,7 +49,7 @@ class CustomerContractController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code' => 'string',
-            'contract_number' => 'string',
+            'contract_no' => 'string',
             'description' => 'string',
             'customer_id' => 'integer|exists:customers,id',
         ]);
@@ -61,7 +61,7 @@ class CustomerContractController extends Controller
             ], 404);
         }
 
-        $contract->update($request->all(['code', 'contract_number', 'description', 'customer_id']));
+        $contract->update($request->all(['code', 'contract_no', 'description', 'customer_id']));
 
         return response()->json([
             'message' => 'Success',

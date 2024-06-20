@@ -17,8 +17,7 @@ class CustomerController extends Controller
     public function list(Request $request)
     {
         $page = $request->perpage ?? 10;
-        $customer = Customer::cursorPaginate($page, ['id','no', 'name', 'email']);
-        $customer->values()->all();
+        $customer = Customer::orderBy('id', 'desc')->cursorPaginate($page, ['id','no', 'name', 'email']);
         return response()->json([
             'message' => 'Success',
             'data' => $customer,

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('job_skills', function (Blueprint $table) {
             $table->id();
-            $table->string('skill');
-            $table->enum('type', ['hard', 'soft']);
-            $table->text('description');
+            $table->string('skill')->default('N/A');
+            $table->enum('type', ['hard', 'soft', 'none'])->default('none');
+            $table->text('description')->default('N/A');
             $table->timestamps();
         });
     }

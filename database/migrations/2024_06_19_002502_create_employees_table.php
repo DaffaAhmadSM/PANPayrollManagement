@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->string('No');
-            $table->string('Name');
+            $table->string('no');
+            $table->string('name');
             $table->enum('type', ['employee', 'freelance']);
             $table->string('search_name');
             $table->enum('gender', ['male', 'female']);

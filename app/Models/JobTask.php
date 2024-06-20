@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class JobTask extends Model
 {
     use HasFactory;
+
+    protected $guarded = ['id'];
+
+    public function jobResponsibility()
+    {
+        return $this->belongsTo(JobResponsibility::class);
+    }
 }

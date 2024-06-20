@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('job_tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('job_task');
+            $table->string('job_task')->default('N/A');
             $table->foreignId('job_responsibility_id')->constrained('job_responsibilities');
-            $table->text('description');
-            $table->string('note')->nullable();
+            $table->text('description')->default('N/A');
+            $table->string('note')->nullable()->default('N/A');
             $table->timestamps();
         });
     }

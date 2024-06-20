@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('customer_contracts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('customers');
-            $table->string('code');
-            $table->string('contract_number');
-            $table->string('description');
+            $table->string('code')->default('N/A');
+            $table->string('contract_no')->default('N/A');
+            $table->string('description')->default('N/A');
             $table->timestamps();
         });
     }

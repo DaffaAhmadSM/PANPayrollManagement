@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('education_levels', function (Blueprint $table) {
             $table->id();
-            $table->string('level');
-            $table->text('description');
+            $table->string('level')->default('N/A');
+            $table->text('description')->default('N/A');
             $table->timestamps();
         });
     }
