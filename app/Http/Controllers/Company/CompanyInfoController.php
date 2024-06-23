@@ -39,7 +39,7 @@ class CompanyInfoController extends Controller
         // prosses image name and store it
         $imageName = time(). $random .'.'.$request->img->extension();
         Storage::disk('public')->putFileAs('images', $request->img, $imageName);
-        $request->merge(['img_logo' => $imageName]);
+        $request->merge(['img_logo' => 'images/'. $imageName]);
 
         CompanyInfo::create($request->except('img'));
 
@@ -58,7 +58,7 @@ class CompanyInfoController extends Controller
 
         // delete image if exist
         if ($companyInfo->img_logo) {
-            Storage::disk('public')->delete('images/'.$companyInfo->img_logo);
+            Storage::disk('public')->delete($companyInfo->img_logo);
         }
 
         $companyInfo->delete();
@@ -108,8 +108,8 @@ class CompanyInfoController extends Controller
             $random = Str::random(5);
             // prosses image name and store it
             $imageName = time(). $random .'.'.$request->img->extension();
-            Storage::disk('public')->putFileAs('images', $request->img, $imageName);
-            $request->merge(['img_logo' => $imageName]);
+            Storage::disk('public')->putFileAs('images/', $request->img, $imageName);
+            $request->merge(['img_logo' =>'images/' . $imageName]);
         }
 
         $companyInfo->update($request->except('img'));
