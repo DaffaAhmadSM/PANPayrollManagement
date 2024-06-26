@@ -41,7 +41,8 @@ class CertificateTypeController extends Controller
        $validator = Validator::make($request->all(), [
             'type' => 'required|string',
             'description' => 'required|string',
-            'certificate_classification_id' => 'required|integer|exists:certificate_classifications,id'
+            'certificate_classification_id' => 'required|integer|exists:certificate_classifications,id',
+            'required_renewal' => 'required|in:yes,no',
         ]);
 
         if ($validator->fails()) {
@@ -62,7 +63,8 @@ class CertificateTypeController extends Controller
         $validator = Validator::make($request->all(), [
             'type' => 'string',
             'description' => 'string',
-            'certificate_classification_id' => 'integer|exists:certificate_classifications,id'
+            'certificate_classification_id' => 'integer|exists:certificate_classifications,id',
+            'required_renewal' => 'in:yes,no',
         ]);
 
         if ($validator->fails()) {

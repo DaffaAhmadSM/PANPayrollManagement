@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'dev@admin.com',
             'password' => Hash::make("devsecret")
         ]);
-
         $this->call(UserMenuSeeder::class);
         $this->call(SettingSeeder::class);
         $this->call(SetupSeeder::class);

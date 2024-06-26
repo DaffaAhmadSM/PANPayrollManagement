@@ -1,6 +1,4 @@
 <?php
-
-use App\Models\WorkingHour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +19,13 @@ use App\Http\Controllers\Customer\CustomerCalendarHolidayController;
 use App\Http\Controllers\Calculation\MultiplicationCalculationController;
 use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
 use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
+use App\Http\Controllers\Competency\CertificateClassificationController;
+use App\Http\Controllers\Competency\CertificateTypeController;
+use App\Http\Controllers\Competency\EducationLevelController;
+use App\Http\Controllers\Competency\JobResponsibilityController;
+use App\Http\Controllers\Competency\JobSkillController;
+use App\Http\Controllers\Competency\JobTaskController;
+use App\Http\Controllers\Customer\CustomerRateController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -161,6 +166,73 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [CustomerCalendarHolidayController::class, 'detail']);
         Route::post('search', [CustomerCalendarHolidayController::class, 'search']);
     });
+
+    Route::group(['prefix' => 'customer-rate'], function () {
+        Route::post('create', [CustomerRateController::class, 'create']);
+        Route::post('update/{id}', [CustomerRateController::class, 'update']);
+        Route::post('delete/{id}', [CustomerRateController::class, 'delete']);
+        Route::get('list', [CustomerRateController::class, 'list']);
+        Route::get('detail/{id}', [CustomerRateController::class, 'detail']);
+        Route::post('search', [CustomerRateController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'certificate-classification'], function () {
+        Route::post('create', [CertificateClassificationController::class, 'create']);
+        Route::post('update/{id}', [CertificateClassificationController::class, 'update']);
+        Route::post('delete/{id}', [CertificateClassificationController::class, 'delete']);
+        Route::get('list', [CertificateClassificationController::class, 'list']);
+        Route::get('detail/{id}', [CertificateClassificationController::class, 'detail']);
+        Route::post('search', [CertificateClassificationController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'certificate-type'], function () {
+        Route::post('create', [CertificateTypeController::class, 'create']);
+        Route::post('update/{id}', [CertificateTypeController::class, 'update']);
+        Route::post('delete/{id}', [CertificateTypeController::class, 'delete']);
+        Route::get('list', [CertificateTypeController::class, 'list']);
+        Route::get('detail/{id}', [CertificateTypeController::class, 'detail']);
+        Route::post('search', [CertificateTypeController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'education-level'], function () {
+        Route::post('create', [EducationLevelController::class, 'create']);
+        Route::post('update/{id}', [EducationLevelController::class, 'update']);
+        Route::post('delete/{id}', [EducationLevelController::class, 'delete']);
+        Route::get('list', [EducationLevelController::class, 'list']);
+        Route::get('detail/{id}', [EducationLevelController::class, 'detail']);
+        Route::post('search', [EducationLevelController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'job-skill'], function () {
+        Route::post('create', [JobSkillController::class, 'create']);
+        Route::post('update/{id}', [JobSkillController::class, 'update']);
+        Route::post('delete/{id}', [JobSkillController::class, 'delete']);
+        Route::get('list', [JobSkillController::class, 'list']);
+        Route::get('detail/{id}', [JobSkillController::class, 'detail']);
+        Route::post('search', [JobSkillController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'job-resposibility'], function () {
+        Route::post('create', [JobResponsibilityController::class, 'create']);
+        Route::post('update/{id}', [JobResponsibilityController::class, 'update']);
+        Route::post('delete/{id}', [JobResponsibilityController::class, 'delete']);
+        Route::get('list', [JobResponsibilityController::class, 'list']);
+        Route::get('detail/{id}', [JobResponsibilityController::class, 'detail']);
+        Route::post('search', [JobResponsibilityController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'job-task'], function () {
+        Route::post('create', [JobTaskController::class, 'create']);
+        Route::post('update/{id}', [JobTaskController::class, 'update']);
+        Route::post('delete/{id}', [JobTaskController::class, 'delete']);
+        Route::get('list', [JobTaskController::class, 'list']);
+        Route::get('detail/{id}', [JobTaskController::class, 'detail']);
+        Route::post('search', [JobTaskController::class, 'search']);
+    });
+
+
+
+    
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('update-self', [UserController::class, 'updateUserSelf']);

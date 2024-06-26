@@ -13,6 +13,6 @@ class CertificateType extends Model
 
     public function classification()
     {
-        return $this->belongsTo(CertificateClassification::class, 'classification_id');
+        return $this->belongsTo(CertificateClassification::class, 'certificate_classification_id');
     }
 }
