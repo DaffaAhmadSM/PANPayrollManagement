@@ -12,11 +12,11 @@ class JobTaskController extends Controller
     public function list(Request $request)
     {
        $page = $request->perpage ?? 70;
-        $list = JobTask::with('jobResponsibility:id,responsibility')->cursorPaginate($page, ['id', 'task', 'description', 'job_responsibility_id']);
+        $list = JobTask::with('jobResponsibility:id,responsibility')->cursorPaginate($page, ['id', 'job_task', 'description', 'job_responsibility_id']);
         return response()->json([
             'data' => $list,
             'message' => 'Success',
-            'header' => ["Task","Description"],
+            'header' => ["Task","Description", "Responsibility"],
         ], 200);
     }
 
@@ -39,7 +39,7 @@ class JobTaskController extends Controller
     public function create(Request $request)
     {
        $validator = Validator::make($request->all(), [
-            'task' => 'required|string',
+            'job_task' => 'required|string',
             'description' => 'required|string',
             'job_responsibility_id' => 'required|integer|exists:job_responsibilities,id',
             'note' => 'string'
@@ -51,7 +51,7 @@ class JobTaskController extends Controller
             ], 400);
         }
 
-        JobTask::create($request->all(['task', 'description', 'job_responsibility_id', 'note']));
+        JobTask::create($request->all(['job_task', 'description', 'job_responsibility_id', 'note']));
 
         return response()->json([
             'message' => 'Success'
@@ -61,7 +61,7 @@ class JobTaskController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'task' => 'string',
+            'job_task' => 'string',
             'description' => 'string',
             'job_responsibility_id' => 'integer|exists:job_responsibilities,id',
             'note' => 'string'
@@ -81,7 +81,7 @@ class JobTaskController extends Controller
             ], 404);
         }
 
-        $data->update($request->all(['task', 'description', 'job_responsibility_id', 'note']));
+        $data->update($request->all(['job_task', 'description', 'job_responsibility_id', 'note']));
 
         return response()->json([
             'message' => 'Success'

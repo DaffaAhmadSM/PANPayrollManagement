@@ -129,6 +129,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [EducationLevelController::class, 'delete']);
         Route::post('search', [EducationLevelController::class, 'search']);
     });
+    
+    Route::group(['prefix' => 'job-skill'], function () {
+        Route::post('create', [JobSkillController::class, 'create']);
+        Route::get('list', [JobSkillController::class, 'getList']);
+        Route::get('detail/{id}', [JobSkillController::class, 'detail']);
+        Route::post('update/{id}', [JobSkillController::class, 'update']);
+        Route::post('delete/{id}', [JobSkillController::class, 'delete']);
+        Route::post('search', [JobSkillController::class, 'search']);
+    });
 
     Route::group(['prefix'=> 'app-setting'], function() {
         Route::get('all', [AppSettingController::class, 'getAll']);

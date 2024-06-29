@@ -16,7 +16,7 @@ class JobResponsibilityController extends Controller
         return response()->json([
             'data' => $list,
             'message' => 'Success',
-            'header' => ["Responsibility"],
+            'header' => ["Responsibility", "Description"],
         ], 200);
     }
 
@@ -39,7 +39,7 @@ class JobResponsibilityController extends Controller
     public function create(Request $request)
     {
        $validator = Validator::make($request->all(), [
-            'responsibility' => 'required|string',
+            'responsibility' => 'required|exists:job_responsibilities,id',
             'description' => 'required|string',
             'note' => 'string'
         ]);
@@ -61,7 +61,7 @@ class JobResponsibilityController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'responsibility' => 'string',
+            'responsibility' => 'exists:job_responsibilities,id',
             'description' => 'string',
             'note' => 'string'
         ]);
@@ -81,6 +81,10 @@ class JobResponsibilityController extends Controller
         }
 
         $data->update($request->all(['responsibility', 'description', 'note']));
+
+        return response()->json([
+            'message' => 'Success'
+        ], 200);
     }
 
     public function delete(string $id)
