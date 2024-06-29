@@ -121,6 +121,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [ClassificationOfTaxPayerController::class, 'search']);
     });
 
+    Route::group(['prefix' => 'education-level'], function () {
+        Route::post('create', [EducationLevelController::class, 'create']);
+        Route::get('list', [EducationLevelController::class, 'getList']);
+        Route::get('detail/{id}', [EducationLevelController::class, 'detail']);
+        Route::post('update/{id}', [EducationLevelController::class, 'update']);
+        Route::post('delete/{id}', [EducationLevelController::class, 'delete']);
+        Route::post('search', [EducationLevelController::class, 'search']);
+    });
+
     Route::group(['prefix'=> 'app-setting'], function() {
         Route::get('all', [AppSettingController::class, 'getAll']);
         Route::post('create', [AppSettingController::class, 'create']);
@@ -229,10 +238,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [JobTaskController::class, 'detail']);
         Route::post('search', [JobTaskController::class, 'search']);
     });
-
-
-
-    
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('update-self', [UserController::class, 'updateUserSelf']);

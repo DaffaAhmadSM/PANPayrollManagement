@@ -16,7 +16,7 @@ class CertificateTypeController extends Controller
         return response()->json([
             'data' => $list,
             'message' => 'Success',
-            'header' => ["Type", "Description"],
+            'header' => ["Type", "Description", "Classification"],
         ], 200);
     }
 
