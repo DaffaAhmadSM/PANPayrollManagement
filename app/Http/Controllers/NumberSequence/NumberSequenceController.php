@@ -86,7 +86,7 @@ class NumberSequenceController extends Controller
         ], 200);
     }
 
-    function getAll () {
+    function list () {
         $numberSequences = NumberSequence::cursorPaginate(10, ['id', 'code', 'description']);
         return response()->json([
             "message" => "Number sequence list",
@@ -114,6 +114,14 @@ class NumberSequenceController extends Controller
         return response()->json([
             "message" => "Number sequence search result",
             "header" => ["code", "description"],
+            "data" => $numberSequences
+        ], 200);
+    }
+
+    function getAll () {
+        $numberSequences = NumberSequence::get(['id', 'code']);
+        return response()->json([
+            "message" => "Number sequence list",
             "data" => $numberSequences
         ], 200);
     }

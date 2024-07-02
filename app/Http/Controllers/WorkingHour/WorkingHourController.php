@@ -86,8 +86,18 @@ class WorkingHourController extends Controller
         ], 200);
     }
 
-    function getAll() {
+    function list(){
         $workingHour = WorkingHour::cursorPaginate(10, ['id', 'code', 'description']);
+
+        return response()->json([
+            "message" => "Working hour list",
+            "header" => ["code", "description"],
+            "data" => $workingHour
+        ], 200);
+    }
+
+    function getAll() {
+        $workingHour = WorkingHour::get(['id', 'code', 'description']);
 
         return response()->json([
             "message" => "Working hour list",

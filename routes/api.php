@@ -49,6 +49,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['prefix' => 'number-sequence'], function () {
         Route::post('create', [NumberSequenceController::class, 'create']);
+        Route::get('list', [NumberSequenceController::class, 'list']);
         Route::get('all', [NumberSequenceController::class, 'getAll']);
         Route::get('detail/{id}', [NumberSequenceController::class, 'detail']);
         Route::post('update/{id}', [NumberSequenceController::class, 'update']);
@@ -95,6 +96,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'working-hour'], function () {
         Route::post('create', [WorkingHourController::class, 'create']);
         Route::get('all', [WorkingHourController::class, 'getAll']);
+        Route::get('list', [WorkingHourController::class, 'list']);
         Route::get('detail/{id}', [WorkingHourController::class, 'detail']);
         Route::post('update/{id}', [WorkingHourController::class, 'update']);
         Route::post('delete/{id}', [WorkingHourController::class, 'delete']);
@@ -163,6 +165,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [CustomerController::class, 'update']);
         Route::post('delete/{id}', [CustomerController::class, 'delete']);
         Route::get('list', [CustomerController::class, 'list']);
+        Route::get('all', [CustomerController::class, 'getAll']);
         Route::get('detail/{id}', [CustomerController::class, 'detail']);
         Route::post('search', [CustomerController::class, 'search']);
     });

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\NumberSequence;
 use Faker\Core\Number;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
@@ -25,10 +26,19 @@ class CustomerController extends Controller
         ],200);
     }
 
+    public function getAll(){
+        $customer = Customer::get(['id','name']);
+        return response()->json([
+            'message' => 'Success',
+            'data' => $customer,
+        ],200);
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
             // no from number sequence
+            'no' => 'required|string|unique:customers,no',
             'name' => 'required|string',
             'email' => 'required|email',
             'fax' => 'required|string',
@@ -36,7 +46,11 @@ class CustomerController extends Controller
             'address' => 'required|string',
             'working_hour_id' => 'required|integer|exists:working_hours,id',    
             'number_sequence_id' => 'required|integer|exists:number_sequences,id',
-        ]);
+        ],
+        [
+            'no.unique' => 'The no has already been taken, please refresh to get the latest no.',
+        ]
+    );
 
         if ($validator->fails()) {
             return response()->json([
@@ -45,7 +59,17 @@ class CustomerController extends Controller
         }
 
         $customer = Customer::create($request->all());
-        NumberSequence::find($request->number_sequence_id)->increment('current_number');
+        DB::beginTransaction();
+        try {
+            NumberSequence::find($request->number_sequence_id)->increment('current_number');
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create customer',
+            ], 500);
+        }
+        
         return response()->json([
             'message' => 'Customer created successfully',
         ], 200);
@@ -78,6 +102,9 @@ class CustomerController extends Controller
             'address' => 'string',
             'working_hour_id' => 'integer|exists:working_hours,id',    
             'number_sequence_id' => 'integer|exists:number_sequences,id',
+        ],
+        [
+            'no.unique' => 'The no has already been taken, please refresh to get the latest no.',
         ]);
 
         if ($validator->fails()) {
@@ -86,11 +113,25 @@ class CustomerController extends Controller
             ],400);
         }
 
+
         $customer = Customer::find($id);
         if (!$customer) {
             return response()->json([
                 'message' => 'Customer not found',
             ],404);
+        }
+
+        if($request->number_sequence_id && $request->number_sequence_id != $customer->number_sequence_id){
+            DB::beginTransaction();
+            try {
+                NumberSequence::find($request->number_sequence_id)->increment('current_number');
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return response()->json([
+                    'message' => 'Failed to update customer',
+                ], 500);
+            }
         }
 
         $customer->update($request->all());

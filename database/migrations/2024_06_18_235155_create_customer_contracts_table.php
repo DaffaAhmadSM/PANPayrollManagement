@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('customer_contracts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('number_sequence_id')->constrained('number_sequences');
             $table->foreignId('customer_id')->constrained('customers');
             $table->string('code')->default('N/A');
             $table->string('contract_no')->default('N/A');
