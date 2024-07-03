@@ -19,7 +19,7 @@ class CustomerCalendarHolidayController extends Controller
         return response()->json([
         'message' => 'Success',
             'data' => $list,
-            'header' => ["Date", "Remarks"],
+            'header' => ["Date", "Remarks", "Customer No", "Customer Name"],
         ], 200);
     }
 

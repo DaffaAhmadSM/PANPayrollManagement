@@ -20,7 +20,7 @@ class CustomerContractController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $list,
-            'header' => ["Code", "Contract No", "Description"],
+            'header' => ["Code", "Contract No", "Description","Customer No", "Customer Name"],
         ], 200);
     }
 
@@ -109,6 +109,20 @@ class CustomerContractController extends Controller
 
         return response()->json([
             'message' => 'Customer contract deleted'
+        ], 200);
+    }
+
+    public function detail($id){
+        $contract = CustomerContract::with('customer:id,no,name', 'numberSequence:id,code')->find($id);
+        if (!$contract) {
+            return response()->json([
+                'message' => 'Customer contract not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Customer contract found',
+            'data' => $contract,
         ], 200);
     }
 }

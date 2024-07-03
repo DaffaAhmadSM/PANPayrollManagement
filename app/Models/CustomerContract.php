@@ -17,4 +17,9 @@ class CustomerContract extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function numberSequence()
+    {
+        return $this->belongsTo(NumberSequence::class);
+    }
 }

@@ -22,7 +22,7 @@ class CustomerController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $customer,
-            'header' => ["no", "name", "email"],
+            'header' => ["No Cust", "Name", "Email"],
         ],200);
     }
 
