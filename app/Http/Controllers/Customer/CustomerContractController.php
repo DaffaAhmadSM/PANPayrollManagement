@@ -24,6 +24,15 @@ class CustomerContractController extends Controller
         ], 200);
     }
 
+    public function getAll()
+    {
+        $contracts = CustomerContract::all(['id', 'code']);
+        return response()->json([
+            'message' => 'Success',
+            'data' => $contracts,
+        ], 200);
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -27,7 +27,7 @@ class CustomerController extends Controller
     }
 
     public function getAll(){
-        $customer = Customer::get(['id','name']);
+        $customer = Customer::get(['id','name','no']);
         return response()->json([
             'message' => 'Success',
             'data' => $customer,

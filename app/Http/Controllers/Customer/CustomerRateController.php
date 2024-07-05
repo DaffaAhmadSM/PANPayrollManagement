@@ -13,12 +13,12 @@ class CustomerRateController extends Controller
     public function list(Request $request)
     {
         $page = $request->perpage ?? 70;
-        $list = CustomerRate::with('customer:id,name')->cursorPaginate($page, ['id', 'type', 'rate', 'customer_id']);
+        $list = CustomerRate::with('customer:id,name,no')->cursorPaginate($page, ['id', 'type', 'rate', 'customer_id']);
 
         return response()->json([
             'message' => 'Success',
             'data' => $list,
-            'header' => ["Type", "Rate"],
+            'header' => ["Customer", "Type", "Rate"],
         ], 200);
     }
 
@@ -63,12 +63,18 @@ class CustomerRateController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'type' => 'enum:hourly,daily,monthly,yearly',
+            'type' => 'in:hourly,daily,monthly,yearly',
             'rate' => 'numeric',
             'customer_id' => 'integer|exists:customers,id',
             'position_id' => 'integer|exists:positions,id',
             'customer_contract_id' => 'integer|exists:customer_contracts,id',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
 
         $rate = CustomerRate::find($id);
         if (!$rate) {
