@@ -26,6 +26,8 @@ use App\Http\Controllers\Competency\JobResponsibilityController;
 use App\Http\Controllers\Competency\JobSkillController;
 use App\Http\Controllers\Competency\JobTaskController;
 use App\Http\Controllers\Customer\CustomerRateController;
+use App\Http\Controllers\Position\GradeControler;
+use App\Http\Controllers\Position\PositionControler;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -249,6 +251,25 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('list', [JobTaskController::class, 'list']);
         Route::get('detail/{id}', [JobTaskController::class, 'detail']);
         Route::post('search', [JobTaskController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'position'], function () {
+        Route::post('create', [PositionControler::class, 'create']);
+        Route::get('list', [PositionControler::class, 'list']);
+        Route::get('detail/{id}', [PositionControler::class, 'detail']);
+        Route::post('update/{id}', [PositionControler::class, 'update']);
+        Route::post('delete/{id}', [PositionControler::class, 'delete']);
+        Route::post('search', [PositionControler::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'grade'], function () {
+        Route::post('create', [GradeControler::class, 'create']);
+        Route::get('list', [GradeControler::class, 'list']);
+        Route::get('all', [GradeControler::class, 'getAll']);
+        Route::get('detail/{id}', [GradeControler::class, 'detail']);
+        Route::post('update/{id}', [GradeControler::class, 'update']);
+        Route::post('delete/{id}', [GradeControler::class, 'delete']);
+        Route::post('search', [GradeControler::class, 'search']);
     });
 
     Route::post('logout', [AuthController::class, 'logout']);

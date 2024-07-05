@@ -268,6 +268,7 @@ class UserMenuSeeder extends Seeder
 
         $competencySubmenu =[
             [
+                "id" => 30,
                 "name" => "Certificate Classification",
                 "url" => "/admin/employee/competency/certificate-classification",
                 "order" => 1,
@@ -275,6 +276,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 24,
             ],
             [
+                "id" => 31,
                 "name" => "Certificate Type",
                 "url" => "/admin/employee/competency/certificate-type",
                 "order" => 1,
@@ -282,6 +284,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 24,
             ],
             [
+                "id" => 32,
                 "name" => "Education Level",
                 "url" => "/admin/employee/competency/education-level",
                 "order" => 1,
@@ -289,6 +292,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 24,
             ],
             [
+                "id" => 33,
                 "name" => "Job Skill",
                 "url" => "/admin/employee/competency/job-skill",
                 "order" => 1,
@@ -296,6 +300,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 24,
             ],
             [
+                "id" => 34,
                 "name" => "Job Responsibility",
                 "url" => "/admin/employee/competency/job-responsibility",
                 "order" => 1,
@@ -303,6 +308,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 24,
             ],
             [
+                "id" => 35,
                 "name" => "Job Task",
                 "url" => "/admin/employee/competency/job-task",
                 "order" => 1,
@@ -310,6 +316,25 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 24,
             ],
             
+        ];
+
+        $positionSubmenu = [
+            [
+                "id" => 36,
+                "name" => "Grade",
+                "url" => "/admin/employee/position/grade",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 29,
+            ],
+            [
+                "id" => 37,
+                "name" => "Position",
+                "url" => "/admin/employee/position/position",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 29,
+            ],
         ];
 
         $UserMenu = [
@@ -558,6 +583,20 @@ class UserMenuSeeder extends Seeder
                 'update' => 1,
                 'delete' => 1,
             ],
+            [
+                'user_id' => 1,
+                'menu_id' => 36,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1,
+            ],
+            [
+                'user_id' => 1,
+                'menu_id' => 37,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1,
+            ],
         ];
 
         Menu::create($setup);
@@ -574,6 +613,7 @@ class UserMenuSeeder extends Seeder
         Menu::insert($invoiceSubmenu);
         Menu::insert($employeeSubmenu);
         Menu::insert($competencySubmenu);
+        Menu::insert($positionSubmenu);
 
 
         UserMenu::insert($UserMenu);
