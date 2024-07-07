@@ -5,6 +5,8 @@ namespace App\Http\Controllers\EmployeeCompetencies;
 use Illuminate\Http\Request;
 use App\Models\EmployeeCertificate;
 use App\Http\Controllers\Controller;
+use App\Models\CertificateType;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Validator;
 
 class EmployeeCertificateController extends Controller
@@ -58,8 +60,6 @@ class EmployeeCertificateController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|exists:employees,id',
             'certificate_type_id' => 'required|exists:certificate_types,id',
-            'description' => 'required',
-            'required_renewal' => 'required|in:yes,no',
             'certificate_number' => 'required',
             'issued_date' => 'required|date',
             'issued_by' => 'required',
@@ -71,6 +71,13 @@ class EmployeeCertificateController extends Controller
                 'message' => $validator->errors(),
             ], 400);
         }
+
+        $certificateType = CertificateType::find($request->certificate_type_id);
+
+        $request->merge([
+            'description' => $certificateType->type,
+            'required_renewal' => $certificateType->required_renewal,
+        ]);
 
         $data = EmployeeCertificate::create($request->all());
 
@@ -84,8 +91,6 @@ class EmployeeCertificateController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'exists:employees,id',
             'certificate_type_id' => 'exists:certificate_types,id',
-            'description' => 'required',
-            'required_renewal' => 'in:yes,no',
             'certificate_number' => 'required',
             'issued_date' => 'date',
             'issued_by' => 'string',
@@ -96,6 +101,14 @@ class EmployeeCertificateController extends Controller
                 'status' => 'error',
                 'message' => $validator->errors(),
             ], 400);
+        }
+
+        if ($request->certificate_type_id) {
+            $certificateType = CertificateType::find($request->certificate_type_id);
+            $request->merge([
+                'description' => $certificateType->type,
+                'required_renewal' => $certificateType->required_renewal,
+            ]);
         }
 
         $data = EmployeeCertificate::find($request->id);
