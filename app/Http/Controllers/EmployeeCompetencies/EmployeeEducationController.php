@@ -17,7 +17,6 @@ class EmployeeEducationController extends Controller
             'status' => 'success',
             'data' => $data,
             'header' => [
-                'id',
                 'Employee ID',
                 'Education Level',
                 'Institution',
@@ -143,7 +142,6 @@ class EmployeeEducationController extends Controller
             'status' => 'success',
             'data' => $data,
             'header' => [
-                'id',
                 'Employee ID',
                 'Education Level',
                 'Institution',

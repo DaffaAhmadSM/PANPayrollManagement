@@ -13,13 +13,12 @@ class EmployeeCertificateController extends Controller
 {
     public function list(Request $request){
         $page = $request->page ?? 70;
-        $data = EmployeeCertificate::with('employee', 'certificateType')->paginate($page, ['id, employee_id, certificate_type_id, description, required_renewal, certificate_number, issued_date, issued_by']);
+        $data = EmployeeCertificate::with('employee', 'certificateType')->cursorPaginate($page, ['id, employee_id, certificate_type_id, description, required_renewal, certificate_number, issued_date, issued_by']);
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
             'header' => [
-                'id',
                 'Employee ID',
                 'Certificate Type ID',
                 'Description',
@@ -149,6 +148,20 @@ class EmployeeCertificateController extends Controller
             $query->where('no', 'like', "%$request->search%");
         }])->with(['certificateType' => function($query) use ($request){
             $query->where('type', 'like', "%$request->search%");
-        }])->get();
+        }])->cursorPaginate(70, ['id, employee_id, certificate_type_id, description, required_renewal, certificate_number, issued_date, issued_by']);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data,
+            'header' => [
+                'Employee ID',
+                'Certificate Type ID',
+                'Description',
+                'Required Renewal',
+                'Certificate Number',
+                'Issued Date',
+                'Issued By'
+            ]
+        ]);
     }
 }
