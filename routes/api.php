@@ -27,6 +27,7 @@ use App\Http\Controllers\Competency\JobSkillController;
 use App\Http\Controllers\Competency\JobTaskController;
 use App\Http\Controllers\Customer\CustomerRateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
 use App\Http\Controllers\Position\GradeControler;
 use App\Http\Controllers\Position\PositionControler;
 
@@ -283,6 +284,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [EmployeeCertificateController::class, 'update']);
         Route::post('delete/{id}', [EmployeeCertificateController::class, 'delete']);
         Route::post('search', [EmployeeCertificateController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'employee-education'], function () {
+        Route::post('create', [EmployeeEducationController::class, 'create']);
+        Route::get('list', [EmployeeEducationController::class, 'list']);
+        Route::get('all', [EmployeeEducationController::class, 'getAll']);
+        Route::get('detail/{id}', [EmployeeEducationController::class, 'detail']);
+        Route::post('update/{id}', [EmployeeEducationController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeEducationController::class, 'delete']);
+        Route::post('search', [EmployeeEducationController::class, 'search']);
     });
 
     Route::post('logout', [AuthController::class, 'logout']);
