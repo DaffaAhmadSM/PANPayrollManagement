@@ -12,8 +12,12 @@ class UserMenuController extends Controller
 {
     function UpdateUserMenu(Request $request) {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required',
-            'menu_id' => 'required|array',
+            'data' => 'required|array',
+            'data.*.menu_id' => 'required|integer',
+            'data.*.create' => 'required|in:0,1',
+            'data.*.update' => 'required|in:0,1',
+            'data.*.delete' => 'required|in:0,1',
+            'user_id' => 'required|integer',
         ]);
         
         if($validator->fails()) {
@@ -22,23 +26,20 @@ class UserMenuController extends Controller
                 'status' => 'error'
             ], 400);
         }
-
-        $user_id = $request->user_id;
-        UserMenu::where('user_id', $user_id)->delete();
-
-        $menus = array();
-
-        foreach ($request->menu_id as $menu) {
-            $menus[] = [
-                "user_id" => $user_id,
-                "menu_id" => $menu
-            ];
+        try {
+            UserMenu::where('user_id', $request->user_id)->delete();
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'status' => 'error'
+            ], 500);
         }
+        
 
-        UserMenu::insert($menus);
+        UserMenu::insert($request->data);
 
         return response()->json([
-            'message' => 'Menu added successfully',
+            'message' => 'Menu updated successfully',
             'status' => 'success'
         ], 200);
     }

@@ -20,7 +20,8 @@ class MenuController extends Controller
         }
         $menu = $this->recursiveMenu($transformedMenu);
         return response()->json([
-           "menu" => $menu
+            "user" => $user,
+            "menu" => $menu
         ], 200);
     }
 
@@ -41,15 +42,32 @@ class MenuController extends Controller
     function getAllmenu($user_id) {
         $menu_unprocessed = Menu::all(["id", "name as content", "parent_id"]);
         $menu = $this->recursiveMenu($menu_unprocessed);
-        $usermenu = UserMenu::where('user_id', $user_id)->get(['menu_id']);
+        $usermenu = UserMenu::where('user_id', $user_id)->get(['menu_id', 'create', 'update', 'delete']);
         $menuIds = array_map(function($item) {
             return $item['menu_id'];
         }, $usermenu->toArray());
+        $create = [];
+        $update = [];
+        $delete = [];
+        foreach ($usermenu as $item) {
+            if ($item['create'] == 1) {
+                $create[] = $item['menu_id'];
+            }
+            if ($item['update'] == 1) {
+                $update[] = $item['menu_id'];
+            }
+            if ($item['delete'] == 1) {
+                $delete[] = $item['menu_id'];
+            }
+        }
         return response()->json([
             'status' => 'success',
             'message' => 'User has permission to access this menu',
             'menu' => $menu,
-            'menuChecked' => $menuIds
+            'menuChecked' => $menuIds,
+            'menuCreate' => $create,
+            'menuUpdate' => $update,
+            'menuDelete' => $delete
         ], 200);
     }
 }
