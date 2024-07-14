@@ -318,9 +318,56 @@ class UserMenuSeeder extends Seeder
             
         ];
 
-        $positionSubmenu = [
+        $employeeCompetence = [
             [
                 "id" => 36,
+                "name" => "Employee Certificate",
+                "url" => "/admin/employee/employee-competencies/employee-certificates",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 27,
+            ],
+
+            [
+                "id" => 37,
+                "name" => "Employee Education",
+                "url" => "/admin/employee/employee-competencies/employee-education",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 27,
+            ],
+
+            [
+                "id" => 38,
+                "name" => "Employee Skill",
+                "url" => "/admin/employee/employee-competencies/employee-skill",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 27,
+            ],
+
+            [
+                "id" => 39,
+                "name" => "Employee Professional Experience",
+                "url" => "/admin/employee/employee-competencies/employee-professional-experience",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 27,
+            ],
+
+            [
+                "id" => 40,
+                "name" => "Employee Project Experience",
+                "url" => "/admin/employee/employee-competencies/employee-project-experience",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 27,
+            ],
+        ];
+
+        $positionSubmenu = [
+            [
+                "id" => 41,
                 "name" => "Grade",
                 "url" => "/admin/employee/position/grade",
                 "order" => 1,
@@ -328,7 +375,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 29,
             ],
             [
-                "id" => 37,
+                "id" => 42,
                 "name" => "Position",
                 "url" => "/admin/employee/position/position",
                 "order" => 1,
@@ -597,6 +644,41 @@ class UserMenuSeeder extends Seeder
                 'update' => 1,
                 'delete' => 1,
             ],
+            [
+                'user_id' => 1,
+                'menu_id' => 38,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1,
+            ],
+            [
+                'user_id' => 1,
+                'menu_id' => 39,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1,
+            ],
+            [
+                'user_id' => 1,
+                'menu_id' => 40,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1,
+            ],
+            [
+                'user_id' => 1,
+                'menu_id' => 41,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1,
+            ],
+            [
+                'user_id' => 1,
+                'menu_id' => 42,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1,
+            ],
         ];
 
         Menu::create($setup);
@@ -614,6 +696,7 @@ class UserMenuSeeder extends Seeder
         Menu::insert($employeeSubmenu);
         Menu::insert($competencySubmenu);
         Menu::insert($positionSubmenu);
+        Menu::insert($employeeCompetence);
 
 
         UserMenu::insert($UserMenu);

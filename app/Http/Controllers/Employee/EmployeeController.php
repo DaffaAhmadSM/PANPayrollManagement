@@ -24,6 +24,14 @@ class EmployeeController extends Controller
         ], 200);
     }
 
+    public function getAll(){
+        $employees = Employee::all(['id', 'no',]);
+        return response()->json([
+            'message' => 'Success',
+            'data' => $employees
+        ], 200);
+    }
+
     public function detail($id)
     {
         $employee = Employee::with('education', 'classificationOfTaxPayer')->find($id);
@@ -43,7 +51,7 @@ class EmployeeController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'no' => 'string|max:255',
+            'no' => 'string|max:255|unique:employees,no',
             'name' => 'string|max:255',
             'type' => 'in:employee,freelance',
             'search_name' => 'string|max:255',
@@ -58,7 +66,7 @@ class EmployeeController extends Controller
             'marital_status' => 'in:single,married,divorced,widowed,none',
             'number_of_dependents' => 'integer|min:0',
             'status' => 'in:active,inactive',
-            'last_education' => 'exists:education_levels,id',
+            'last_education' => 'required|exists:education_levels,id',
             'clothes_size' => 'string|max:255',
             'shoes_size' => 'string|max:255',
             'entitle_leaved_per_month' => 'numeric|between:0,99999999.99',
@@ -69,7 +77,7 @@ class EmployeeController extends Controller
             'passport_expired_date' => 'date',
             'tax_number' => 'string|max:255',
             'tax_start_date' => 'date',
-            'classification_of_tax_payer_id' => 'exists:classification_of_tax_payers,id',
+            'classification_of_tax_payer_id' => 'required|exists:classification_of_tax_payers,id',
             'tax_paid_by_company' => 'in:yes,no',
             'tax_calculation_method' => 'in:gross,net,gross_up,none',
             'emergency_contact_name' => 'string|max:255',
@@ -100,15 +108,14 @@ class EmployeeController extends Controller
         $employee = Employee::create($request->all());
 
         return response()->json([
-            'message' => 'Employee created successfully',
-            'data' => $employee
+            'message' => 'Employee created successfully'
         ], 201);
     }
 
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'no' => 'string|max:255',
+            'no' => 'string|max:255|unique:employees,no',
             'name' => 'string|max:255',
             'type' => 'in:employee,freelance',
             'search_name' => 'string|max:255',
@@ -123,7 +130,7 @@ class EmployeeController extends Controller
             'marital_status' => 'in:single,married,divorced,widowed,none',
             'number_of_dependents' => 'integer|min:0',
             'status' => 'in:active,inactive',
-            'last_education' => 'exists:education_levels,id',
+            'last_education' => 'required|exists:education_levels,id',
             'clothes_size' => 'string|max:255',
             'shoes_size' => 'string|max:255',
             'entitle_leaved_per_month' => 'numeric|between:0,99999999.99',
@@ -134,7 +141,7 @@ class EmployeeController extends Controller
             'passport_expired_date' => 'date',
             'tax_number' => 'string|max:255',
             'tax_start_date' => 'date',
-            'classification_of_tax_payer_id' => 'exists:classification_of_tax_payers,id',
+            'classification_of_tax_payer_id' => 'required|exists:classification_of_tax_payers,id',
             'tax_paid_by_company' => 'in:yes,no',
             'tax_calculation_method' => 'in:gross,net,gross_up,none',
             'emergency_contact_name' => 'string|max:255',
@@ -175,8 +182,7 @@ class EmployeeController extends Controller
         $employee->update($request->all());
 
         return response()->json([
-            'message' => 'Employee updated successfully',
-            'data' => $employee
+            'message' => 'Employee updated successfully'
         ], 200);
 
     }
