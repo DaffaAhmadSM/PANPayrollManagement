@@ -20,6 +20,15 @@ class CertificateTypeController extends Controller
         ], 200);
     }
 
+    public function getAll()
+    {
+        $list = CertificateType::all(['id', 'type']);
+        return response()->json([
+            'data' => $list,
+            'message' => 'Success'
+        ], 200);
+    }
+
     public function detail(string $id)
     {
        $list = CertificateType::with('classification')->find($id);

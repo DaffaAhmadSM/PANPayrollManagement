@@ -11,7 +11,7 @@ class EmployeeEducationController extends Controller
 {
     public function list(Request $request){
         $page = $request->page ?? 70;
-        $data = EmployeeEducation::with('employee', 'educationLevel')->paginate($page, ['id, employee_id, education_level_id, institution']);
+        $data = EmployeeEducation::with('employee:id,no', 'educationLevel:id,level')->cursorPaginate($page, ['id', 'employee_id', 'education_level_id', 'institution']);
 
         return response()->json([
             'status' => 'success',
@@ -63,7 +63,7 @@ class EmployeeEducationController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
@@ -90,7 +90,7 @@ class EmployeeEducationController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 

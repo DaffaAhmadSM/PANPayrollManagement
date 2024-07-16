@@ -217,6 +217,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [CertificateTypeController::class, 'update']);
         Route::post('delete/{id}', [CertificateTypeController::class, 'delete']);
         Route::get('list', [CertificateTypeController::class, 'list']);
+        Route::get('all', [CertificateTypeController::class, 'getAll']);
         Route::get('detail/{id}', [CertificateTypeController::class, 'detail']);
         Route::post('search', [CertificateTypeController::class, 'search']);
     });
@@ -226,6 +227,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [EducationLevelController::class, 'update']);
         Route::post('delete/{id}', [EducationLevelController::class, 'delete']);
         Route::get('list', [EducationLevelController::class, 'list']);
+        Route::get('all', [EducationLevelController::class, 'getAll']);
         Route::get('detail/{id}', [EducationLevelController::class, 'detail']);
         Route::post('search', [EducationLevelController::class, 'search']);
     });

@@ -7,13 +7,14 @@ use App\Models\EmployeeCertificate;
 use App\Http\Controllers\Controller;
 use App\Models\CertificateType;
 use App\Models\Employee;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class EmployeeCertificateController extends Controller
 {
     public function list(Request $request){
         $page = $request->page ?? 70;
-        $data = EmployeeCertificate::with('employee', 'certificateType')->cursorPaginate($page, ['id, employee_id, certificate_type_id, description, required_renewal, certificate_number, issued_date, issued_by']);
+        $data = EmployeeCertificate::with('employee:id,no', 'certificateType:id,type')->cursorPaginate($page, ['id', 'employee_id', 'certificate_type_id', 'description', 'required_renewal', 'certificate_number', 'issued_date', 'issued_by']);
 
         return response()->json([
             'status' => 'success',
@@ -31,7 +32,7 @@ class EmployeeCertificateController extends Controller
     }
 
     public function getAll(){
-        $data = EmployeeCertificate::get(['id, employee_id, certificate_type_id, description, required_renewal, certificate_number, issued_date, issued_by']);
+        $data = EmployeeCertificate::get(['id', 'employee_id', 'certificate_type_id', 'description', 'required_renewal', 'certificate_number', 'issued_date', 'issued_by']);
 
         return response()->json([
             'status' => 'success',
@@ -67,13 +68,14 @@ class EmployeeCertificateController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
         $certificateType = CertificateType::find($request->certificate_type_id);
 
         $request->merge([
+            'issued_date' => Carbon::parse($request->issued_date)->format('Y-m-d'),
             'description' => $certificateType->type,
             'required_renewal' => $certificateType->required_renewal,
         ]);
@@ -81,8 +83,7 @@ class EmployeeCertificateController extends Controller
         $data = EmployeeCertificate::create($request->all());
 
         return response()->json([
-            'status' => 'success',
-            'data' => $data,
+            'status' => 'success'
         ]);
     }
 
@@ -98,7 +99,7 @@ class EmployeeCertificateController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
@@ -107,6 +108,12 @@ class EmployeeCertificateController extends Controller
             $request->merge([
                 'description' => $certificateType->type,
                 'required_renewal' => $certificateType->required_renewal,
+            ]);
+        }
+
+        if ($request->issued_date) {
+            $request->merge([
+                'issued_date' => Carbon::parse($request->issued_date)->format('Y-m-d'),
             ]);
         }
 
@@ -148,7 +155,7 @@ class EmployeeCertificateController extends Controller
             $query->where('no', 'like', "%$request->search%");
         }])->with(['certificateType' => function($query) use ($request){
             $query->where('type', 'like', "%$request->search%");
-        }])->cursorPaginate(70, ['id, employee_id, certificate_type_id, description, required_renewal, certificate_number, issued_date, issued_by']);
+        }])->cursorPaginate(70, ['id', 'employee_id', 'certificate_type_id', 'description', 'required_renewal', 'certificate_number', 'issued_date', 'issued_by']);
 
         return response()->json([
             'status' => 'success',

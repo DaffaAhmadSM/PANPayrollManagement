@@ -20,6 +20,16 @@ class EducationLevelController extends Controller
         ], 200);
     }
 
+    public function getAll()
+    {
+        $data = EducationLevel::get(['id', 'level']);
+
+        return response()->json([
+            'data' => $data,
+            'message' => 'Success'
+        ], 200);
+    }
+
     public function detail(string $id)
     {
        $data = EducationLevel::find($id);

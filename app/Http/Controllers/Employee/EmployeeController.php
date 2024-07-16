@@ -25,7 +25,7 @@ class EmployeeController extends Controller
     }
 
     public function getAll(){
-        $employees = Employee::all(['id', 'no',]);
+        $employees = Employee::take(70)->get(['id', 'no',]);
         return response()->json([
             'message' => 'Success',
             'data' => $employees
@@ -207,6 +207,11 @@ class EmployeeController extends Controller
 
 
     public function search(Request $request){
-        
+        $data = Employee::where('name', 'like', '%'.$request->name.'%')->orWhere('no', 'like', '%'.$request->name.'%')->get();
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $data
+        ], 200);
     }
 }
