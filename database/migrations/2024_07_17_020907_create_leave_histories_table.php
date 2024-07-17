@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('date')->default(Carbon::parse('3000-06-20'));
             $table->enum('trans_type', ['Leave', 'Adjustment', 'Entitle'])->default('Entitle');
             $table->string('ref_no')->default('N/A');
-            $table->enum('deduct_type', ['yes', 'no', 'none'])->default('none'); // from leave_categories
+            $table->enum('deduct', ['yes', 'no', 'none'])->default('none'); // from leave_categories
             $table->enum('paid', ['yes', 'no', 'none'])->default('none'); // from leave_categories
             $table->decimal('amount', 15, 2)->default(0);
             $table->date('from_date_time')->default(Carbon::parse('3000-06-20'));

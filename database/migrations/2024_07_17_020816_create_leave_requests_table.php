@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('no'); // from number_sequence
             $table->string('name'); // from employee
             $table->date('date_request')->default(Carbon::parse('3000-06-20'));
-            $table->enum('deduct_type', ['yes', 'no', 'none'])->default('none'); // from leave_categories
+            $table->enum('deduct', ['yes', 'no', 'none'])->default('none'); // from leave_categories
             $table->enum('paid', ['yes', 'no', 'none'])->default('none'); // from leave_categories
             $table->decimal('amount', 15, 2)->default(0);
             $table->date('from_date_time')->default(Carbon::parse('3000-06-20'));

@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
             $table->text('description')->default('N/A');
-            $table->enum('deduct_type', ['yes', 'no', 'none'])->default('none');
+            $table->enum('deduct', ['yes', 'no', 'none'])->default('none');
             $table->enum('paid', ['yes', 'no', 'none'])->default('none');
+            $table->text('note')->default('N/A');
             $table->timestamps();
         });
     }

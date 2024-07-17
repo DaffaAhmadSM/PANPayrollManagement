@@ -30,6 +30,7 @@ use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeSkillController;
+use App\Http\Controllers\leave\LeaveCategoryController;
 use App\Http\Controllers\Position\GradeControler;
 use App\Http\Controllers\Position\PositionControler;
 
@@ -319,6 +320,17 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [EmployeeSkillController::class, 'update']);
         Route::post('delete/{id}', [EmployeeSkillController::class, 'delete']);
         Route::post('search', [EmployeeSkillController::class, 'search']);
+    });
+
+
+    Route::group(['prefix' => 'leave-category'], function () {
+        Route::post('create', [LeaveCategoryController::class, 'create']);
+        Route::get('list', [LeaveCategoryController::class, 'list']);
+        Route::get('all', [LeaveCategoryController::class, 'getAll']);
+        Route::get('detail/{id}', [LeaveCategoryController::class, 'detail']);
+        Route::post('update/{id}', [LeaveCategoryController::class, 'update']);
+        Route::post('delete/{id}', [LeaveCategoryController::class, 'delete']);
+        Route::post('search', [LeaveCategoryController::class, 'search']);
     });
     
 
