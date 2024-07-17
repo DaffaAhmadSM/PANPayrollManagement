@@ -20,6 +20,16 @@ class JobSkillController extends Controller
         ], 200);
     }
 
+    public function getAll()
+    {
+        $data = JobSkill::all(['id', 'skill']);
+
+        return response()->json([
+            'data' => $data,
+            'message' => 'Success'
+        ], 200);
+    }
+
     public function detail(string $id)
     {
        $data = JobSkill::find($id);

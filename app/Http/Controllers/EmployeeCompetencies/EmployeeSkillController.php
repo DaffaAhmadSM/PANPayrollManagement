@@ -12,7 +12,7 @@ class EmployeeSkillController extends Controller
 {
     public function list(Request $request){
         $page = $request->page ?? 70;
-        $data = EmployeeSkill::with('employee:id,no', 'jobSkill:id,skill')->cursorPaginate($page, ['id, employee_id, skill_id, description, type']);
+        $data = EmployeeSkill::with('employee:id,no', 'jobSkill:id,skill')->cursorPaginate($page, ['id', 'employee_id','job_skill_id', 'description', 'type']);
 
         return response()->json([
             'status' => 'success',
@@ -27,7 +27,7 @@ class EmployeeSkillController extends Controller
     }
 
     public function getAll(){
-        $data = EmployeeSkill::get(['id, employee_id, skill_id, description, type']);
+        $data = EmployeeSkill::all(['id', 'employee_id', 'job_skill_id', 'description', 'type']);
 
         return response()->json([
             'status' => 'success',
@@ -53,21 +53,21 @@ class EmployeeSkillController extends Controller
     public function create(Request $request){
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|exists:employees,id',
-            'skill_id' => 'required|exists:job_skills,id',
+            'job_skill_id' => 'required|exists:job_skills,id',
             'notes' => 'string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
-        $jobSkil = JobSkill::find($request->skill_id);
+        $jobSkil = JobSkill::find($request->job_skill_id);
 
         $request->merge([
-            'description' => $jobSkil->skill,
+            'description' => $jobSkil->description,
             'type' => $jobSkil->type,
         ]);
 
@@ -82,22 +82,22 @@ class EmployeeSkillController extends Controller
     public function update(Request $request){
         $validator = Validator::make($request->all(), [
             'employee_id' => 'exists:employees,id',
-            'skill_id' => 'exists:job_skills,id',
+            'job_skill_id' => 'exists:job_skills,id',
             'notes' => 'string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
 
-        if ($request->skill_id) {
-            $jobSkil = JobSkill::find($request->skill_id);
+        if ($request->job_skill_id) {
+            $jobSkil = JobSkill::find($request->job_skill_id);
             $request->merge([
-                'description' => $jobSkil->skill,
+                'description' => $jobSkil->description,
                 'type' => $jobSkil->type,
             ]);
         }
@@ -129,11 +129,11 @@ class EmployeeSkillController extends Controller
     }
 
     public function search(Request $request){
-        $data = EmployeeSkill::with(['employee'=>function($query) use ($request){
-            $query->where('no', 'like', "%$request->search%");
-        }, 'jobSkill'=>function($query) use ($request){
-            $query->where('skill', 'like', "%$request->search%");
-        }])->cursorPaginate(70, ['id, employee_id, skill_id, description, type']);
+        $data = EmployeeSkill::with('employee:id,no', 'jobSkill:id,skill')->whereHas('employee', function($query) use ($request){
+            $query->where('no', 'like', '%'.$request->search.'%');
+        })->orWhereHas('jobSkill', function($query) use ($request){
+            $query->where('skill', 'like', '%'.$request->search.'%');
+        })->cursorPaginate(70, ['id', 'employee_id','job_skill_id', 'description', 'type']); 
 
         return response()->json([
             'status' => 'success',

@@ -29,6 +29,7 @@ use App\Http\Controllers\Customer\CustomerRateController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeSkillController;
 use App\Http\Controllers\Position\GradeControler;
 use App\Http\Controllers\Position\PositionControler;
 
@@ -237,6 +238,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [JobSkillController::class, 'update']);
         Route::post('delete/{id}', [JobSkillController::class, 'delete']);
         Route::get('list', [JobSkillController::class, 'list']);
+        Route::get('all', [JobSkillController::class, 'getAll']);
         Route::get('detail/{id}', [JobSkillController::class, 'detail']);
         Route::post('search', [JobSkillController::class, 'search']);
     });
@@ -308,6 +310,17 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [EmployeeEducationController::class, 'delete']);
         Route::post('search', [EmployeeEducationController::class, 'search']);
     });
+
+    Route::group(['prefix' => 'employee-skill'], function () {
+        Route::post('create', [EmployeeSkillController::class, 'create']);
+        Route::get('list', [EmployeeSkillController::class, 'list']);
+        Route::get('all', [EmployeeSkillController::class, 'getAll']);
+        Route::get('detail/{id}', [EmployeeSkillController::class, 'detail']);
+        Route::post('update/{id}', [EmployeeSkillController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeSkillController::class, 'delete']);
+        Route::post('search', [EmployeeSkillController::class, 'search']);
+    });
+    
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('update-self', [UserController::class, 'updateUserSelf']);
