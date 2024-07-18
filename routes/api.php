@@ -404,6 +404,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('update-self', [UserController::class, 'updateUserSelf']);
+
+    Route::get('check-auth', function () {
+        return response()->json([
+            'message' => 'Success',
+            'data' => 'Authenticated'
+        ], 200);
+    });
 });
 
 Route::post('login', [AuthController::class, 'login']);
