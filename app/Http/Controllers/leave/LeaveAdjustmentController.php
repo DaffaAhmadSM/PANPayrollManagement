@@ -233,7 +233,8 @@ class LeaveAdjustmentController extends Controller
             $query->where('no', 'like', '%' . $request->search . '%');
         })->orWhereHas('leaveCategory', function ($query) use ($request) {
             $query->where('description', 'like', '%' . $request->search . '%');
-        })->cursorPaginate(70, ['id', 'no', 'employee_id', 'leave_category_id', 'date', 'beginning_balance', 'ending_balance', 'adjust_balance', 'remark', 'posted']);
+        })->orWhere('no', 'like', '%' . $request->search . '%')
+        ->cursorPaginate(70, ['id', 'no', 'employee_id', 'leave_category_id', 'date', 'beginning_balance', 'ending_balance', 'adjust_balance', 'remark', 'posted']);
 
         return response()->json([
             'message' => 'Leave categories retrieved successfully',

@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Employee;
 use Illuminate\Http\Request;
 use App\Models\EmploymentType;
 use App\Http\Controllers\Controller;
-use Dflydev\DotAccessData\Data;
 use Illuminate\Support\Facades\Validator;
 
-class EmployeeTypeController extends Controller
+class EmploymentTypeController extends Controller
 {
     public function list(Request $request)
     {

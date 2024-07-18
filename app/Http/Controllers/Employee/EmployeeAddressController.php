@@ -10,6 +10,39 @@ use Illuminate\Support\Facades\Validator;
 class EmployeeAddressController extends Controller
 {
 
+    public function list(Request $request)
+    {
+        $page = $request->page ?? 70;
+        $employeeAddress = EmployeeAddress::with('employee')->cursorPaginate($page, ['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab/kota', 'provinsi']);
+
+        return response()->json([
+            'message' => 'Employee Address retrieved successfully',
+            'data' => $employeeAddress,
+            'header' => [
+                'Sequence',
+                'Employee ID',
+                'Address',
+                'Type',
+                'RT',
+                'RW',
+                'Kelurahan',
+                'Kecamatan',
+                'Kab/Kota',
+                'Provinsi'
+            ]
+        ], 200);
+    }
+
+    public function getAll()
+    {
+        $employeeAddress = EmployeeAddress::with('employee')->get(['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab/kota', 'provinsi']);
+
+        return response()->json([
+            'message' => 'Employee Address retrieved successfully',
+            'data' => $employeeAddress
+        ], 200);
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -124,6 +157,35 @@ class EmployeeAddressController extends Controller
 
     public function search(Request $request)
     {
-        
+        $validator = Validator::make($request->all(), [
+            'search' => 'required|string|max:255'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        $data = EmployeeAddress::whereHas('employee', function($query) use ($request) {
+            $query->where('name', 'like', '%'.$request->search.'%');
+        })->where('address', 'like', '%'.$request->search.'%')->cursorPaginate(70, ['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab/kota', 'provinsi']);
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $data,
+            'header' => [
+                'Sequence',
+                'Employee ID',
+                'Address',
+                'Type',
+                'RT',
+                'RW',
+                'Kelurahan',
+                'Kecamatan',
+                'Kab/Kota',
+                'Provinsi'
+            ]
+        ], 200);
     }
 }

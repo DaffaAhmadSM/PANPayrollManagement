@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Employee;
 use App\Models\Employee;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\NumberSequence;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -51,7 +53,7 @@ class EmployeeController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'no' => 'string|max:255|unique:employees,no',
+            'number_sequence_id' => 'required|exists:number_sequences,id',
             'name' => 'string|max:255',
             'type' => 'in:employee,freelance',
             'search_name' => 'string|max:255',
@@ -105,7 +107,22 @@ class EmployeeController extends Controller
             $request->merge(['img_picture' => 'images/employee/' . $imageName]);
         }
 
-        $employee = Employee::create($request->all());
+        $numberSequence = NumberSequence::find($request->number_sequence_id);
+
+        $request->merge(['no' => $numberSequence->code . $numberSequence->current_number]);
+
+        try {
+            DB::beginTransaction();
+            $numberSequence->increment('current_number');
+            Employee::create($request->all());
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create employee'
+            ], 500);
+        }
+
 
         return response()->json([
             'message' => 'Employee created successfully'
@@ -115,7 +132,7 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'no' => 'string|max:255|unique:employees,no',
+            'number_sequence_id' => 'exists:number_sequences,id',
             'name' => 'string|max:255',
             'type' => 'in:employee,freelance',
             'search_name' => 'string|max:255',
@@ -177,6 +194,12 @@ class EmployeeController extends Controller
             $imageName = time(). $random .'.'.$request->img->extension();
             Storage::disk('public')->putFileAs('images/employee/', $request->img, $imageName);
             $request->merge(['img_picture' => 'images/employee/' .  $imageName]);
+        }
+
+        if($request->has('number_sequence_id') && $request->number_sequence_id != $employee->number_sequence_id) {
+            $numberSequence = NumberSequence::find($request->number_sequence_id);
+            $request->merge(['no' => $numberSequence->code . $numberSequence->current_number]);
+            $numberSequence->increment('current_number');
         }
 
         $employee->update($request->all());

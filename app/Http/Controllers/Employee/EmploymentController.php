@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
-class EmployementController extends Controller
+class EmploymentController extends Controller
 {
     public function list(Request $request)
     {
