@@ -12,11 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('leave_adjusments', function (Blueprint $table) {
+        Schema::create('leave_adjustments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('number_sequence_id')->constrained('number_sequences');
             $table->string('no'); // from number_sequence
-            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->foreignId('leave_category_id')->constrained('leave_categories')->onDelete('cascade');
+            $table->foreignId('employee_id')->constrained('employees');
+            $table->foreignId('leave_category_id')->constrained('leave_categories');
             $table->date('date')->default(Carbon::parse('3000-06-20'));
             $table->enum('deduct', ['yes', 'no', 'none'])->default('none'); // from leave_categories
             $table->enum('paid', ['yes', 'no', 'none'])->default('none'); // from leave_categories

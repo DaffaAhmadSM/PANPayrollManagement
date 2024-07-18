@@ -30,6 +30,7 @@ use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeSkillController;
+use App\Http\Controllers\leave\LeaveAdjustmentController;
 use App\Http\Controllers\leave\LeaveCategoryController;
 use App\Http\Controllers\Position\GradeControler;
 use App\Http\Controllers\Position\PositionControler;
@@ -332,6 +333,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [LeaveCategoryController::class, 'delete']);
         Route::post('search', [LeaveCategoryController::class, 'search']);
     });
+
+    Route::group(['prefix' => 'leave-adjustment'], function () {
+        Route::post('create', [LeaveAdjustmentController::class, 'create']);
+        Route::get('list', [LeaveAdjustmentController::class, 'list']);
+        Route::get('all', [LeaveAdjustmentController::class, 'getAll']);
+        Route::get('detail/{id}', [LeaveAdjustmentController::class, 'detail']);
+        Route::post('update/{id}', [LeaveAdjustmentController::class, 'update']);
+        Route::post('delete/{id}', [LeaveAdjustmentController::class, 'delete']);
+        Route::post('search', [LeaveAdjustmentController::class, 'search']);
+    });
     
 
     Route::post('logout', [AuthController::class, 'logout']);
@@ -343,4 +354,4 @@ Route::get('validation-error', function () {
     return response()->json([
         "message" => "Validation error"
     ], 401);
-});
+})->name('login');

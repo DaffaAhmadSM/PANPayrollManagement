@@ -24,7 +24,7 @@ class LeaveCategoryController extends Controller
 
     public function getAll()
     {
-        $leaveCategories = LeaveCategory::with('employee:id,no')->all(['id', 'employee_id']);
+        $leaveCategories = LeaveCategory::get(['id', 'employee_id', 'description']);
 
         return response()->json([
             'message' => 'Leave categories fetched successfully',
