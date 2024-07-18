@@ -34,10 +34,6 @@ class SetupSeeder extends Seeder
                 "code" => "EMPL",
                 "description" => "Employee"
             ],
-            [
-                "code" => "CUST",
-                "description" => "Customer"
-            ],
         ];
 
         WorkingHour::insert($working_hour);

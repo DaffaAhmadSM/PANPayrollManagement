@@ -6,32 +6,39 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Menu\UserMenuController;
-use App\Http\Controllers\Customer\CustomerController;
-use App\Http\Controllers\Company\CompanyInfoController;
-use App\Http\Controllers\AppSetting\AppSettingController;
-use App\Http\Controllers\WorkingHour\WorkingHourController;
-use App\Http\Controllers\Calendar\CalendarHolidayController;
-use App\Http\Controllers\Customer\CustomerContractController;
-use App\Http\Controllers\GeneralSetup\GeneralSetupController;
-use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
-use App\Http\Controllers\NumberSequence\NumberSequenceController;
-use App\Http\Controllers\Customer\CustomerCalendarHolidayController;
-use App\Http\Controllers\Calculation\MultiplicationCalculationController;
-use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
-use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
-use App\Http\Controllers\Competency\CertificateClassificationController;
-use App\Http\Controllers\Competency\CertificateTypeController;
-use App\Http\Controllers\Competency\EducationLevelController;
-use App\Http\Controllers\Competency\JobResponsibilityController;
-use App\Http\Controllers\Competency\JobSkillController;
-use App\Http\Controllers\Competency\JobTaskController;
-use App\Http\Controllers\Customer\CustomerRateController;
-use App\Http\Controllers\Employee\EmployeeController;
-use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
-use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
-use App\Http\Controllers\EmployeeCompetencies\EmployeeSkillController;
 use App\Http\Controllers\Position\GradeControler;
 use App\Http\Controllers\Position\PositionControler;
+use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Competency\JobTaskController;
+use App\Http\Controllers\leave\LeaveRequestController;
+use App\Http\Controllers\Company\CompanyInfoController;
+use App\Http\Controllers\Competency\JobSkillController;
+use App\Http\Controllers\Employee\EmploymentController;
+use App\Http\Controllers\leave\LeaveCategoryController;
+use App\Http\Controllers\AppSetting\AppSettingController;
+use App\Http\Controllers\Customer\CustomerRateController;
+use App\Http\Controllers\leave\LeaveAdjustmentController;
+use App\Http\Controllers\WorkingHour\WorkingHourController;
+use App\Http\Controllers\Calendar\CalendarHolidayController;
+use App\Http\Controllers\Employee\EmployeeAddressController;
+use App\Http\Controllers\Competency\EducationLevelController;
+use App\Http\Controllers\Customer\CustomerContractController;
+use App\Http\Controllers\Employee\EmployeeCustomerController;
+use App\Http\Controllers\GeneralSetup\GeneralSetupController;
+use App\Http\Controllers\Competency\CertificateTypeController;
+use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
+use App\Http\Controllers\Competency\JobResponsibilityController;
+use App\Http\Controllers\NumberSequence\NumberSequenceController;
+use App\Http\Controllers\Customer\CustomerCalendarHolidayController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeSkillController;
+use App\Http\Controllers\Competency\CertificateClassificationController;
+use App\Http\Controllers\Calculation\MultiplicationCalculationController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
+use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
+use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
+use App\Http\Controllers\Employee\EmploymentTypeController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -291,6 +298,48 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [EmployeeController::class, 'search']);
     });
 
+    Route::group(['prefix' => 'employee-adress'], function () {
+        Route::post('create', [EmployeeAddressController::class, 'create']);
+        Route::get('list', [EmployeeAddressController::class, 'list']);
+        Route::get('all', [EmployeeAddressController::class, 'getAll']);
+        Route::get('detail/{id}', [EmployeeAddressController::class, 'detail']);
+        Route::post('update/{id}', [EmployeeAddressController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeAddressController::class, 'delete']);
+        Route::post('search', [EmployeeAddressController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'employee-customer'], function () {
+        Route::post('create', [EmployeeCustomerController::class, 'create']);
+        Route::get('list', [EmployeeCustomerController::class, 'list']);
+        Route::get('all', [EmployeeCustomerController::class, 'getAll']);
+        Route::get('detail/{id}', [EmployeeCustomerController::class, 'detail']);
+        Route::post('update/{id}', [EmployeeCustomerController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeCustomerController::class, 'delete']);
+        Route::post('search', [EmployeeCustomerController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'employment'], function () {
+        Route::post('create', [EmploymentController::class, 'create']);
+        Route::get('list', [EmploymentController::class, 'list']);
+        Route::get('all', [EmploymentController::class, 'getAll']);
+        Route::get('detail/{id}', [EmploymentController::class, 'detail']);
+        Route::post('update/{id}', [EmploymentController::class, 'update']);
+        Route::post('delete/{id}', [EmploymentController::class, 'delete']);
+        Route::post('search', [EmploymentController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'employment-type'], function () {
+        Route::post('create', [EmploymentTypeController::class, 'create']);
+        Route::get('list', [EmploymentTypeController::class, 'list']);
+        Route::get('all', [EmploymentTypeController::class, 'getAll']);
+        Route::get('detail/{id}', [EmploymentTypeController::class, 'detail']);
+        Route::post('update/{id}', [EmploymentTypeController::class, 'update']);
+        Route::post('delete/{id}', [EmploymentTypeController::class, 'delete']);
+        Route::post('search', [EmploymentTypeController::class, 'search']);
+    });
+
+    
+
     Route::group(['prefix' => 'employee-certificate'], function () {
         Route::post('create', [EmployeeCertificateController::class, 'create']);
         Route::get('list', [EmployeeCertificateController::class, 'list']);
@@ -320,10 +369,48 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [EmployeeSkillController::class, 'delete']);
         Route::post('search', [EmployeeSkillController::class, 'search']);
     });
+
+
+    Route::group(['prefix' => 'leave-category'], function () {
+        Route::post('create', [LeaveCategoryController::class, 'create']);
+        Route::get('list', [LeaveCategoryController::class, 'list']);
+        Route::get('all', [LeaveCategoryController::class, 'getAll']);
+        Route::get('detail/{id}', [LeaveCategoryController::class, 'detail']);
+        Route::post('update/{id}', [LeaveCategoryController::class, 'update']);
+        Route::post('delete/{id}', [LeaveCategoryController::class, 'delete']);
+        Route::post('search', [LeaveCategoryController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'leave-adjustment'], function () {
+        Route::post('create', [LeaveAdjustmentController::class, 'create']);
+        Route::get('list', [LeaveAdjustmentController::class, 'list']);
+        Route::get('all', [LeaveAdjustmentController::class, 'getAll']);
+        Route::get('detail/{id}', [LeaveAdjustmentController::class, 'detail']);
+        Route::post('update/{id}', [LeaveAdjustmentController::class, 'update']);
+        Route::post('delete/{id}', [LeaveAdjustmentController::class, 'delete']);
+        Route::post('search', [LeaveAdjustmentController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'leave-request'], function () {
+        Route::post('create', [LeaveRequestController::class, 'create']);
+        Route::get('list', [LeaveRequestController::class, 'list']);
+        Route::get('all', [LeaveRequestController::class, 'getAll']);
+        Route::get('detail/{id}', [LeaveRequestController::class, 'detail']);
+        Route::post('update/{id}', [LeaveRequestController::class, 'update']);
+        Route::post('delete/{id}', [LeaveRequestController::class, 'delete']);
+        Route::post('search', [LeaveRequestController::class, 'search']);
+    });
     
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('update-self', [UserController::class, 'updateUserSelf']);
+
+    Route::get('check-auth', function () {
+        return response()->json([
+            'message' => 'Success',
+            'data' => 'Authenticated'
+        ], 200);
+    });
 });
 
 Route::post('login', [AuthController::class, 'login']);
@@ -331,4 +418,4 @@ Route::get('validation-error', function () {
     return response()->json([
         "message" => "Validation error"
     ], 401);
-});
+})->name('login');
