@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -14,17 +15,18 @@ return new class extends Migration
         Schema::create('employments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees');
-            $table->string('name');
-            $table->string('status');
+            $table->string('name')->default('N/A');
+            $table->enum('status', ['contract', 'permanent','none'])->default('none');
             $table->foreignId('employment_type_id')->constrained('employment_types');
-            $table->text('description')->nullable();
-            $table->date('from_date');
-            $table->date('to_date')->nullable();
-            $table->integer('duration')->nullable();
-            $table->date('last_date_worked')->nullable();
-            $table->enum('terminated', ['yes', 'no'])->nullable();
-            $table->date('termination_date')->nullable();
-            $table->text('termination_reason')->nullable();
+            $table->text('description')->default('N/A');
+            $table->enum('permanent', ['yes', 'no'])->nullable();
+            $table->date('from_date')->default(Carbon::parse('3000-01-01'));
+            $table->date('to_date')->default(Carbon::parse('3000-01-01'));
+            $table->integer('duration')->default(1);
+            $table->date('last_date_worked')->default(Carbon::parse('3000-01-01'));
+            $table->enum('terminated', ['yes', 'no'])->default('no');
+            $table->date('termination_date')->default(Carbon::parse('3000-01-01'))->nullable();
+            $table->text('termination_reason')->default(Carbon::parse('3000-01-01'))->nullable();
             $table->timestamps();
         });
     }

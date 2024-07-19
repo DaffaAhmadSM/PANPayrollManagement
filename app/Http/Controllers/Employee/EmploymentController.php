@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Employee;
 
+use App\Models\Employee;
 use App\Models\Employment;
 use Illuminate\Http\Request;
+use App\Models\EmploymentType;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,12 +14,12 @@ class EmploymentController extends Controller
     public function list(Request $request)
     {
         $page = $request->perpage ?? 70;
-        $data = Employment::with('employee:No')->cursorPaginate($page);
+        $data = Employment::with('employee:id,name,no', 'employmentType:id,code')->cursorPaginate($page, ['id', 'employee_id', 'from_date', 'to_date', 'employment_type_id', 'status', 'permanent']);
 
         return response()->json([
             'message' => 'Success',
             'data' => $data,
-            'header' => ['No', 'Employee No', 'Start Date', 'End Date', 'Type', 'Position', 'Department']
+            'header' => ['No', 'Employee Name', 'Start Date', 'End Date', 'Type', 'Status', 'Permanent']
         ], 200);
 
     }
@@ -27,18 +29,15 @@ class EmploymentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|exists:employees,id',
-            'name' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive', // replace 'active,inactive' with actual enum values if different
+            'status' => 'required|in:contract,permanent', // replace 'active,inactive' with actual enum values if different
             'employment_type_id' => 'required|exists:employment_types,id',
-            'description' => 'required|string|max:1000',
-            'permanent' => 'required|in:yes,no', // replace 'yes,no' with actual enum values if different
             'from_date' => 'required|date',
             'to_date' => 'required|date|after_or_equal:from_date',
             'duration' => 'required|integer|min:0',
             'last_date_worked' => 'required|date|after_or_equal:from_date',
-            'terminated' => 'required|in:yes,no', // replace 'yes,no' with actual enum values if different
-            'termination_date' => 'required|date|after_or_equal:last_date_worked',
-            'termination_reason' => 'required|string|max:1000'
+            'terminated' => 'in:yes,no', // replace 'yes,no' with actual enum values if different
+            'termination_date' => 'date',
+            'termination_reason' => 'string|max:1000'
         ]);
 
         if($validator->fails()) {
@@ -46,6 +45,19 @@ class EmploymentController extends Controller
                 'message' => $validator->errors()->first()
             ], 400);
         }
+
+        $employee = Employee::find($request->employee_id);
+
+        $request->merge([
+            'name' => $employee->name
+        ]);
+
+        $employmentType = EmploymentType::find($request->employment_type_id);
+
+        $request->merge([
+            'description' => $employmentType->description,
+            'permanent' => $employmentType->permanent
+        ]); 
 
         $data = Employment::create($request->only(
             'employee_id',
@@ -65,7 +77,6 @@ class EmploymentController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => $data
         ], 201);
     }
 
@@ -89,12 +100,9 @@ class EmploymentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'employee_id' => 'exists:employees,id',
-            'name' => 'string|max:255',
-            'status' => 'in:active,inactive', // replace 'active,inactive' with actual enum values if different
+            'status' => 'required|in:contract,permanent', // replace 'active,inactive' with actual enum values if different
             'employment_type_id' => 'exists:employment_types,id',
-            'description' => 'string|max:1000',
-            'permanent' => 'in:yes,no', // replace 'yes,no' with actual enum values if different
-            'from_date' => 'date',
+           'from_date' => 'date',
             'to_date' => 'date|after_or_equal:from_date',
             'duration' => 'integer|min:0',
             'last_date_worked' => 'date|after_or_equal:from_date',
@@ -107,6 +115,21 @@ class EmploymentController extends Controller
             return response()->json([
                 'message' => $validator->errors()->first()
             ], 400);
+        }
+
+        if ($request->has('employee_id')) {
+            $employee = Employee::find($request->employee_id);
+            $request->merge([
+                'name' => $employee->name
+            ]);
+        }
+
+        if ($request->has('employment_type_id')) {
+            $employmentType = EmploymentType::find($request->employment_type_id);
+            $request->merge([
+                'description' => $employmentType->description,
+                'permanent' => $employmentType->permanent
+            ]);
         }
 
         $data = Employment::find($id);
