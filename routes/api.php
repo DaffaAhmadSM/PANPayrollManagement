@@ -130,6 +130,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'classification-of-tax-payer'], function () {
         Route::post('create', [ClassificationOfTaxPayerController::class, 'create']);
         Route::get('list', [ClassificationOfTaxPayerController::class, 'getList']);
+        Route::get('all', [ClassificationOfTaxPayerController::class, 'getAll']);
         Route::get('detail/{id}', [ClassificationOfTaxPayerController::class, 'detail']);
         Route::post('update/{id}', [ClassificationOfTaxPayerController::class, 'update']);
         Route::post('delete/{id}', [ClassificationOfTaxPayerController::class, 'delete']);

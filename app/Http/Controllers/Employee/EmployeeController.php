@@ -16,7 +16,7 @@ class EmployeeController extends Controller
 
     public function list(Request $request)
     {
-        $page = $request->perpage ?? 1;
+        $page = $request->perpage ?? 70;
         $employees = Employee::cursorPaginate($page, ['id', 'no', 'name', 'type', 'gender', 'search_name']);
 
         return response()->json([
@@ -36,7 +36,7 @@ class EmployeeController extends Controller
 
     public function detail($id)
     {
-        $employee = Employee::with('education', 'classificationOfTaxPayer')->find($id);
+        $employee = Employee::find($id);
 
         if(!$employee) {
             return response()->json([
@@ -112,12 +112,10 @@ class EmployeeController extends Controller
         $request->merge(['no' => $numberSequence->code . $numberSequence->current_number]);
 
         try {
-            DB::beginTransaction();
             $numberSequence->increment('current_number');
             Employee::create($request->all());
 
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'message' => 'Failed to create employee'
             ], 500);
@@ -230,11 +228,15 @@ class EmployeeController extends Controller
 
 
     public function search(Request $request){
-        $data = Employee::where('name', 'like', '%'.$request->name.'%')->orWhere('no', 'like', '%'.$request->name.'%')->get();
+        $validator = Validator::make($request->all(), [
+            'search' => 'required|string'
+        ]);
+        $data = Employee::where('name', 'like', '%'.$request->search.'%')->orWhere('no', 'like', '%'.$request->search.'%')->cursorPaginate(70, ['id', 'no', 'name', 'type', 'gender', 'search_name']);
 
         return response()->json([
             'message' => 'Success',
-            'data' => $data
+            'data' => $data,
+            'header' => ['No', 'Name', 'Type', 'Gender', 'Search Name']
         ], 200);
     }
 }

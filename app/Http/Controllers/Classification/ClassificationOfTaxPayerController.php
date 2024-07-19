@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Validator;
 
 class ClassificationOfTaxPayerController extends Controller
 {
+
+    function getAll(){
+        $classificationOfTaxPayers = ClassificationOfTaxPayer::get(['id', 'code']);
+        return response()->json([
+            "message" => "Success get all classification of tax payer",
+            "data" => $classificationOfTaxPayers
+        ], 200);
+    }
     
     function create(Request $request) {
         $validate = Validator::make($request->all(), [
