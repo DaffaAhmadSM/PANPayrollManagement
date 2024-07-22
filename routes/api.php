@@ -299,7 +299,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [EmployeeController::class, 'search']);
     });
 
-    Route::group(['prefix' => 'employee-adress'], function () {
+    Route::group(['prefix' => 'employee-address'], function () {
         Route::post('create', [EmployeeAddressController::class, 'create']);
         Route::get('list', [EmployeeAddressController::class, 'list']);
         Route::get('all', [EmployeeAddressController::class, 'getAll']);

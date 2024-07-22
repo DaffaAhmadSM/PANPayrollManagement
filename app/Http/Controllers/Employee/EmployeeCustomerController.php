@@ -12,12 +12,12 @@ class EmployeeCustomerController extends Controller
     public function list(Request $request)
     {
         $page = $request->perpage ?? 70;
-        $data = EmployeeCustomerRelation::with('employee:name', 'customer:name')->cursorPaginate($page);
+        $data = EmployeeCustomerRelation::with('employee:id,name,no', 'customer:id,no,name')->cursorPaginate($page);
 
         return response()->json([
             'message' => 'Success',
             'data' => $data,
-            'header' => ['No', 'Employee Name', 'Customer Name']
+            'header' => ['No', 'Employee Name', 'Employee ID', 'Customer Name', 'Customer ID']
         ], 200);
 
     }

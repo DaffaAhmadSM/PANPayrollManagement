@@ -13,13 +13,12 @@ class EmployeeAddressController extends Controller
     public function list(Request $request)
     {
         $page = $request->page ?? 70;
-        $employeeAddress = EmployeeAddress::with('employee')->cursorPaginate($page, ['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab/kota', 'provinsi']);
+        $employeeAddress = EmployeeAddress::with('employee')->cursorPaginate($page, ['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'provinsi']);
 
         return response()->json([
             'message' => 'Employee Address retrieved successfully',
             'data' => $employeeAddress,
             'header' => [
-                'Sequence',
                 'Employee ID',
                 'Address',
                 'Type',
@@ -35,7 +34,7 @@ class EmployeeAddressController extends Controller
 
     public function getAll()
     {
-        $employeeAddress = EmployeeAddress::with('employee')->get(['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab/kota', 'provinsi']);
+        $employeeAddress = EmployeeAddress::with('employee')->get(['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'provinsi']);
 
         return response()->json([
             'message' => 'Employee Address retrieved successfully',
@@ -52,7 +51,8 @@ class EmployeeAddressController extends Controller
             'rt' => 'required|string',
             'rw' => 'required|string',
             'kelurahan' => 'required|string',
-            'kab/kota' => 'required|string',
+            'kab_kota' => 'required|string',
+            'kecamatan' => 'required|string',
             'provinsi' => 'required|string',
         ]);
 
@@ -70,7 +70,7 @@ class EmployeeAddressController extends Controller
             'rw',
             'kelurahan',
             'kecamatan',
-            'kab/kota',
+            'kab_kota',
             'provinsi'
         ));
 
@@ -107,7 +107,8 @@ class EmployeeAddressController extends Controller
             'rt' => 'string',
             'rw' => 'string',
             'kelurahan' => 'string',
-            'kab/kota' => 'string',
+            'kecamatan' => 'string',
+            'kab_kota' => 'string',
             'provinsi' => 'string',
         ]);
 
@@ -133,9 +134,13 @@ class EmployeeAddressController extends Controller
             'rw',
             'kelurahan',
             'kecamatan',
-            'kab/kota',
+            'kab_kota',
             'provinsi'
         ));
+
+        return response()->json([
+            'message' => 'Employee Address updated successfully'
+        ], 200);
     }
 
     public function delete(string $id)
@@ -169,13 +174,12 @@ class EmployeeAddressController extends Controller
 
         $data = EmployeeAddress::whereHas('employee', function($query) use ($request) {
             $query->where('name', 'like', '%'.$request->search.'%');
-        })->where('address', 'like', '%'.$request->search.'%')->cursorPaginate(70, ['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab/kota', 'provinsi']);
+        })->where('address', 'like', '%'.$request->search.'%')->cursorPaginate(70, ['id', 'employee_id', 'address', 'type', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'provinsi']);
 
         return response()->json([
             'message' => 'Success',
             'data' => $data,
             'header' => [
-                'Sequence',
                 'Employee ID',
                 'Address',
                 'Type',

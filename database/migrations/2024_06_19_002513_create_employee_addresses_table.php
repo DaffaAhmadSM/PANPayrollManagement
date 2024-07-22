@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('rw');
             $table->string('kelurahan');
             $table->string('kecamatan');
-            $table->string('kab/kota');
+            $table->string('kab_kota');
             $table->string('provinsi');
             $table->timestamps();
         });
