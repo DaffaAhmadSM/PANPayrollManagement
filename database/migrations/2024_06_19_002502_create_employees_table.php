@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('religion', ['Muslim', 'Protestant', 'Catholic', 'Hindu', 'Buddhist', 'Confucian', 'none'])->default('none');
             $table->string('ethnic_group')->default('N/A');
             $table->string('phone')->default('N/A');
-            $table->string('email')->default('N/A');
+            $table->string('email')->default('email@email.com');
             $table->enum('marital_status', ['single', 'married', 'divorced', 'widowed', 'none'])->default('none');
             $table->integer('number_of_dependents')->default(0);
             $table->enum('status', ['active', 'inactive'])->default('active');

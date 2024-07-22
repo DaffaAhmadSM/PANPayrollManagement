@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('employee_id')->constrained('employees');
             $table->foreignId('customer_id')->constrained('customers');
+            $table->text('note')->default('N/A');
             $table->timestamps();
         });
     }

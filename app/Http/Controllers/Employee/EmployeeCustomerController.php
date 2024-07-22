@@ -17,7 +17,7 @@ class EmployeeCustomerController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $data,
-            'header' => ['No', 'Employee Name', 'Employee ID', 'Customer Name', 'Customer ID']
+            'header' => ['Employee Name', 'Employee ID', 'Customer Name', 'Customer ID', 'Note']
         ], 200);
 
     }
@@ -28,6 +28,7 @@ class EmployeeCustomerController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|exists:employees,id',
             'customer_id' => 'required|exists:customers,id',
+            'note' => 'string',
         ]);
 
         if($validator->fails()) {
@@ -36,7 +37,7 @@ class EmployeeCustomerController extends Controller
             ], 400);
         }
 
-        $data = EmployeeCustomerRelation::create($request->only('employee_id', 'customer_id'));
+        $data = EmployeeCustomerRelation::create($request->only('employee_id', 'customer_id', 'note'));
 
         return response()->json([
             'message' => 'Success',
@@ -65,6 +66,7 @@ class EmployeeCustomerController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'exists:employees,id',
             'customer_id' => 'exists:customers,id',
+            'note' => 'string'
         ]);
 
         if($validator->fails()) {
@@ -74,7 +76,7 @@ class EmployeeCustomerController extends Controller
         }
 
         $data = EmployeeCustomerRelation::find($id);
-        $data->update($request->only('employee_id', 'customer_id'));
+        $data->update($request->only('employee_id', 'customer_id', 'note'));
 
         return response()->json([
             'message' => 'Success',
@@ -101,6 +103,26 @@ class EmployeeCustomerController extends Controller
 
     public function search(Request $request)
     {
-        
+        $validator = Validator::make($request->all(), [
+            'search' => 'required|string'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        $data = EmployeeCustomerRelation::whereHas('employee', function($query) use ($request) {
+            $query->where('name', 'like', '%'.$request->search.'%')->orWhere('no', 'like', '%'.$request->search.'%');
+        })->orWhereHas('customer', function($query) use ($request) {
+            $query->where('name', 'like', '%'.$request->search.'%')->orWhere('no', 'like', '%'.$request->search.'%');
+        })->with('employee:id,name,no', 'customer:id,no,name')->cursorPaginate(70);
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $data,
+            'header' => ['Employee Name', 'Employee ID', 'Customer Name', 'Customer ID', 'Note']
+        ], 200);
     }   
 }

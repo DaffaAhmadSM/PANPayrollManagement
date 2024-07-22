@@ -46,7 +46,7 @@ class EmployeeController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => $employee
+            'data' => $employee->makeHidden(['img_picture'])
         ], 200);
     }
 
@@ -57,11 +57,11 @@ class EmployeeController extends Controller
             'name' => 'string|max:255',
             'type' => 'in:employee,freelance',
             'search_name' => 'string|max:255',
-            'gender' => 'in:male,female',
+            'gender' => 'in:male,female,none',
             'birth_date' => 'date',
             'birth_place' => 'string|max:255',
-            'blood_type' => 'in:A,B,AB,O',
-            'religion' => 'in:Muslim,Protestant,Catholic,Hindu,Buddhist,Confucian',
+            'blood_type' => 'in:A,B,AB,O,none',
+            'religion' => 'in:Muslim,Protestant,Catholic,Hindu,Buddhist,Confucian,none',
             'ethnic_group' => 'string|max:255',
             'phone' => 'string|max:255',
             'email' => 'email|max:255',
@@ -130,15 +130,15 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'number_sequence_id' => 'exists:number_sequences,id',
+            'number_sequence_id' => 'required|exists:number_sequences,id',
             'name' => 'string|max:255',
             'type' => 'in:employee,freelance',
             'search_name' => 'string|max:255',
-            'gender' => 'in:male,female',
+            'gender' => 'in:male,female,none',
             'birth_date' => 'date',
             'birth_place' => 'string|max:255',
-            'blood_type' => 'in:A,B,AB,O',
-            'religion' => 'in:Muslim,Protestant,Catholic,Hindu,Buddhist,Confucian',
+            'blood_type' => 'in:A,B,AB,O,none',
+            'religion' => 'in:Muslim,Protestant,Catholic,Hindu,Buddhist,Confucian,none',
             'ethnic_group' => 'string|max:255',
             'phone' => 'string|max:255',
             'email' => 'email|max:255',
