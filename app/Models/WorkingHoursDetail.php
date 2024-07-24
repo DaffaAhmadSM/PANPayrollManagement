@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class WorkingHoursDetail extends Model
 {
     use HasFactory;
+
+    protected $guarded = ["id"];
+
+    public function workingHours()
+    {
+        return $this->belongsTo(WorkingHour::class);
+    }
 }

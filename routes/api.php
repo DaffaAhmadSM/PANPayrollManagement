@@ -39,6 +39,7 @@ use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
 use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
 use App\Http\Controllers\Employee\EmploymentTypeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
+use App\Http\Controllers\WorkingHour\WorkingHoursDetailController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -114,6 +115,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [WorkingHourController::class, 'update']);
         Route::post('delete/{id}', [WorkingHourController::class, 'delete']);
         Route::post('search', [WorkingHourController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'working-hour-detail'], function () {
+        Route::post('create', [WorkingHoursDetailController::class, 'create']);
+        Route::get('list', [WorkingHoursDetailController::class, 'list']);
+        Route::get('detail/{id}', [WorkingHoursDetailController::class, 'detail']);
+        Route::post('update/{id}', [WorkingHoursDetailController::class, 'update']);
+        Route::post('delete/{id}', [WorkingHoursDetailController::class, 'delete']);
+        Route::post('search', [WorkingHoursDetailController::class, 'search']);
     });
 
     // route calendar holiday

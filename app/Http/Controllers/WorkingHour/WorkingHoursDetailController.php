@@ -62,6 +62,49 @@ class WorkingHoursDetailController extends Controller
         ], 200);
     }
 
+    public function list (Request $request) {
+        $page = $request->page ?? 70;
+        $workingHourDetail = WorkingHoursDetail::with('workingHour')->cursorPaginate($page, ['id', 'working_hour_id', 'day', 'hour']);
+        return response()->json([
+            "message" => "Working hour detail list",
+            "data" => $workingHourDetail,
+            "header" => [
+                "Working Hour",
+                "Day",
+                "Hour"
+            ]
+        ], 200);
+    }
+
+    public function search(Request $request){
+        $validator = Validator::make($request->all(), [
+            'search' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => $validator->errors()->first()
+            ], 400);
+        }
+
+        $workingHourDetail = WorkingHoursDetail::whereHas('workingHour', function($query) use ($request){
+            $query->where('name', 'like', "%$request->search%");
+        })
+        ->orWhere('day', 'like', "%$request->search%")
+        ->orWhere('hour', 'like', "%$request->search%")
+        ->with('workingHour')->cursorPaginate(70, ['id', 'working_hour_id', 'day', 'hour']);
+
+        return response()->json([
+            "message" => "Working hour detail list",
+            "data" => $workingHourDetail,
+            "header" => [
+                "Working Hour",
+                "Day",
+                "Hour"
+            ]
+        ], 200);
+    }
+
     function getList ($working_hour){
         $workingHourDetail = WorkingHoursDetail::where('working_hour_id', $working_hour)->get();
         if (!$workingHourDetail) {

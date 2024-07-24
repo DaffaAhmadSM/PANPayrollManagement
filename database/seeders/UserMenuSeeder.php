@@ -139,6 +139,14 @@ class UserMenuSeeder extends Seeder
             ],
             [
                 "id" => 16,
+                "name" => "Working Hours Detail",
+                "url" => "/admin/setup/working-hours-detail",
+                "order" => 9,
+                "level" => 0,
+                'parent_id' => 1,
+            ],
+            [
+                "id" => 17,
                 "name" => "Classification of Tax Payer",
                 "url" => "/admin/setup/classification-of-tax-payer",
                 "order" => 10,
@@ -146,7 +154,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 1,
             ],
             [
-                "id" => 17,
+                "id" => 18,
                 "name" => "Calendar Holiday",
                 "url" => "/admin/setup/calendar-holiday",
                 "order" => 11,
@@ -158,7 +166,7 @@ class UserMenuSeeder extends Seeder
 
         $customerSubmenu = [
             [
-                "id" => 18,
+                "id" => 19,
                 "name" => "Customer Data",
                 "url" => "/admin/customer/customer-data",
                 "order" => 1,
@@ -167,7 +175,7 @@ class UserMenuSeeder extends Seeder
             ],
 
             [
-                "id" => 19,
+                "id" => 20,
                 "name" => "Customer Contract",
                 "url" => "/admin/customer/customer-contract",
                 "order" => 1,
@@ -176,7 +184,7 @@ class UserMenuSeeder extends Seeder
             ],
 
             [
-                "id" => 20,
+                "id" => 21,
                 "name" => "Customer Calendar Holiday",
                 "url" => "/admin/customer/customer-calendar-holiday",
                 "order" => 1,
@@ -185,7 +193,7 @@ class UserMenuSeeder extends Seeder
             ],
 
             [
-                "id" => 21,
+                "id" => 22,
                 "name" => "Customer Rate",
                 "url" => "/admin/customer/customer-rate",
                 "order" => 1,
@@ -197,7 +205,7 @@ class UserMenuSeeder extends Seeder
 
         $invoiceSubmenu = [
             [
-                "id" => 22,
+                "id" => 23,
                 "name" => "Customer TimeSheet",
                 "url" => "/admin/invoice/customer-timesheet",
                 "order" => 1,
@@ -206,7 +214,7 @@ class UserMenuSeeder extends Seeder
             ],
 
             [
-                "id" => 23,
+                "id" => 24,
                 "name" => "Customer Invoice",
                 "url" => "/admin/invoice/customer-invoice",
                 "order" => 1,
@@ -217,7 +225,7 @@ class UserMenuSeeder extends Seeder
 
         $employeeSubmenu = [
             [
-                "id" => 24,
+                "id" => 25,
                 "name" => "Competency",
                 "url" => null,
                 "order" => 1,
@@ -225,7 +233,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 4,
             ],
             [
-                "id" => 25,
+                "id" => 26,
                 "name" => "Employee",
                 "url" => null,
                 "order" => 1,
@@ -233,7 +241,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 4,
             ],
             [
-                "id" => 26,
+                "id" => 27,
                 "name" => "Employment",
                 "url" => null,
                 "order" => 1,
@@ -241,7 +249,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 4,
             ],
             [
-                "id" => 27,
+                "id" => 28,
                 "name" => "Employee Competencies",
                 "url" => null,
                 "order" => 1,
@@ -249,7 +257,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 4,
             ],
             [
-                "id" => 28,
+                "id" => 29,
                 "name" => "Leave",
                 "url" => null,
                 "order" => 1,
@@ -257,7 +265,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 4,
             ],
             [
-                "id" => 29,
+                "id" => 30,
                 "name" => "Position",
                 "url" => null,
                 "order" => 1,
@@ -271,200 +279,200 @@ class UserMenuSeeder extends Seeder
 
         $employeedataSubmenu = [
             [
-                "id" => 30,
+                "id" => 31,
                 "name" => "Employee Data",
                 "url" => "/admin/employee/employee-data",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 25,
+                'parent_id' => 26,
             ],
             [
-                "id" => 31,
+                "id" => 32,
                 "name" => "Employee Address",
                 "url" => "/admin/employee/employee-address",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 25,
+                'parent_id' => 26,
             ],
             [
-                "id" => 32,
+                "id" => 33,
                 "name" => "Employee Customer",
                 "url" => "/admin/employee/employee-customer",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 25,
+                'parent_id' => 26,
             ],
         ];
 
         $employmentSubmenu = [
             [
-                "id" => 33,
+                "id" => 34,
                 "name" => "Employment Type",
                 "url" => "/admin/employee/employment/employment-type",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 26,
+                'parent_id' => 27,
             ],
             [
-                "id" => 34,
+                "id" => 35,
                 "name" => "Employment Data",
                 "url" => "/admin/employee/employment/employment-data",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 26,
+                'parent_id' => 27,
             ],
         ];
 
         $competencySubmenu =[
             [
-                "id" => 35,
+                "id" => 36,
                 "name" => "Certificate Classification",
                 "url" => "/admin/employee/competency/certificate-classification",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 24,
+                'parent_id' => 25,
             ],
             [
-                "id" => 36,
+                "id" => 37,
                 "name" => "Certificate Type",
                 "url" => "/admin/employee/competency/certificate-type",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 24,
+                'parent_id' => 25,
             ],
             [
-                "id" => 37,
+                "id" => 38,
                 "name" => "Education Level",
                 "url" => "/admin/employee/competency/education-level",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 24,
+                'parent_id' => 25,
             ],
             [
-                "id" => 38,
+                "id" => 39,
                 "name" => "Job Skill",
                 "url" => "/admin/employee/competency/job-skill",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 24,
+                'parent_id' => 25,
             ],
             [
-                "id" => 39,
+                "id" => 40,
                 "name" => "Job Responsibility",
                 "url" => "/admin/employee/competency/job-responsibility",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 24,
+                'parent_id' => 25,
             ],
             [
-                "id" => 40,
+                "id" => 41,
                 "name" => "Job Task",
                 "url" => "/admin/employee/competency/job-task",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 24,
+                'parent_id' => 25,
             ],
             
         ];
 
         $employeeCompetence = [
             [
-                "id" => 41,
+                "id" => 42,
                 "name" => "Employee Certificate",
                 "url" => "/admin/employee/employee-competencies/employee-certificates",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 27,
-            ],
-
-            [
-                "id" => 42,
-                "name" => "Employee Education",
-                "url" => "/admin/employee/employee-competencies/employee-education",
-                "order" => 1,
-                "level" => 0,
-                'parent_id' => 27,
+                'parent_id' => 28,
             ],
 
             [
                 "id" => 43,
-                "name" => "Employee Skill",
-                "url" => "/admin/employee/employee-competencies/employee-skill",
+                "name" => "Employee Education",
+                "url" => "/admin/employee/employee-competencies/employee-education",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 27,
+                'parent_id' => 28,
             ],
 
             [
                 "id" => 44,
-                "name" => "Employee Professional Experience",
-                "url" => "/admin/employee/employee-competencies/employee-professional-experience",
+                "name" => "Employee Skill",
+                "url" => "/admin/employee/employee-competencies/employee-skill",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 27,
+                'parent_id' => 28,
             ],
 
             [
                 "id" => 45,
+                "name" => "Employee Professional Experience",
+                "url" => "/admin/employee/employee-competencies/employee-professional-experience",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 28,
+            ],
+
+            [
+                "id" => 46,
                 "name" => "Employee Project Experience",
                 "url" => "/admin/employee/employee-competencies/employee-project-experience",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 27,
+                'parent_id' => 28,
             ],
         ];
 
         $leaveSubmenu = [
             [
-                "id" => 46,
+                "id" => 47,
                 "name" => "Leave Category",
                 "url" => "/admin/employee/leave/leave-category",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 28,
+                'parent_id' => 29,
             ],
             [
-                "id" => 47,
+                "id" => 48,
                 "name" => "Leave Adjustment",
                 "url" => "/admin/employee/leave/leave-adjustment",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 28,
+                'parent_id' => 29,
             ],
             [
-                "id" => 48,
+                "id" => 49,
                 "name" => "Leave Request",
                 "url" => "/admin/employee/leave/leave-request",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 28,
+                'parent_id' => 29,
             ],
             [
-                "id" => 49,
+                "id" => 50,
                 "name" => "Leave History",
                 "url" => "/admin/employee/leave/leave-history",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 28,
+                'parent_id' => 29,
             ],
         ];
 
         $positionSubmenu = [
             [
-                "id" => 50,
+                "id" => 51,
                 "name" => "Grade",
                 "url" => "/admin/employee/position/grade",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 29,
+                'parent_id' => 30,
             ],
             [
-                "id" => 51,
+                "id" => 52,
                 "name" => "Position",
                 "url" => "/admin/employee/position/position",
                 "order" => 1,
                 "level" => 0,
-                'parent_id' => 29,
+                'parent_id' => 30,
             ],
         ];
 
@@ -824,6 +832,13 @@ class UserMenuSeeder extends Seeder
             [
                 'user_id' => 1,
                 'menu_id' => 51,
+                'create' => 1,
+                'update' => 1,
+                'delete' => 1,
+            ],
+            [
+                'user_id' => 1,
+                'menu_id' => 52,
                 'create' => 1,
                 'update' => 1,
                 'delete' => 1,
