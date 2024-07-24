@@ -11,8 +11,8 @@ class WorkingHoursDetail extends Model
 
     protected $guarded = ["id"];
 
-    public function workingHours()
+    public function workingHour()
     {
-        return $this->belongsTo(WorkingHour::class);
+        return $this->belongsTo(WorkingHour::class, 'working_hours_id', 'id');
     }
 }

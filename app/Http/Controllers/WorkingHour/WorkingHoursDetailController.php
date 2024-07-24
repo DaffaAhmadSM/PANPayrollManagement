@@ -11,9 +11,9 @@ class WorkingHoursDetailController extends Controller
 {
     function create (Request $request) {
         $validate = Validator::make($request->all(), [
-            "working_hour_id" => "required|string",
+            "working_hours_id" => "required|string",
             "day" => "required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday",
-            "hour" => "required|decimal",
+            "hours" => "required|decimal:0,2",
         ]);
 
         if ($validate->fails()) {
@@ -23,9 +23,9 @@ class WorkingHoursDetailController extends Controller
         }
 
         WorkingHoursDetail::create([
-            "working_hour_id" => $request->working_hour_id,
+            "working_hours_id" => $request->working_hours_id,
             "day" => $request->day,
-            "hour" => $request->hour,
+            "hours" => $request->hours,
         ]);
 
         return response()->json([
@@ -64,7 +64,7 @@ class WorkingHoursDetailController extends Controller
 
     public function list (Request $request) {
         $page = $request->page ?? 70;
-        $workingHourDetail = WorkingHoursDetail::with('workingHour')->cursorPaginate($page, ['id', 'working_hour_id', 'day', 'hour']);
+        $workingHourDetail = WorkingHoursDetail::with('workingHour')->cursorPaginate($page, ['id', 'working_hours_id', 'day', 'hours']);
         return response()->json([
             "message" => "Working hour detail list",
             "data" => $workingHourDetail,
@@ -92,7 +92,7 @@ class WorkingHoursDetailController extends Controller
         })
         ->orWhere('day', 'like', "%$request->search%")
         ->orWhere('hour', 'like', "%$request->search%")
-        ->with('workingHour')->cursorPaginate(70, ['id', 'working_hour_id', 'day', 'hour']);
+        ->with('workingHour')->cursorPaginate(70, ['id', 'working_hours_id', 'day', 'hours']);
 
         return response()->json([
             "message" => "Working hour detail list",
@@ -102,6 +102,33 @@ class WorkingHoursDetailController extends Controller
                 "Day",
                 "Hour"
             ]
+        ], 200);
+    }
+
+    public function update(Request $request) {
+        $validate = Validator::make($request->all(), [
+            "working_hours_id" => "string",
+            "day" => "in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday",
+            "hours" => "decimal:0,2",
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                "message" => $validate->errors()->first()
+            ], 400);
+        }
+
+        $workingHourDetail = WorkingHoursDetail::find($request->id);
+        if (!$workingHourDetail) {
+            return response()->json([
+                "message" => "Working hour detail not found"
+            ], 404);
+        }
+
+        $workingHourDetail->update($request->all());
+
+        return response()->json([
+            "message" => "Working hour detail updated"
         ], 200);
     }
 
