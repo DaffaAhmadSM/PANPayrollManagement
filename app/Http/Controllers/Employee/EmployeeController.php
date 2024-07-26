@@ -46,7 +46,7 @@ class EmployeeController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => $employee->makeHidden(['img_picture'])
+            'data' => $employee
         ], 200);
     }
 
@@ -72,7 +72,7 @@ class EmployeeController extends Controller
             'clothes_size' => 'string|max:255',
             'shoes_size' => 'string|max:255',
             'entitle_leaved_per_month' => 'numeric|between:0,99999999.99',
-            'img_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'img' => 'image|mimes:jpeg,png,jpg,gif,svg|max:4096',
             'identity_number' => 'string|max:255',
             'family_card_number' => 'string|max:255',
             'passport_number' => 'string|max:255',
@@ -100,9 +100,9 @@ class EmployeeController extends Controller
             ],400);
         }
 
-        if($request->hasFile('img_picture')) {
+        if($request->hasFile('img')) {
             $random = Str::random(5);
-            $imageName = time(). $random .'.'.$request->img->extension();
+            $imageName = time(). $random .'.'.$request->img_picture->extension();
             Storage::disk('public')->putFileAs('images/employee/', $request->img, $imageName);
             $request->merge(['img_picture' => 'images/employee/' . $imageName]);
         }
@@ -149,7 +149,7 @@ class EmployeeController extends Controller
             'clothes_size' => 'string|max:255',
             'shoes_size' => 'string|max:255',
             'entitle_leaved_per_month' => 'numeric|between:0,99999999.99',
-            'img_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'img' => 'image|mimes:jpeg,png,jpg,gif,svg|max:4096',
             'identity_number' => 'string|max:255',
             'family_card_number' => 'string|max:255',
             'passport_number' => 'string|max:255',
@@ -186,7 +186,7 @@ class EmployeeController extends Controller
             ], 404);
         }
 
-        if($request->hasFile('img_picture')) {
+        if($request->hasFile('img')) {
             Storage::disk('public')->delete($employee->img_picture);
             $random = Str::random(5);
             $imageName = time(). $random .'.'.$request->img->extension();

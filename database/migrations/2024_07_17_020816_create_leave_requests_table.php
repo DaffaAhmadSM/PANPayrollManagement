@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('leave_requests', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('number_sequence_id')->constrained('number_sequences')->onDelete('cascade');
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
             $table->foreignId('leave_category_id')->constrained('leave_categories')->onDelete('cascade');
             $table->string('no'); // from number_sequence
