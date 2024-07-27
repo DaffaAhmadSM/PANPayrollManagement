@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('leave_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees');
-            $table->foreignId('leave_category_id')->constrained('leave_categories');
             $table->string('name'); // from employee
             $table->date('date')->default(Carbon::parse('3000-06-20'));
             $table->enum('trans_type', ['Leave', 'Adjustment', 'Entitle'])->default('Entitle');

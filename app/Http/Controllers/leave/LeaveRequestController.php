@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LeaveHistory;
 use App\Models\LeaveRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class LeaveRequestController extends Controller
@@ -168,7 +169,7 @@ class LeaveRequestController extends Controller
 
     public function list(Request $request){
         $page = $request->page ?? 70;
-        $leave_requests = LeaveRequest::with(['employee', 'leave_category'])->paginate($page, ['no', 'name', 'from_date_time', 'to_date_time', 'amount', 'remark', 'posted']);
+        $leave_requests = LeaveRequest::with(['employee:id,no,name', 'leaveCategory:id,description,note'])->cursorPaginate($page, ['no', 'name', 'from_date_time', 'to_date_time', 'amount', 'remark', 'posted', 'leave_category_id', 'employee_id']);
         return response()->json([
             'status' => 'success',
             'data' => $leave_requests,
@@ -204,13 +205,15 @@ class LeaveRequestController extends Controller
                 'message' => $validator->errors()->first()
             ], 400);
         }
+        $leave_request_first = LeaveRequest::findOrFail($id);
         
         if($request->has('employee_id')){
             $employee = Employee::findOrFail($request->employee_id);
             $request->merge(['name' => $employee->name]);
         }
-        if($request->number_sequence_id){
+        if($request->number_sequence_id && $request->number_sequence_id != $leave_request_first->number_sequence_id){
             $number_sequence = NumberSequence::findOrFail($request->number_sequence_id);
+            $number_sequence->increment('current_number');
             $request->merge(['no' => $number_sequence->code . $number_sequence->current_number]);
         }
         if($request->leave_category_id){
@@ -229,10 +232,12 @@ class LeaveRequestController extends Controller
             $LeaveReq = LeaveRequest::findOrFail($id);
             $leave_from_date = $request->from_date_time ?? $LeaveReq->from_date_time;
             $leave_to_date = $request->to_date_time ?? $LeaveReq->to_date_time;
+            $leave_from_date = Carbon::parse($leave_from_date);
+            $leave_to_date = Carbon::parse($leave_to_date);
             $difDays = $leave_from_date->diffInDays($leave_to_date) + 1;
 
 
-            $leave_request_posted_no = LeaveRequest::where('posted', 'no')->where('employee_id', $request->employee_id)->whereYear('from_date_time', $fromDate->year)->get();
+            $leave_request_posted_no = LeaveRequest::where('posted', 'no')->where('employee_id', $LeaveReq->employee_id)->whereYear('from_date_time', $leave_from_date->year)->get()->except($id);
             $totalAmount = $difDays;
             if($leave_request_posted_no->count() > 0){
                 // sum all amount of leave_request_posted_no
@@ -240,8 +245,8 @@ class LeaveRequestController extends Controller
                 $totalAmount += $leave_request_posted_no->sum('amount');
             }
 
-            $leaveHistory = LeaveHistory::where('employee_id', $request->employee_id)->whereYear('from_date_time', $fromDate->year)->where('trans_type', 'Leave')->where('deduct', 'yes')->get();
-            $entitleHistory = LeaveHistory::where('employee_id', $request->employee_id)->whereYear('from_date_time', $fromDate->year)->where('trans_type', 'Entitle')->get();
+            $leaveHistory = LeaveHistory::where('employee_id', $LeaveReq->employee_id)->whereYear('from_date_time', $leave_from_date->year)->where('trans_type', 'Leave')->where('deduct', 'yes')->get();
+            $entitleHistory = LeaveHistory::where('employee_id', $LeaveReq->employee_id)->whereYear('from_date_time', $leave_from_date->year)->where('trans_type', 'Entitle')->get();
             if($leaveHistory->count() > 0){
                 $totalAmount += $leaveHistory->sum('amount');
             }
@@ -252,26 +257,106 @@ class LeaveRequestController extends Controller
                     'message' => 'Leave request amount already exceed the leave balance'
                 ], 400);
             }
+
+            $request->merge(['amount' => $difDays]);
         }
 
-        if($request->posted == 'yes'){
-            // do logic to copy data to leave history
-        }
+
+        
 
         try {
+            DB::beginTransaction();
+            if($request->posted == 'yes'){
+                $request->merge(['posted' => 'yes']);
+            }
             $leave_request = LeaveRequest::findOrFail($id);
             $leave_request->update($request->all());
+
+            if($request->posted == 'yes'){
+                $updated_leave_request = LeaveRequest::findOrFail($id);
+                LeaveHistory::create([
+                    'employee_id' => $updated_leave_request->employee_id,
+                    'name' => $updated_leave_request->name,
+                    'date' => $updated_leave_request->date_request,
+                    'trans_type' => 'Leave',
+                    'ref_no' => "LeaveReq.". $updated_leave_request->id,
+                    'deduct' => $updated_leave_request->deduct,
+                    'paid' => $updated_leave_request->paid,
+                    'amount' => $updated_leave_request->amount,
+                    'from_date_time' => $updated_leave_request->from_date_time,
+                    'to_date_time' => $updated_leave_request->to_date_time,
+                    'remark' => $updated_leave_request->remark,
+                ]);  
+            }
+            DB::commit();
     
             return response()->json([
                 'status' => 'success',
                 'message' => 'Leave request updated successfully',
             ], 200);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => "Failed to update leave request"
             ], 500);
         }
 
+    }
+
+    public function delete($id){
+        try {
+            $leave_request = LeaveRequest::findOrFail($id);
+            $leave_request->delete();
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Leave request deleted successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Failed to delete leave request"
+            ], 500);
+        }
+    }
+
+    public function detail($id){
+        $leave_request = LeaveRequest::with(['employee:id,no,name', 'leaveCategory:id,description,note'])->findOrFail($id);
+        return response()->json([
+            'status' => 'success',
+            'data' => $leave_request
+        ]);
+    }
+
+    public function search(Request $request){
+        $validator = Validator::make($request->all(), [
+            'search' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        $search = $request->search;
+        $leave_requests = LeaveRequest::with(['employee:id,no,name', 'leaveCategory:id,description,note'])->whereHas('employee', function($query) use ($search){
+            $query->where('name', 'like', "%$search%")->orWhere('no', 'like', "%$search%");
+        })->orWhere('remark', 'like', "%$search%")->cursorPaginate(70, ['no', 'name', 'from_date_time', 'to_date_time', 'amount', 'remark', 'posted', 'leave_category_id', 'employee_id']);
+        return response()->json([
+            'status' => 'success',
+            'data' => $leave_requests,
+            'headers' => [
+                'No',
+                'Name',
+                'From Date',
+                'To Date',
+                'Amount',
+                'Remark',
+                'Posted'
+            ]
+        ]);
     }
 }
