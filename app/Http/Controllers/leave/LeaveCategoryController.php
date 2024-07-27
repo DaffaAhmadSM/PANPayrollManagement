@@ -32,6 +32,16 @@ class LeaveCategoryController extends Controller
         ]);
     }
 
+    public function getEmployeeLeaveCategories($employeeId)
+    {
+        $leaveCategories = LeaveCategory::where('employee_id', $employeeId)->get(['id', 'description']);
+
+        return response()->json([
+            'message' => 'Leave categories fetched successfully',
+            'data' => $leaveCategories
+        ]);
+    }
+
     public function detail($id)
     {
         $leaveCategory = LeaveCategory::with('employee:id,no')->find($id);

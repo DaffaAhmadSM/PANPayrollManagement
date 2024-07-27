@@ -169,12 +169,13 @@ class LeaveRequestController extends Controller
 
     public function list(Request $request){
         $page = $request->page ?? 70;
-        $leave_requests = LeaveRequest::with(['employee:id,no,name', 'leaveCategory:id,description,note'])->cursorPaginate($page, ['no', 'name', 'from_date_time', 'to_date_time', 'amount', 'remark', 'posted', 'leave_category_id', 'employee_id']);
+        $leave_requests = LeaveRequest::with(['employee:id,no,name', 'leaveCategory:id,description,note'])->where('posted', 'no')->cursorPaginate($page, ['id','no', 'name', 'from_date_time', 'to_date_time', 'amount', 'remark', 'posted', 'leave_category_id', 'employee_id']);
         return response()->json([
             'status' => 'success',
             'data' => $leave_requests,
-            'headers' => [
+            'header' => [
                 'No',
+                'Employee No',
                 'Name',
                 'From Date',
                 'To Date',
@@ -344,12 +345,13 @@ class LeaveRequestController extends Controller
         $search = $request->search;
         $leave_requests = LeaveRequest::with(['employee:id,no,name', 'leaveCategory:id,description,note'])->whereHas('employee', function($query) use ($search){
             $query->where('name', 'like', "%$search%")->orWhere('no', 'like', "%$search%");
-        })->orWhere('remark', 'like', "%$search%")->cursorPaginate(70, ['no', 'name', 'from_date_time', 'to_date_time', 'amount', 'remark', 'posted', 'leave_category_id', 'employee_id']);
+        })->orWhere('remark', 'like', "%$search%")->cursorPaginate(70, ['id','no', 'name', 'from_date_time', 'to_date_time', 'amount', 'remark', 'posted', 'leave_category_id', 'employee_id']);
         return response()->json([
             'status' => 'success',
             'data' => $leave_requests,
             'headers' => [
                 'No',
+                'Employee No',
                 'Name',
                 'From Date',
                 'To Date',

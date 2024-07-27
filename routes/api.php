@@ -386,6 +386,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('create', [LeaveCategoryController::class, 'create']);
         Route::get('list', [LeaveCategoryController::class, 'list']);
         Route::get('all', [LeaveCategoryController::class, 'getAll']);
+        Route::get('all/employee/{employee_id}', [LeaveCategoryController::class, 'getEmployeeLeaveCategories']);
         Route::get('detail/{id}', [LeaveCategoryController::class, 'detail']);
         Route::post('update/{id}', [LeaveCategoryController::class, 'update']);
         Route::post('delete/{id}', [LeaveCategoryController::class, 'delete']);
