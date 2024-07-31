@@ -39,7 +39,7 @@ class JobResponsibilityController extends Controller
     public function create(Request $request)
     {
        $validator = Validator::make($request->all(), [
-            'responsibility' => 'required|exists:job_responsibilities,id',
+            'responsibility' => 'required|string',
             'description' => 'required|string',
             'note' => 'string'
         ]);
@@ -61,7 +61,7 @@ class JobResponsibilityController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'responsibility' => 'exists:job_responsibilities,id',
+            'responsibility' => 'string',
             'description' => 'string',
             'note' => 'string'
         ]);
