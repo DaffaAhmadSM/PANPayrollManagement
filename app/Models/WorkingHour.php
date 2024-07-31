@@ -13,4 +13,8 @@ class WorkingHour extends Model
         'code',
         'description',
     ];
+
+    public function workingHourDetail(){
+        return $this->hasMany(WorkingHoursDetail::class, 'working_hours_id', 'id');
+    }
 }

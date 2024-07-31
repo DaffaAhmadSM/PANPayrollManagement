@@ -78,7 +78,7 @@ class CustomerController extends Controller
 
     public function detail(string $id)
     {
-        $customer = Customer::with('workingHour:id,code', 'numberSequence:id,code')->find($id); 
+        $customer = Customer::with('workingHour:id,code', 'numberSequence:id,code', 'workingHour.workingHourDetail')->find($id); 
         if (!$customer) {
             return response()->json([       
                 'message' => 'Customer not found',

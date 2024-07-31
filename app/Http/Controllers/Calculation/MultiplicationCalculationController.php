@@ -92,11 +92,12 @@ class MultiplicationCalculationController extends Controller
         $multiplicationCalculation = MultiplicationCalculation::cursorPaginate(10, [
             "id",
             "code",
-            "description"
+            "description",
+            "multiplier"
         ]);
 
         return response()->json([
-            "header" => ["code", "description"],
+            "header" => ["code", "description", "multiplier"],
             "data" => $multiplicationCalculation
         ], 200);
     }
@@ -110,11 +111,12 @@ class MultiplicationCalculationController extends Controller
             ->cursorPaginate(10, [
                 "id",
                 "code",
-                "description"
+                "description",
+                "multiplier"
             ]);
 
         return response()->json([
-            "header" => ["code", "description"],
+            "header" => ["code", "description", "multiplier"],
             "data" => $multiplicationCalculation
         ], 200);
     }
