@@ -58,7 +58,7 @@ class WorkingHourController extends Controller
     }
 
     function detail($id){
-        $workingHour = WorkingHour::find($id);
+        $workingHour = WorkingHour::with('workingHourDetail')->find($id);
         if (!$workingHour) {
             return response()->json([
                 "message" => "Working hour not found"
