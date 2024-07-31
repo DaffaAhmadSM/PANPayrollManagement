@@ -13,7 +13,7 @@ class MenuController extends Controller
     function getMenu() {
 
         $user = Auth::user();
-        $menu = UserMenu::where('user_id', $user->id)->with('menu:id,name,url,parent_id')->get(['menu_id']);
+        $menu = UserMenu::where('user_id', $user->id)->with('menu:id,name,url,parent_id')->get(['menu_id'])->sortBy('menu_id');
         $transformedMenu = [];
         foreach ($menu as $item) {
             $transformedMenu[] = $item["menu"];
