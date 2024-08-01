@@ -123,7 +123,7 @@ class UserController extends Controller
 
     function listUser() {
 
-        $page = request()->perpage ? request()->perpage : 20;
+        $page = request()->perpage ? request()->perpage : 70;
         $users = User::orderBy('id', 'DESC')->cursorPaginate($page, ['id','name', 'email']);
         return response()->json([
             'message' => 'List of users',
