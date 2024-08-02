@@ -16,9 +16,9 @@ class EmployeeProfessionalExperienceController extends Controller
             'status' => 'success',
             'data' => $data,
             'header' => [
-                'Employee ID',
-                'Employer',
-                'Position',
+                "employee.no" => 'Employee ID',
+                "employer" => 'Employer',
+                "position" => 'Position',
             ]
         ]);
     }
@@ -55,15 +55,15 @@ class EmployeeProfessionalExperienceController extends Controller
             'homepage' => 'required|string',
             'phone' => 'required|string',
             'location' => 'required|string',
-            'from_date' => 'required|date',
-            'to_date' => 'required|date',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'notes' => 'string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
@@ -84,15 +84,15 @@ class EmployeeProfessionalExperienceController extends Controller
             'homepage' => 'string',
             'phone' => 'string',
             'location' => 'string',
-            'from_date' => 'date',
-            'to_date' => 'date',
+            'start_date' => 'date',
+            'end_date' => 'date',
             'notes' => 'string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
@@ -130,6 +130,32 @@ class EmployeeProfessionalExperienceController extends Controller
     }
 
     public function search(Request $request){
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        $data = EmployeeProfessionalExperience::whereHas('employee', function($query) use ($request){
+            $query->where('no', 'like', "%$request->search%");
+        })->orWhere('employer', 'like', "%$request->search%")
+            ->orWhere('position', 'like', "%$request->search%")
+            ->with('employee:id,no')
+            ->cursorPaginate($request->page ?? 70, ['id', 'employee_id', 'employer', 'position']);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data,
+            'header' => [
+                "employee.no" => 'Employee ID',
+                "employer" => 'Employer',
+                "position" => 'Position',
+            ]
+        ]);
     }
 }

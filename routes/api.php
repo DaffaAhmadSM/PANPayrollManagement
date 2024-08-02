@@ -39,6 +39,8 @@ use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
 use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
 use App\Http\Controllers\Employee\EmploymentTypeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeProjectExperienceController;
 use App\Http\Controllers\WorkingHour\WorkingHoursDetailController;
 
 Route::get('/user', function (Request $request) {
@@ -379,6 +381,26 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [EmployeeSkillController::class, 'update']);
         Route::post('delete/{id}', [EmployeeSkillController::class, 'delete']);
         Route::post('search', [EmployeeSkillController::class, 'search']);
+    });
+    
+    Route::group(['prefix' => 'employee-professional-experience'], function () {
+        Route::post('create', [EmployeeProfessionalExperienceController::class, 'create']);
+        Route::get('list', [EmployeeProfessionalExperienceController::class, 'list']);
+        Route::get('all', [EmployeeProfessionalExperienceController::class, 'getAll']);
+        Route::get('detail/{id}', [EmployeeProfessionalExperienceController::class, 'detail']);
+        Route::post('update/{id}', [EmployeeProfessionalExperienceController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeProfessionalExperienceController::class, 'delete']);
+        Route::post('search', [EmployeeProfessionalExperienceController::class, 'search']);
+    });
+    
+    Route::group(['prefix' => 'employee-project-experience'], function () {
+        Route::post('create', [EmployeeProjectExperienceController::class, 'create']);
+        Route::get('list', [EmployeeProjectExperienceController::class, 'list']);
+        Route::get('all', [EmployeeProjectExperienceController::class, 'getAll']);
+        Route::get('detail/{id}', [EmployeeProjectExperienceController::class, 'detail']);
+        Route::post('update/{id}', [EmployeeProjectExperienceController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeProjectExperienceController::class, 'delete']);
+        Route::post('search', [EmployeeProjectExperienceController::class, 'search']);
     });
 
 

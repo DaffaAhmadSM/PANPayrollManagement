@@ -17,11 +17,11 @@ class EmployeeProjectExperienceController extends Controller
             'status' => 'success',
             'data' => $data,
             'header' => [
-                'Employee ID',
-                'Project Name',
-                'Role',
-                'Start Date',
-                'End Date',
+                "employee.no" => 'Employee ID',
+                "project_name" => 'Project Name',
+                "role" => 'Role',
+                "start_date" => 'Start Date',
+                "end_date" => 'End Date',
             ]
         ]);
     }
@@ -62,7 +62,7 @@ class EmployeeProjectExperienceController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
@@ -87,7 +87,7 @@ class EmployeeProjectExperienceController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors(),
+                'message' => $validator->errors()->first(),
             ], 400);
         }
 
@@ -126,21 +126,22 @@ class EmployeeProjectExperienceController extends Controller
     }
 
     public function search(Request $request){
-        $data = EmployeeProjectExperience::with(['employee'=>function($query) use ($request){
-            $query->where('no', 'like', "%$request->no%");
-        }])->where('project_name', 'like', "%$request->project_name%")
-            ->where('role', 'like', "%$request->role%")
-            ->cursorPaginate(['id', 'employee_id', 'project_name', 'role', 'start_date', 'end_date']);
+        $data = EmployeeProjectExperience::whereHas('employee', function($query) use ($request){
+            $query->where('no', 'like', "%$request->search%");
+        })->orWhere('project_name', 'like', "%$request->search%")
+        ->orWhere('role', 'like', "%$request->search%")
+        ->with('employee:id,no')
+        ->cursorPaginate(70, ['id', 'employee_id', 'project_name', 'role', 'start_date', 'end_date']);
 
         return response()->json([
             'status' => 'success',
             'data' => $data,
             'header' => [
-                'Employee ID',
-                'Project Name',
-                'Role',
-                'Start Date',
-                'End Date',
+                "employee.no" => 'Employee ID',
+                "project_name" => 'Project Name',
+                "role" => 'Role',
+                "start_date" => 'Start Date',
+                "end_date" => 'End Date',
             ]
         ]);
     }
