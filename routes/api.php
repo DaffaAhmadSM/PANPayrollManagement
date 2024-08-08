@@ -41,6 +41,7 @@ use App\Http\Controllers\Employee\EmploymentTypeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProjectExperienceController;
+use App\Http\Controllers\LeaveHistoryController;
 use App\Http\Controllers\WorkingHour\WorkingHoursDetailController;
 
 Route::get('/user', function (Request $request) {
@@ -433,6 +434,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [LeaveRequestController::class, 'update']);
         Route::post('delete/{id}', [LeaveRequestController::class, 'delete']);
         Route::post('search', [LeaveRequestController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'leave-history'], function () {
+        Route::post('create', [LeaveHistoryController::class, 'create']);
+        Route::get('list', [LeaveHistoryController::class, 'list']);
+        Route::get('all', [LeaveHistoryController::class, 'getAll']);
+        Route::get('detail/{id}', [LeaveHistoryController::class, 'detail']);
+        Route::post('update/{id}', [LeaveHistoryController::class, 'update']);
+        Route::post('delete/{id}', [LeaveHistoryController::class, 'delete']);
+        Route::post('search', [LeaveHistoryController::class, 'search']);
     });
     
 

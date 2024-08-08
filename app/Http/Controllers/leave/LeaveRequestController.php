@@ -174,7 +174,7 @@ class LeaveRequestController extends Controller
             'status' => 'success',
             'data' => $leave_requests,
             'header' => [
-                'No',
+                'No Sequence',
                 'Employee No',
                 'Name',
                 'From Date',
