@@ -67,7 +67,7 @@ class LeaveHistoryController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 400);
         }
         $request->merge([
@@ -110,7 +110,7 @@ class LeaveHistoryController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 400);
         }
 
