@@ -291,6 +291,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [PositionControler::class, 'delete']);
         Route::post('search', [PositionControler::class, 'search']);
     });
+    
+    Route::group(['prefix' => 'position'], function () {
+        Route::post('create', [PositionControler::class, 'create']);
+        Route::get('list', [PositionControler::class, 'list']);
+        Route::get('all', [PositionControler::class, 'getAll']);
+        Route::get('detail/{id}', [PositionControler::class, 'detail']);
+        Route::post('update/{id}', [PositionControler::class, 'update']);
+        Route::post('delete/{id}', [PositionControler::class, 'delete']);
+        Route::post('search', [PositionControler::class, 'search']);
+    });
 
     Route::group(['prefix' => 'grade'], function () {
         Route::post('create', [GradeControler::class, 'create']);
