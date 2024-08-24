@@ -41,6 +41,7 @@ use App\Http\Controllers\Employee\EmploymentTypeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProjectExperienceController;
+use App\Http\Controllers\ImportTimeSheetController;
 use App\Http\Controllers\LeaveHistoryController;
 use App\Http\Controllers\WorkingHour\WorkingHoursDetailController;
 
@@ -454,6 +455,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [LeaveHistoryController::class, 'update']);
         Route::post('delete/{id}', [LeaveHistoryController::class, 'delete']);
         Route::post('search', [LeaveHistoryController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'timesheet'], function () {
+        Route::post('import-to-temp', [ImportTimeSheetController::class, 'importToTemp']);
     });
     
 
