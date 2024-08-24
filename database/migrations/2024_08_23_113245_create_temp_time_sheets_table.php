@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('temp_time_sheets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->date('date');
+            $table->date('from_date');
+            $table->date('to_date');
+            $table->string('description');
             $table->string('filename');
-            $table->string('random_string');
+            $table->string('random_string')->index();
             $table->timestamps();
         });
     }
