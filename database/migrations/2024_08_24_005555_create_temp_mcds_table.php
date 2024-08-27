@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('leg_id');
             $table->string('job_dissipline');
             $table->string('slo_no');
+            $table->integer('value');
             $table->date('date');
             $table->timestamps();
         });

@@ -458,7 +458,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::group(['prefix' => 'timesheet'], function () {
-        Route::post('import-to-temp', [ImportTimeSheetController::class, 'importToTemp']);
+        Route::post('import-to-temp-mcd', [ImportTimeSheetController::class, 'importToTempMcd']);
+        Route::post('import-to-temp-pns', [ImportTimeSheetController::class, 'importToTempPns']);
+        Route::post('create-temp-timesheet', [ImportTimeSheetController::class, 'createTempTimesheet']);
     });
     
 

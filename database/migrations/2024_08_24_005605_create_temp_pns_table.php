@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('job_dissipline');
             $table->string('slo_no');
             $table->date('date');
+            $table->integer('value');
             $table->timestamps();
         });
     }
