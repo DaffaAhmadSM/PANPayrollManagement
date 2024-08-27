@@ -33,7 +33,7 @@ class ImportTimeSheetController extends Controller
         }
 
         $temptimesheet = TempTimeSheet::create([
-            'random_string' => Str::random(5) . Carbon::now(),
+            'random_string' => Str::random(5) . Carbon::now()->timestamp,
             'from_date' => Carbon::parse($request->from_date),
             'to_date' => Carbon::parse($request->to_date),
             'description' => $request->description,
