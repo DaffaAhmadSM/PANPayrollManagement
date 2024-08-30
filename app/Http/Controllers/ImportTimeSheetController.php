@@ -145,4 +145,68 @@ class ImportTimeSheetController extends Controller
 
         return response()->json(['message' => 'Data imported successfully.'], 200);
     }
+
+
+    public function comparePnsMcd(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "random_string" => "required|string",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first()
+            ]);
+        }
+
+        $temptimesheet = TempTimeSheet::where('random_string', $request->random_string)->first();
+        
+        if (!$temptimesheet) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Data not found'
+            ]);
+        }
+
+        $pns = TempPns::where('temp_time_sheet_id', $temptimesheet->id)->get();
+        $mcd = TempMcd::where('temp_time_sheet_id', $temptimesheet->id)->get();
+
+        $sumPNS = $pns->groupBy(function($item) {
+            return $item['employee_name'] . '_' . $item['date'];
+        })->map(function($items) {
+            return [
+                'ids' => $items->pluck('id'),
+                'value' => $items->sum('value')
+            ];;
+        });
+
+        $sumMCD = $mcd->groupBy(function($item) {
+            return $item['employee_name'] . '_' . $item['date'];
+        })->map(function($items) {
+            return [
+                'ids' => $items->pluck('id'),
+                'value' => $items->sum('value')
+            ];;
+        });
+
+        $differeces = [];
+
+        foreach ($sumPNS as $key => $item1) {
+            if($sumMCD->has($key)) {
+               $item2 = $sumMCD[$key];
+               if ($item1['value'] != $item2['value']) {
+                    $differeces[] = [
+                        'pns' => $item1,
+                        'mcd' => $item2
+                    ];
+                }
+            }
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $differeces
+        ]);
+    }
+
 }
