@@ -488,7 +488,7 @@ class UserMenuSeeder extends Seeder
                 [
                     "id" => 54,
                     "name" => "Compare PNS & MCD",
-                    "url" => "/admin/employee/timesheet/compare-pns-mcd",
+                    "url" => "/admin/timesheet/compare-pns-mcd",
                     "order" => 1,
                     "level" => 0,
                     'parent_id' => 53,

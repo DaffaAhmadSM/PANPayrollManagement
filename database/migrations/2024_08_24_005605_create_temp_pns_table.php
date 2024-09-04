@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('temp_pns', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('temp_time_sheet_id')->constrained('temp_time_sheets');
+            $table->foreignId('temp_time_sheet_id')->constrained('temp_time_sheets')->onDelete('cascade');
             $table->string('kronos_job_number');
             $table->string('oracle_job_number');
             $table->string('parent_id');

@@ -5,8 +5,9 @@ namespace App\Imports;
 use App\Models\TempPns;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class PnsImport implements ToModel
+class PnsImport implements ToModel, WithChunkReading
 {
     use Importable;
     /**
@@ -19,5 +20,10 @@ class PnsImport implements ToModel
         return new TempPns([
             //
         ]);
+    }
+
+    public function chunkSize(): int
+    {
+        return 500;
     }
 }
