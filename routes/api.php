@@ -467,12 +467,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('list-pns-temp/{temp_timesheet_id}', [ImportTimeSheetController::class, 'listPnsTemp']);
         Route::get('list-mcd-temp/{temp_timesheet_id}', [ImportTimeSheetController::class, 'listMcdTemp']);
         Route::get('list-compared-pns-mcd', [ImportTimeSheetController::class, 'listComparedPnsMcd']);
-        Route::post('resolve-compare-conflict', [ImportTimeSheetController::class, 'resolveConflict']);
+        Route::post('resolve-compare-conflict/id/{id}', [ImportTimeSheetController::class, 'resolveConflict']);
         Route::post('edit-compare-conflict-value', [ImportTimeSheetController::class, 'editConflictValue']);
+        Route::get('detail-pns-mcd-diff/id/{id}', [ImportTimeSheetController::class, 'getDetailDiff']);
         Route::get('list-pns-mcd', [ImportTimeSheetController::class, 'list']);
         Route::post('update-pns-mcd/{id}', [ImportTimeSheetController::class, 'update']);
         Route::post('delete-pns-mcd/{id}', [ImportTimeSheetController::class, 'delete']);
-        Route::post('search-pns-mcd', [ImportTimeSheetController::class, 'search']);
+        Route::post('search-pns/{temp_timesheet_id}', [ImportTimeSheetController::class, 'searchPNS']);
+        Route::post('search-mcd/{temp_timesheet_id}', [ImportTimeSheetController::class, 'searchMCD']);
+
 
     });
     

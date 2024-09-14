@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\TempTimeSheet;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\HeadingRowImport;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,7 +40,8 @@ class ImportTimeSheetController extends Controller
             'to_date' => Carbon::parse($request->to_date),
             'description' => $request->description,
             'filename' => $request->filename,
-            'user_id' => auth()->user()->id
+            'user_id' => auth()->user()->id,
+            'status' => 'draft',
         ]);
 
         return response()->json([
@@ -243,10 +245,11 @@ class ImportTimeSheetController extends Controller
 
     public function list (Request $request) {
         $page = $request->perpage ?? 75;
-        $list = TempTimeSheet::orderBy('id', 'desc')->cursorPaginate($page);
+        $list = TempTimeSheet::orderBy('id', 'desc')->with('user')->cursorPaginate($page, ['id', 'user_id', 'from_date', 'to_date', 'description', 'filename', 'random_string', 'status']);
         return response()->json([
             'status' => 200,
-            'data' => $list
+            'data' => $list,
+            'header' => ['Name',  'Creator','Code', 'From Date', 'To Date', 'Description','Status']
         ]);
     }
 
@@ -285,9 +288,9 @@ class ImportTimeSheetController extends Controller
 
         if (!$data) {
             return response()->json([
-                'status' => 400,
+                'status' => 404,
                 'message' => 'Data not found'
-            ]);
+            ],404);
         }
 
         $data->delete();
@@ -297,7 +300,7 @@ class ImportTimeSheetController extends Controller
     }
 
     public function detailTempTimeSheet($slug) {
-        $data = TempTimeSheet::where('random_string', $slug)->first();
+        $data = TempTimeSheet::where('random_string', $slug)->with('user')->first();
 
         if (!$data) {
             return response()->json([
@@ -339,7 +342,7 @@ class ImportTimeSheetController extends Controller
 
         $page = $request->perpage ?? 75;
 
-        $mcd_data = TempMcd::where('temp_time_sheet_id', $temp_timesheet_id)->cursorPaginate($page, ['kronos_job_number', 'oracle_job_number', 'parent_id', 'employee_name', 'leg_id', 'job_dissipline', 'slo_no', 'value', 'date']);
+        $mcd_data = TempMcd::where('temp_time_sheet_id', $temp_timesheet_id)->cursorPaginate($page, ['id', 'kronos_job_number', 'oracle_job_number', 'parent_id', 'employee_name', 'leg_id', 'job_dissipline', 'slo_no', 'value', 'date']);
 
         return response()->json([
             'status' => 200,
@@ -379,5 +382,169 @@ class ImportTimeSheetController extends Controller
 
     }
 
+    public function resolveConflict($id) {
+
+        $data = PnsMcdDiff::find($id);
+        if (!$data) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Data not found'
+            ],404);
+        }
+
+        $data->delete();
+
+        return response()->json(['message' => 'Data resolved.'], 200);
+    }
+
+    public function editConflictValue(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'pns_mcd_diff_id' => 'required|integer',
+            'side' => 'required|in:pns,mcd',
+            'id' => 'required|integer',
+            'value' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        $data = PnsMcdDiff::find($request->pns_mcd_diff_id);
+
+        if (!$data) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Data not found'
+            ],404);
+        }
+
+        if ($request->side == 'pns') {
+            try {
+                DB::beginTransaction();
+                TempPNS::where('id', $request->id)->update(['value' => $request->value]);
+                $sumPNS = TempPNS::whereIn('id', json_decode($data->pns_ids))->sum('value');
+                $data->update([
+                    'pns_value' => $sumPNS
+                ]);
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 500,
+                    'message' => "server error"
+                ], 500);
+            }
+        }else{
+            try {
+                DB::beginTransaction();
+                TempMCD::where('id', $request->id)->update(['value' => $request->value]);
+                $sumMCD = TempMCD::whereIn('id', json_decode($data->pns_ids))->sum('value');
+                $data->update([
+                    'pns_value' => $sumMCD
+                ]);
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 500,
+                    'message' => "server error"
+                ], 500);
+            }
+        }
+
+
+        return response()->json(['message' => 'Data updated.'], 200);
+
+    }
+
+    public function getDetailDiff($id) {
+
+        $data = PnsMcdDiff::find($id);
+        if (!$data) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Data not found'
+            ],404);
+        }
+
+        $data->pns_ids = TempPNS::whereIn('id', json_decode($data->pns_ids))->get();
+        $data->mcd_ids = TempMcd::whereIn('id', json_decode($data->mcd_ids))->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' =>  $data
+        ]);
+    }
+
+    public function searchMCD(Request $request, $temp_timesheet_id) {
+
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        $page = $request->perpage ?? 75;
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        $data = TempMcd::where('temp_time_sheet_id', $temp_timesheet_id)->where('employee_name', 'like', '%'.$request->search.'%')->orWhere('date', 'like', '%'.$request->search.'%')->paginate($page, ['id', 'kronos_job_number', 'oracle_job_number', 'parent_id', 'employee_name', 'leg_id', 'job_dissipline', 'slo_no', 'value', 'date']);
+
+        return response()->json([
+            'status' => 200,
+            'data' =>  $data,
+            'header' => [
+                'Kronos Job Number',
+                'Oracle Job Number',
+                'Parent ID',
+                'Employee Name',
+                'Leg ID',
+                'Job Dissipline',
+                'SLO No',
+                'Value',
+                'Date'
+            ],
+        ]);
+    }
+
+    public function searchPNS(Request $request, $temp_timesheet_id) {
+
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        $page = $request->perpage ?? 75;
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        $data = TempPns::where('temp_time_sheet_id', $temp_timesheet_id)->where('employee_name', 'like', '%'.$request->search.'%')->orWhere('date', 'like', '%'.$request->search.'%')->paginate($page, ['id', 'kronos_job_number', 'oracle_job_number', 'parent_id', 'employee_name', 'leg_id', 'job_dissipline', 'slo_no', 'value', 'date']);
+
+        return response()->json([
+            'status' => 200,
+            'data' =>  $data,
+            'header' => [
+                'Kronos Job Number',
+                'Oracle Job Number',
+                'Parent ID',
+                'Employee Name',
+                'Leg ID',
+                'Job Dissipline',
+                'SLO No',
+                'Value',
+                'Date'
+            ],
+        ]);
+    }
 
 }

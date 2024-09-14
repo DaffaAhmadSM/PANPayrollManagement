@@ -16,8 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('from_date');
             $table->date('to_date');
-            $table->string('description');
+            $table->longText('description');
             $table->string('filename');
+            $table->string('status');
             $table->string('random_string')->index();
             $table->timestamps();
         });
