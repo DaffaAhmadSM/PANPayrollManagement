@@ -46,9 +46,10 @@ class CustomerController extends Controller
             'address' => 'required|string',
             'working_hour_id' => 'required|integer|exists:working_hours,id',    
             'number_sequence_id' => 'required|integer|exists:number_sequences,id',
+            'compare_type' => 'required|string',
         ],
         [
-            'no.unique' => 'The no has already been taken, please refresh to get the latest no.',
+            'no.unique' => 'The Customer No has already been taken, please refresh to get the latest no.',
         ]
     );
 
@@ -94,7 +95,7 @@ class CustomerController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'no' => 'string',
+            'no' => 'string|unique:customers,no',
             'name' => 'string',
             'email' => 'email',
             'fax' => 'string',
@@ -102,6 +103,7 @@ class CustomerController extends Controller
             'address' => 'string',
             'working_hour_id' => 'integer|exists:working_hours,id',    
             'number_sequence_id' => 'integer|exists:number_sequences,id',
+            'compare_type' => 'string',
         ],
         [
             'no.unique' => 'The no has already been taken, please refresh to get the latest no.',

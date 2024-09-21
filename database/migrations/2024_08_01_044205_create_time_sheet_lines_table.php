@@ -14,10 +14,11 @@ return new class extends Migration
     {
         Schema::create('time_sheet_lines', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('timesheet_id')->constrained('time_sheets');
-            $table->foreignId('employee_id')->constrained('employees');
+            $table->foreignId('timesheet_id')->constrained('time_sheets')->onDelete('cascade');
+            // $table->foreignId('employee_id')->constrained('employees');
+            $table->string('no');
             $table->foreignId('working_hours_id')->constrained('working_hours'); // init from Employee
-            $table->foreignId('position_id')->constrained('positions');
+            // $table->foreignId('position_id')->constrained('positions');
             $table->date('date')->default(Carbon::parse('3000-06-20'));
             $table->decimal('basic_hours', 8, 2)->default(0); // init from Working Hours
             $table->decimal('actual_hours', 8, 2)->default(0);
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->decimal('paid_hours', 8, 2)->default(0); // Basic Hours + Total Overtime Hours
             $table->enum('meal_allowance', ['no', 'yes'])->default('no'); // based on "Actual Hours" compared to "Meal Allowance Setup"
             $table->enum('transport_allowance', ['no', 'yes'])->default('no'); // based on "Actual Hours" compared to "Transport Allowance Setup"
-            $table->foreignId('leave_category_id')->constrained('leave_categories');
+            // $table->foreignId('leave_category_id')->constrained('leave_categories');
             $table->enum('paid_leave', ['no', 'yes'])->default('no'); // init from Leave Category
             $table->timestamps();
         });

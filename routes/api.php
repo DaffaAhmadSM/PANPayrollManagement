@@ -475,8 +475,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete-pns-mcd/{id}', [ImportTimeSheetController::class, 'delete']);
         Route::post('search-pns/{temp_timesheet_id}', [ImportTimeSheetController::class, 'searchPNS']);
         Route::post('search-mcd/{temp_timesheet_id}', [ImportTimeSheetController::class, 'searchMCD']);
-
-
+        Route::post('move-to-timesheet/{temp_timesheet_id}', [ImportTimeSheetController::class, 'moveToTimesheet']);
     });
     
 

@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class TimeSheet extends Model
 {
     use HasFactory;
+
+    protected $guarded = ["id"];
 }

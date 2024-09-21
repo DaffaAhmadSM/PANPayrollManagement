@@ -14,12 +14,15 @@ return new class extends Migration
     {
         Schema::create('time_sheets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('number_sequence_id')->constrained('number_sequences');
-            $table->string('no')->default('N/A'); // init from Number Sequences
-            $table->string('description')->default('N/A');
+            $table->foreignId('user_id')->constrained();
+            $table->string('filename');
+            $table->longText('description')->default('N/A');
             $table->date('from_date')->default(Carbon::parse('3000-06-20'));
             $table->date('to_date')->default(Carbon::parse('3000-06-20'));
-            $table->enum('status', ['Open', 'Posted'])->default('Open');
+            $table->enum('status', ['draft', 'completed'])->default('draft');
+            $table->string('notes')->default('N/A');
+            $table->string('random_string')->index();
+            $table->foreignId('customer_id')->constrained('customers');
             $table->timestamps();
         });
     }

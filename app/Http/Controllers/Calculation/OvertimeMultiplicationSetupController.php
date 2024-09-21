@@ -109,7 +109,8 @@ class OvertimeMultiplicationSetupController extends Controller
                 'from_hours' => $setup->from_hours,
                 'to_hours' => $setup->to_hours,
                 'multiplication_calc_code' => $setup->calculation->code,
-                'id' => ["calc_id" => $setup->calculation->id, "main_id" => $setup->id]
+                'id' =>$setup->id,
+                "calc_id" => $setup->calculation->id
             ]);
         }
 

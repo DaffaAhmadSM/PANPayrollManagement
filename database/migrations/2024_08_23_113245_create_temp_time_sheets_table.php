@@ -18,8 +18,10 @@ return new class extends Migration
             $table->date('to_date');
             $table->longText('description');
             $table->string('filename');
-            $table->string('status');
+            $table->enum('status', ['draft', 'completed'])->default('draft');
+            $table->string('notes')->default('N/A');
             $table->string('random_string')->index();
+            $table->foreignId('customer_id')->constrained('customers');
             $table->timestamps();
         });
     }
