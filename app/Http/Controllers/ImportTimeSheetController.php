@@ -254,7 +254,7 @@ class ImportTimeSheetController extends Controller
 
     public function list (Request $request) {
         $page = $request->perpage ?? 75;
-        $list = TempTimeSheet::orderBy('id', 'desc')->with('user')->cursorPaginate($page, ['id', 'user_id', 'from_date', 'to_date', 'description', 'filename', 'random_string', 'status']);
+        $list = TempTimeSheet::orderBy('id', 'desc')->with('user')->withCOunt('pnsMcdDiff')->cursorPaginate($page, ['id', 'user_id', 'from_date', 'to_date', 'description', 'filename', 'random_string', 'status']);
         return response()->json([
             'status' => 200,
             'data' => $list,
@@ -557,7 +557,7 @@ class ImportTimeSheetController extends Controller
         ]);
     }
 
-    public function moveToTimesheet(Request $request, $temp_timesheet_id){
+    public function moveToTimesheet($temp_timesheet_id){
 
         $temptimesheet = TempTimeSheet::find($temp_timesheet_id);
 

@@ -43,6 +43,7 @@ use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceCont
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProjectExperienceController;
 use App\Http\Controllers\ImportTimeSheetController;
 use App\Http\Controllers\LeaveHistoryController;
+use App\Http\Controllers\TempTimesheetLineController;
 use App\Http\Controllers\WorkingHour\WorkingHoursDetailController;
 
 Route::get('/user', function (Request $request) {
@@ -477,6 +478,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search-mcd/{temp_timesheet_id}', [ImportTimeSheetController::class, 'searchMCD']);
         Route::post('move-to-timesheet/{temp_timesheet_id}', [ImportTimeSheetController::class, 'moveToTimesheet']);
     });
+
+    Route::group(['prefix' => 'temp-timesheet'], function () {
+        Route::get('overtime-list/{temp_timesheet_str}', [TempTimesheetLineController::class, 'overtimeList']);
+        Route::post('calculate-overtime/{temp_timesheet_str}', [TempTimesheetLineController::class, 'calculateOvertime']);
+        Route::get('overtime-detail/{id}', [TempTimesheetLineController::class, 'overtimeDetail']);
+        Route::post('overtime-verify/{temp_timesheet_str}', [TempTimesheetLineController::class, 'overtimeVerify']);
+    });
+
+
     
 
     Route::post('logout', [AuthController::class, 'logout']);

@@ -10,4 +10,9 @@ class PnsMcdDiff extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function tempTimeSheet()
+    {
+        return $this->belongsTo(TempTimeSheet::class);
+    }
 }
