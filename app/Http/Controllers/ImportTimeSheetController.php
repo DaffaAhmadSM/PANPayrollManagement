@@ -101,12 +101,22 @@ class ImportTimeSheetController extends Controller
                 ];
             }
         }
-        $chunk = array_chunk($flattenedData, 1000);
-        foreach ($chunk as $data) {
-           TempMcd::insert($data);
+        try {
+            $chunk = array_chunk($flattenedData, 1000);
+            foreach ($chunk as $data) {
+               TempMcd::insert($data);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => "error inserting data"
+            ], 500);
         }
 
-        return response()->json(['message' => 'Data imported successfully.'], 200);
+        return response()->json([
+        'message' => 'Data imported successfully.',
+        "count" => count($flattenedData)
+    ], 200);
     }
 
     public function importToTempPns(Request $request) {
@@ -150,12 +160,22 @@ class ImportTimeSheetController extends Controller
                 ];
             }
         }
-        $chunk = array_chunk($flattenedData, 1000);
-        foreach ($chunk as $data) {
-           TempPns::insert($data);
+        try {
+            $chunk = array_chunk($flattenedData, 1000);
+            foreach ($chunk as $data) {
+               TempPns::insert($data);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => "error inserting data"
+            ], 500);
         }
 
-        return response()->json(['message' => 'Data imported successfully.'], 200);
+        return response()->json([
+            'message' => 'Data imported successfully.',
+            "count" => count($flattenedData)
+    ], 200);
     }
 
 
@@ -451,7 +471,7 @@ class ImportTimeSheetController extends Controller
             try {
                 DB::beginTransaction();
                 TempMCD::where('id', $request->id)->update(['value' => $request->value]);
-                $sumMCD = TempMCD::whereIn('id', json_decode($data->pns_ids))->sum('value');
+                $sumMCD = TempMCD::whereIn('id', json_decode($data->mcd_ids))->sum('value');
                 $data->update([
                     'mcd_value' => $sumMCD
                 ]);
