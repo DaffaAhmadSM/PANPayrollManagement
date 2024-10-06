@@ -20,7 +20,10 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\HeadingRowImport;
 use Illuminate\Support\Facades\Validator;
 use App\Models\OvertimeMultiplicationSetup;
+use App\Models\tempTimesheetLine;
+use App\Models\tempTimeSheetOvertime;
 use App\Models\TimeSheetLine;
+use App\Models\TimeSheetOvertime;
 
 class ImportTimeSheetController extends Controller
 {
@@ -286,7 +289,7 @@ class ImportTimeSheetController extends Controller
 
     public function list (Request $request) {
         $page = $request->perpage ?? 75;
-        $list = TempTimeSheet::orderBy('id', 'desc')->with('user')->withCOunt('pnsMcdDiff')->cursorPaginate($page, ['id', 'user_id', 'from_date', 'to_date', 'description', 'filename', 'random_string', 'status']);
+        $list = TempTimeSheet::orderBy('id', 'desc')->with('user')->withCount('pnsMcdDiff')->cursorPaginate($page, ['id', 'user_id', 'from_date', 'to_date', 'description', 'filename', 'random_string', 'status']);
         return response()->json([
             'status' => 200,
             'data' => $list,
@@ -600,88 +603,44 @@ class ImportTimeSheetController extends Controller
             ],404);
         }
 
-        $mcd = TempMcd::where('temp_time_sheet_id', $temp_timesheet_id)->get();
-        $customer = Customer::find($temptimesheet->customer_id);
-        $working_hour_detail = WorkingHoursDetail::where('working_hours_id', $customer->working_hour_id)->get();
-        $calendar_holiday = CalendarHoliday::whereBetween('date', [$temptimesheet->from_date, $temptimesheet->to_date])->get();
-        $overtime_multiplication_all = OvertimeMultiplicationSetup::all();
-
+        $temp_timesheet_lines = tempTimesheetLine::where('temp_timesheet_id', $temp_timesheet_id)->get();
+        $temp_timesheet_overtime = tempTimeSheetOvertime::where('random_string', $temptimesheet->random_string)->get();
         try {
-        DB::beginTransaction();
-        $timesheet = TimeSheet::create([
-            'user_id' => $temptimesheet->user_id,
-            'filename' => $temptimesheet->filename,
-            'description' => $temptimesheet->description,
-            'from_date' => $temptimesheet->from_date,
-            'to_date' => $temptimesheet->to_date,
-            'status' => 'completed',
-            'customer_id' => $temptimesheet->customer_id,
-            'random_string' => $temptimesheet->random_string
-        ]);
-        $processedMcd = [];
-        foreach ($mcd as $item) {
-            $date = Carbon::parse($item->date);
-            $day = $date->dayName;
-            $working_day = $working_hour_detail->firstWhere("day", $day);
-            if(!$working_day) {
-                $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
-                $holiday = $is_holiday ? true : false;
-                $working_day['hours'] = 0;
-                $deduction_hour = 0;
-                $overtime_hour = $item->value;    
-            }else{
-                $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
-                $holiday = $is_holiday ? true : false;
-                $deduction_hour = $item->value < $working_day->hours ? $working_day->hours - $item->value : 0;
-                $overtime_hour = $item->value > $working_day->hours ? $item->value - $working_day->hours : 0;    
-            }
-           $total_overtime_hours = $overtime_hour;
-            
-            if ($overtime_hour > 0) {
-                if ($holiday) {
-                    $overtime_multiplication = $overtime_multiplication_all->where('day_type', 'Holiday')->where('day', $day)->where('to_hours', '<=', $overtime_hour)->all();
-                    // return $overtime_multiplication;
-                }else{
-                    $overtime_multiplication = $overtime_multiplication_all->where('day_type', 'Normal')->where('day', $day)->where('to_hours', '<=', $overtime_hour)->all();
-                }
-                if ($overtime_multiplication) {
-                    foreach ($overtime_multiplication as $multiplication) {
-                        $total_overtime_hours = $total_overtime_hours * $multiplication->calculation->multiplier;
-                    }
-                }else{
-                    $total_overtime_hours = $overtime_hour;
-                }
-            }
+            DB::beginTransaction();
 
-            $processedMcd[] = [
-                'timesheet_id' => $timesheet->id,
-                'no' => $item->leg_id,
-                'working_hours_id' => $customer->working_hour_id,
-                'date' => $item->date,
-                'basic_hours' => $working_day['hours'],
-                'actual_hours' => $item->value,
-                'deduction_hours' => $deduction_hour,
-                'overtime_hours' => $overtime_hour,
-                'total_overtime_hours' => $total_overtime_hours,
-                'paid_hours' => $working_day['hours'] + $total_overtime_hours,
-            ];
-        }
-
-        TimeSheetLine::insert($processedMcd);
-
-        $temptimesheet->update(['status' => 'completed']);
-        DB::commit();
+            $real_timehseet =  TimeSheet::create([
+                'from_date' => $temptimesheet->from_date,
+                "random_string" => $temptimesheet->random_string,
+                'to_date' => $temptimesheet->to_date,
+                'description' => $temptimesheet->description,
+                'filename' => $temptimesheet->filename,
+                'user_id' => $temptimesheet->user_id,
+                'status' => 'draft',
+                'customer_id' => $temptimesheet->customer_id,
+                'customer_file_name' => $temptimesheet->customer_file_name,
+                'employee_file_name' => $temptimesheet->employee_file_name,
+            ]);
+            // change temp_timesheet_id key to timesheet_id and change the id in temp_timesheet_lines to real_timesheet_id
+            $temp_timesheet_lines->map(function($item) use($real_timehseet) {
+                $item->timesheet_id = $real_timehseet->id;
+                // delete temp_timesheet_id key
+                unset($item->temp_timesheet_id);
+            });
+    
+            TimeSheetLine::insert($temp_timesheet_lines->toArray());
+            TimeSheetOvertime::insert($temp_timesheet_overtime->toArray());
+            DB::commit();    
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
                 'status' => 500,
-                'message' => "server error"
+                'message' => $th->getMessage()
             ], 500);
         }
         return response()->json([
             'status' => 200,
             'message' => 'Data moved successfully',
-            'data' => $processedMcd
+            'data' => $temp_timesheet_lines
         ]);
 
     }

@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('time_sheet_overtimes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('timesheet_line_id')->constrained('time_sheet_lines');
             $table->string('custom_id')->index();
-            $table->foreignId('multiplication_code_id')->constrained('multiplication_calculations');
-            $table->decimal('multiplication', 8, 2)->default(0); // init from Multiplication Code
-            $table->decimal('hours', 8, 2)->default(0);
-            $table->decimal('total_hours', 8, 2)->default(0); // Multiplication * Hours
+            $table->foreignId('multiplication_id')->constrained('overtime_multiplication_setups');
+            $table->string('multiplication_code');
+            $table->string('hours');
+            $table->string('total_hours');
+            $table->string('random_string')->nullable();
             $table->timestamps();
         });
     }
