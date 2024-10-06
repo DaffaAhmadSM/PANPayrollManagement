@@ -30,6 +30,7 @@ return new class extends Migration
             $table->enum('transport_allowance', ['no', 'yes'])->default('no'); // based on "Actual Hours" compared to "Transport Allowance Setup"
             // $table->foreignId('leave_category_id')->constrained('leave_categories');
             $table->enum('paid_leave', ['no', 'yes'])->default('no'); // init from Leave Category
+            $table->string('custom_id')->index();
             $table->timestamps();
         });
     }

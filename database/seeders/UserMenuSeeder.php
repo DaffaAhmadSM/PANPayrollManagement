@@ -48,37 +48,56 @@ class UserMenuSeeder extends Seeder
             "level" => 0,
         ];
 
-        $payrollMain = [
-            "id" => 5,
-            "name" => "Payroll",
-            "url" => null,
-            "order" => 1,
-            "level" => 0,
-        ];
+        // $payrollMain = [
+        //     "id" => 5,
+        //     "name" => "Payroll",
+        //     "url" => null,
+        //     "order" => 1,
+        //     "level" => 0,
+        // ];
 
-        $inventoryMain = [
-            "id" => 6,
-            "name" => "Inventory",
-            "url" => null,
-            "order" => 1,
-            "level" => 0,
-        ];
+        // $inventoryMain = [
+        //     "id" => 6,
+        //     "name" => "Inventory",
+        //     "url" => null,
+        //     "order" => 1,
+        //     "level" => 0,
+        // ];
 
-        $jobVacancy = [
-            "id" => 7,
-            "name" => "Job Vacancy",
-            "url" => null,
-            "order" => 1,
-            "level" => 0,
-        ];
+        // $jobVacancy = [
+        //     "id" => 7,
+        //     "name" => "Job Vacancy",
+        //     "url" => null,
+        //     "order" => 1,
+        //     "level" => 0,
+        // ];
 
         $timesheetMenu = [
-                "id" => 53,
+                "id" => 5,
                 "name" => "Timesheet",
                 "url" => Null,
                 "order" => 1,
                 "level" => 0,
         ];
+
+        $timesheetSubMenu = [
+            [
+                "id" => 6,
+                "name" => "Compare PNS & MCD",
+                "url" => "/admin/timesheet/compare-pns-mcd",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 5,
+            ],
+            [
+                "id" => 7,
+                "name" => "Timesheet Data",
+                "url" => "/admin/timesheet/timesheet-data",
+                "order" => 1,
+                "level" => 0,
+                'parent_id' => 5,
+            ],
+    ];
 
         $setupSubmenu = [
             [
@@ -441,14 +460,6 @@ class UserMenuSeeder extends Seeder
             ],
             [
                 "id" => 48,
-                "name" => "Leave Adjustment",
-                "url" => "/admin/employee/leave/leave-adjustment",
-                "order" => 1,
-                "level" => 0,
-                'parent_id' => 29,
-            ],
-            [
-                "id" => 49,
                 "name" => "Leave Request",
                 "url" => "/admin/employee/leave/leave-request",
                 "order" => 1,
@@ -456,7 +467,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 29,
             ],
             [
-                "id" => 50,
+                "id" => 49,
                 "name" => "Leave History",
                 "url" => "/admin/employee/leave/leave-history",
                 "order" => 1,
@@ -467,7 +478,7 @@ class UserMenuSeeder extends Seeder
 
         $positionSubmenu = [
             [
-                "id" => 51,
+                "id" => 50,
                 "name" => "Grade",
                 "url" => "/admin/employee/position/grade",
                 "order" => 1,
@@ -475,7 +486,7 @@ class UserMenuSeeder extends Seeder
                 'parent_id' => 30,
             ],
             [
-                "id" => 52,
+                "id" => 51,
                 "name" => "Position",
                 "url" => "/admin/employee/position/position",
                 "order" => 1,
@@ -484,18 +495,7 @@ class UserMenuSeeder extends Seeder
             ],
         ];
 
-        $timesheetSubMenu = [
-                [
-                    "id" => 54,
-                    "name" => "Compare PNS & MCD",
-                    "url" => "/admin/timesheet/compare-pns-mcd",
-                    "order" => 1,
-                    "level" => 0,
-                    'parent_id' => 53,
-                ],
-        ];
-
-        // last id = 54
+        // last id = 51
         
 
         $UserMenu = [
@@ -856,39 +856,15 @@ class UserMenuSeeder extends Seeder
                 'update' => 1,
                 'delete' => 1,
             ],
-            [
-                'user_id' => 1,
-                'menu_id' => 52,
-                'create' => 1,
-                'update' => 1,
-                'delete' => 1,
-            ],
-            [
-                'user_id' => 1,
-                'menu_id' => 53,
-                'create' => 1,
-                'update' => 1,
-                'delete' => 1,
-            ],
-            [
-                'user_id' => 1,
-                'menu_id' => 54,
-                'create' => 1,
-                'update' => 1,
-                'delete' => 1,
-            ],
-
         ];
 
         Menu::create($setup);
         Menu::create($customerMain);
         Menu::create($invoiceMain);
         Menu::create($employeeMain);
-        Menu::create($payrollMain);
-        Menu::create($inventoryMain);
-        Menu::create($jobVacancy);
+        $timesheetmenucreate = Menu::create($timesheetMenu);
 
-
+        Menu::insert($timesheetSubMenu);
         Menu::insert($setupSubmenu);
         Menu::insert($customerSubmenu);
         Menu::insert($invoiceSubmenu);
@@ -899,9 +875,6 @@ class UserMenuSeeder extends Seeder
         Menu::insert($employeeCompetence);
         Menu::insert($leaveSubmenu);
         Menu::insert($positionSubmenu);
-        Menu::create($timesheetMenu);
-        Menu::insert($timesheetSubMenu);
-
 
         UserMenu::insert($UserMenu);
     }

@@ -22,6 +22,10 @@ return new class extends Migration
             $table->string('notes')->default('N/A');
             $table->string('random_string')->index();
             $table->foreignId('customer_id')->constrained('customers');
+            $table->string("customer_file_name");
+            $table->string("employee_file_name");
+            $table->integer("customer_total_imported")->default(0);
+            $table->integer("employee_total_imported")->default(0);
             $table->timestamps();
         });
     }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('multiplication_code');
             $table->string('hours');
             $table->string('total_hours');
+            $table->string('random_string')->nullable();
             $table->timestamps();
         });
     }
