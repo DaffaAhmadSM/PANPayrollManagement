@@ -50,7 +50,9 @@ class ImportTimeSheetController extends Controller
             'filename' => $request->filename,
             'user_id' => auth()->user()->id,
             'status' => 'draft',
-            'customer_id' => $request->customer_id
+            'customer_id' => $request->customer_id,
+            'customer_file_name' => 'N/A',
+            'employee_file_name' => 'N/A',
         ]);
 
         return response()->json([
@@ -74,6 +76,7 @@ class ImportTimeSheetController extends Controller
             ], 400);
         }
         
+        $temptimesheet = TempTimeSheet::find($request->temptimesheet_id);
 
         $excel = (new McdImport)->toCollection($request->file('csv'));
         // $data = (new HeadingRowImport)->toArray($request->file('file'));
@@ -106,6 +109,10 @@ class ImportTimeSheetController extends Controller
             foreach ($chunk as $data) {
                TempMcd::insert($data);
             }
+            $temptimesheet->update([
+                'customer_file_name' => $request->file('csv')->getClientOriginalName(),
+                'customer_total_imported' => count($flattenedData)
+            ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
@@ -134,6 +141,7 @@ class ImportTimeSheetController extends Controller
         }
         
 
+        $temptimesheet = TempTimeSheet::find($request->temptimesheet_id);
         $excel = (new PnsImport)->toCollection($request->file('csv'));
         // $data = (new HeadingRowImport)->toArray($request->file('file'));
         $collect = collect($excel->first());
@@ -165,6 +173,10 @@ class ImportTimeSheetController extends Controller
             foreach ($chunk as $data) {
                TempPns::insert($data);
             }
+            $temptimesheet->update([
+                'employee_file_name' => $request->file('csv')->getClientOriginalName(),
+                'employee_total_imported' => count($flattenedData)
+            ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
