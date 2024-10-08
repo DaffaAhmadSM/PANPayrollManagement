@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->string('filename');
-            $table->longText('description')->default('N/A');
+            $table->longText('description')->nullable();
             $table->date('from_date')->default(Carbon::parse('3000-06-20'));
             $table->date('to_date')->default(Carbon::parse('3000-06-20'));
             $table->enum('status', ['draft', 'completed'])->default('draft');
