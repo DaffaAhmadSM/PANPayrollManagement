@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('leave_categories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->text('description')->default('N/A');
+            $table->text('description')->nullable();
             $table->enum('deduct', ['yes', 'no', 'none'])->default('none');
             $table->enum('paid', ['yes', 'no', 'none'])->default('none');
             $table->text('note')->nullable();
