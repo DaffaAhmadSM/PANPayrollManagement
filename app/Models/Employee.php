@@ -10,6 +10,9 @@ class Employee extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+    protected $attributes = [
+        'tax_number' => 'N/A',
+    ];
 
     public function education()
     {

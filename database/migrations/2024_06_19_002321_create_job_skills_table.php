@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('skill')->default('N/A');
             $table->enum('type', ['hard', 'soft', 'none'])->default('none');
-            $table->text('description')->default('N/A');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

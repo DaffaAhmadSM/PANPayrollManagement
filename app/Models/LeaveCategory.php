@@ -10,6 +10,10 @@ class LeaveCategory extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+    protected $attributes = [
+        'description' => 'N/A',
+        'note' => 'N/A'
+    ];
 
     public function employee()
     {

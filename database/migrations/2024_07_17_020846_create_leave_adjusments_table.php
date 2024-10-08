@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('beginning_balance', 15, 2)->default(0); // init from leave history (Sum all Amount in Leave History with Deduct = Yes)
             $table->decimal('ending_balance', 15, 2)->default(0);
             $table->decimal('adjust_balance', 15, 2)->default(0); // the difference between Beginning Balance and Ending Balance
-            $table->text('remark')->default('N/A');
+            $table->text('remark')->nullable();
             $table->enum('posted', ['yes', 'no'])->default('no'); // When the request is posted then Leave Request data will be added to the Leave History with TransType  'Adjustment'
             $table->timestamps();
         });

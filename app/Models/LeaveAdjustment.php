@@ -13,6 +13,10 @@ class LeaveAdjustment extends Model
 
     protected $guarded = ['id'];
 
+    protected $attributes = [
+        'remark' => 'N/A'
+    ];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

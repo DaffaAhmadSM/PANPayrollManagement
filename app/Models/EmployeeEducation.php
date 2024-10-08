@@ -11,6 +11,10 @@ class EmployeeEducation extends Model
 
     protected $guarded = ["id"];
 
+    protected $attributes = [
+        'notes' => 'N/A',
+    ];
+
     public function employee(){
         return $this->belongsTo(Employee::class);
     }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('job_skill_id')->constrained('job_skills');
             $table->string('description')->default('N/A');
             $table->enum('type', ['soft', 'hard'])->default('soft');
-            $table->text('notes')->default('N/A');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

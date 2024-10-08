@@ -27,7 +27,7 @@ return new class extends Migration
             $table->date('to_date_time')->default(Carbon::parse('3000-06-20'));
             $table->string('adress_during_leave')->default('N/A');
             $table->string('contact_no')->default('N/A');
-            $table->text('remark')->default('N/A');
+            $table->text('remark')->nullable();
             $table->enum('posted', ['yes', 'no'])->default('no'); // When the request is posted then Leave Request data will be added to the Leave History with TransType  'Leave'
             $table->timestamps();
         });

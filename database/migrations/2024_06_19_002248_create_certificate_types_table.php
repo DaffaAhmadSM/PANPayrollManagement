@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('type')->default('N/A');
             $table->foreignId('certificate_classification_id')->constrained('certificate_classifications');
-            $table->text('description')->default('N/A');
+            $table->text('description')->nullable();
             $table->enum('required_renewal', ['yes', 'no', 'none'])->default('none');
             $table->timestamps();
         });

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name')->default('N/A');
             $table->enum('status', ['contract', 'permanent','none'])->default('none');
             $table->foreignId('employment_type_id')->constrained('employment_types');
-            $table->text('description')->default('N/A');
+            $table->text('description')->nullable();
             $table->enum('permanent', ['yes', 'no'])->nullable();
             $table->date('from_date')->default(Carbon::parse('3000-01-01'));
             $table->date('to_date')->default(Carbon::parse('3000-01-01'));
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->date('last_date_worked')->default(Carbon::parse('3000-01-01'));
             $table->enum('terminated', ['yes', 'no'])->default('no');
             $table->date('termination_date')->default(Carbon::parse('3000-01-01'))->nullable();
-            $table->text('termination_reason')->default(Carbon::parse('3000-01-01'))->nullable();
+            $table->text('termination_reason')->nullable();
             $table->timestamps();
         });
     }

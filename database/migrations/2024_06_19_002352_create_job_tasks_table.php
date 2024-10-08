@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('job_task')->default('N/A');
             $table->foreignId('job_responsibility_id')->constrained('job_responsibilities');
-            $table->text('description')->default('N/A');
+            $table->text('description')->nullable();
             $table->string('note')->nullable()->default('N/A');
             $table->timestamps();
         });

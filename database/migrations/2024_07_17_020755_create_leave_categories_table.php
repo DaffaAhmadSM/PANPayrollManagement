@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description')->default('N/A');
             $table->enum('deduct', ['yes', 'no', 'none'])->default('none');
             $table->enum('paid', ['yes', 'no', 'none'])->default('none');
-            $table->text('note')->default('N/A');
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

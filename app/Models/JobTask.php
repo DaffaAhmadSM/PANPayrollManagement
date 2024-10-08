@@ -10,7 +10,9 @@ class JobTask extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
-
+    protected $attributes = [
+        'description' => 'N/A'
+    ];
     public function jobResponsibility()
     {
         return $this->belongsTo(JobResponsibility::class);

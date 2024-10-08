@@ -9,4 +9,7 @@ class JobSkill extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+    protected $attributes = [
+        'description' => 'N/A'
+    ];
 }

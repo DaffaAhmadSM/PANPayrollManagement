@@ -17,12 +17,12 @@ return new class extends Migration
             $table->foreignId('employee_id')->constrained('employees');
             $table->string('employer')->default('N/A');
             $table->string('position')->default('N/A');
-            $table->text('homepage')->default('N/A');
-            $table->text('phone')->default('N/A');
-            $table->text('location')->default('N/A');
+            $table->text('homepage')->nullable();
+            $table->text('phone')->nullable();
+            $table->text('location')->nullable();
             $table->date('start_date')->default(Carbon::parse('3000-06-20'));
             $table->date('end_date')->default(Carbon::parse('3000-06-20'));
-            $table->text('notes')->default('N/A');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

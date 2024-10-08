@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('grade_point_scale', 8 ,2)->default(0);
             $table->integer('from_year')->default(0);
             $table->integer('to_year')->default(0);
-            $table->text('notes')->default('N/A');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

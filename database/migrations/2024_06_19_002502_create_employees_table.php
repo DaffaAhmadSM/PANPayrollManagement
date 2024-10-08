@@ -40,7 +40,7 @@ return new class extends Migration
             $table->string('family_card_number')->default('N/A');
             $table->string('passport_number')->nullable()->default('N/A');
             $table->date('passport_expired_date')->nullable()->default(Carbon::parse('3000-12-31'));
-            $table->text('tax_number')->nullable()->default('N/A');
+            $table->text('tax_number')->nullable();
             $table->date('tax_start_date')->nullable()->default(Carbon::parse('3000-12-31'));
             $table->foreignId('classification_of_tax_payer_id')->constrained('classification_of_tax_payers');
             $table->enum('tax_paid_by_company', ['yes', 'no'])->default('no');

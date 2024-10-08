@@ -10,6 +10,9 @@ class EmployeeCustomerRelation extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+    protected $attributes = [
+        'note' => 'N/A'
+    ];
 
     public function employee()
     {

@@ -11,6 +11,13 @@ class EmployeeProjectExperience extends Model
 
     protected $guarded = ["id"];
 
+    protected $attribute = [
+        "homepage" => "N/A",
+        "phone" => "N/A",
+        "location" => "N/A",
+        "notes" => "N/A",
+    ];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

@@ -2,14 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Employment extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    protected $attributes = [
+        'description' => 'N/A',
+        'termination_reason' => 'N/A',
+    ];
 
     public function employee()
     {
