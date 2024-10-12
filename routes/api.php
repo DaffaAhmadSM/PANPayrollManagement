@@ -323,6 +323,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [EmployeeController::class, 'update']);
         Route::post('delete/{id}', [EmployeeController::class, 'delete']);
         Route::post('search', [EmployeeController::class, 'search']);
+        Route::post('import', [EmployeeController::class, 'importFromExcel']);
     });
 
     Route::group(['prefix' => 'employee-address'], function () {

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Employee;
 use App\Models\Employee;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\EducationLevel;
 use App\Models\NumberSequence;
+use Illuminate\Support\Carbon;
+use App\Imports\ImportEmployee;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -238,5 +241,50 @@ class EmployeeController extends Controller
             'data' => $data,
             'header' => ['No', 'Name', 'Type', 'Gender', 'Search Name']
         ], 200);
+    }
+
+    public function importFromExcel(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|mimes:xlsx,xls,csv'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => $validator->errors()->first()
+            ],400);
+        }
+
+        $lastEducationAll = EducationLevel::all();
+
+        $employee = (new ImportEmployee)->toCollection($request->file('file'))->collapse();
+        $processedEmployee = [];
+        foreach ($employee as $emp){
+            $tanggalLahir = trim($emp['tanggal_lahir']);
+            $lastEducation = $lastEducationAll->where('level', trim($emp['pendidikan']))->first() ? $lastEducationAll->where('level', trim($emp['pendidikan']))->first()->id : 1  ;
+            $processedEmployee[] = [
+                'classification_of_tax_payer_id' => 1,
+                'number_sequence_id' => 1,
+                'type' => 'employee',
+                'no' => trim($emp['nomor_karyawan']),
+                'name' => trim($emp['nama_lengkap_karyawan']),
+                'search_name' => trim($emp['nama_karyawan']),
+                'gender' => trim($emp['jenis_kelamin']) == 'L' ? 'male' : 'female',
+                'birth_date' => Carbon::createFromFormat('d/m/Y', $tanggalLahir),
+                'birth_place' => trim($emp['tempat_lahir']),
+                'blood_type' => trim($emp['golongan_darah']) == "-" ? 'none' : trim($emp['golongan_darah']),
+                'religion' => trim($emp['agama']) == "-" ? 'none' : trim($emp['agama']),
+                'email' => trim($emp['email']),
+                'phone' => trim($emp['nomor_hp']),
+                'marital_status' => trim($emp['menikah_yatidak']) == "-" ? 'none' : trim(strtolower($emp['menikah_yatidak'])),
+                'last_education' => $lastEducation,
+            ];
+        }
+
+        $employeeBatch = array_chunk($processedEmployee, 1000);
+        foreach ($employeeBatch as $batch){
+            Employee::insert($batch);
+        }
+
+        return $processedEmployee;
     }
 }

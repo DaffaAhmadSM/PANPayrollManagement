@@ -27,12 +27,12 @@ class SetupSeeder extends Seeder
 
         $number_sequence = [
             [
-                "code" => "CUST",
-                "description" => "Customer"
+                "code" => "N/A",
+                "description" => "Imported Data"
             ],
             [
-                "code" => "EMPL",
-                "description" => "Employee"
+                "code" => "PNS",
+                "description" => "PNS employee"
             ],
         ];
 

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ClassificationOfTaxPayer;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -24,5 +25,11 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingSeeder::class);
         $this->call(SetupSeeder::class);
         $this->call(multiplicationSetup::class);
+        $this->call(EducationLevelSeeder::class);
+
+        ClassificationOfTaxPayer::create([
+            'description' => 'N/A',
+            'code' => 'N/A',
+        ]);
     }
 }
