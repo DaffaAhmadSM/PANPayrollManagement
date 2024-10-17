@@ -13,18 +13,17 @@ return new class extends Migration
     {
         Schema::create('general_setups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('number_sequence_id')->nullable()->constrained('number_sequences')->onDelete('cascade');
-            $table->string("customer");
-            $table->string('customer_contract');
-            $table->string('customer_timesheet')->nullable();
-            $table->string('customer_invoice');
-            $table->string('employee')->nullable();
-            $table->string('leave_request')->nullable();
-            $table->string('leave_adjustment')->nullable();
-            $table->string('timesheet')->nullable();
-            $table->string('invent_journal_id')->nullable();
-            $table->string('invent_trans_id')->nullable();
-            $table->string('vacancy_no')->nullable();
+            $table->string("customer")->default("N/A");
+            $table->string('customer_contract')->default("N/A");
+            $table->string('customer_timesheet')->default("N/A");
+            $table->string('customer_invoice')->default("N/A");
+            $table->string('employee')->default("N/A");
+            $table->string('leave_request')->default("N/A");
+            $table->string('leave_adjustment')->default("N/A");
+            $table->string('timesheet')->default("N/A");
+            $table->string('invent_journal_id')->default("N/A");
+            $table->string('invent_trans_id')->default("N/A");
+            $table->string('vacancy_no')->default("N/A");
             $table->timestamps();
         });
     }

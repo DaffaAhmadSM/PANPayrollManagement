@@ -13,10 +13,9 @@ class GeneralSetupController extends Controller
 {
     function create (Request $request) {
         $validate = Validator::make($request->all(), [
-            "number_sequence_id" => "required|string|exists:number_sequences,id",
-            "customer" => "required|string",
-            "customer_invoice" => "required|string",
-            "customer_contract" => "required|string",
+            "customer" => "required|nullable",
+            "customer_invoice" => "required|nullable",
+            "customer_contract" => "required|nullable",
             "customer_timesheet" => "string|nullable",
             "employee" => "string|nullable",
             "leave_request" => "string|nullable",
@@ -26,6 +25,13 @@ class GeneralSetupController extends Controller
             "invent_trans_id" => "string|nullable",
             "vacancy_no" => "string|nullable",
         ]);
+
+        $generalSetup = GeneralSetup::first();
+        if ($generalSetup) {
+            return response()->json([
+                "message" => "General setup must be only one, general setup already exist"
+            ], 400);
+        }
 
         if ($validate->fails()) {
             return response()->json([
@@ -51,6 +57,7 @@ class GeneralSetupController extends Controller
 
     function update (Request $request, $id) {
         $validate = Validator::make($request->all(), [
+            "customer" => "string",
             "customer_contract" => "string",
             "customer_timesheet" => "string",
             "customer_invoice" => "string",
@@ -100,7 +107,7 @@ class GeneralSetupController extends Controller
     }
 
     function detail($id) {
-        $generalSetup = GeneralSetup::with('numberSequence')->find($id);
+        $generalSetup = GeneralSetup::find($id);
         if (!$generalSetup) {
             return response()->json([
                 "message" => "General setup not found"
@@ -113,11 +120,11 @@ class GeneralSetupController extends Controller
     }
 
     function getAll () {
-        $generalSetup = GeneralSetup::cursorPaginate(10, ['id', 'customer', 'customer_contract','customer_invoice']);
+        $generalSetup = GeneralSetup::cursorPaginate(10, ['id', 'customer', 'customer_contract','customer_invoice', 'customer_timesheet', 'employee', 'leave_request', 'leave_adjustment', 'timesheet', 'invent_journal_id', 'invent_trans_id', 'vacancy_no']);
 
         return response()->json([
             "message" => "General setup list",
-            "header" => ["customer", "Customer Contract", "Customer Invoice"],
+            "header" => ["customer", "Customer Contract", "Customer Invoice", "Customer Timesheet", "Employee", "Leave Request", "Leave Adjustment", "Timesheet", "Invent Journal ID", "Invent Trans ID", "Vacancy No"],
             "data" => $generalSetup
         ], 200);
     }

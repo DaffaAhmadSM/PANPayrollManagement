@@ -75,6 +75,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [NumberSequenceController::class, 'update']);
         Route::post('delete/{id}', [NumberSequenceController::class, 'delete']);
         Route::post('search', [NumberSequenceController::class, 'search']);
+        Route::get('generate/{id}', [NumberSequenceController::class, 'generateNumber']);
     });
 
     Route::group(['prefix' => 'unit-of-measure'], function () {

@@ -13,6 +13,9 @@ class NumberSequenceController extends Controller
         $validate = Validator::make($request->all(), [
             "code" => "required|string|unique:number_sequences,code",
             "description" => "required|string",
+            "prefix" => "string|nullable",
+            "starting_number" => "integer|nullable",
+            "ending_number" => "integer|nullable",
         ]);
 
         if ($validate->fails()) {
@@ -21,26 +24,47 @@ class NumberSequenceController extends Controller
             ], 400);
         }
 
-        NumberSequence::create([
-            "code" => $request->code,
-            "description" => $request->description,
-        ], 201);
+        if ($request->starting_number > $request->ending_number) {
+            return response()->json([
+                "message" => "Starting number must be less than ending number"
+            ], 400);
+        }
+
+        if ($request->starting_number) {
+            $request->merge([
+                "current_number" => $request->starting_number
+            ]);
+        }
+
+        $data = NumberSequence::create($request->all(), 201);
 
         return response()->json([
-            "message" => "Number sequence created"
+            "message" => "Number sequence created",
+            "data" => $data
         ], 201);
     }
 
     function update (Request $request, $id) {
         $validate = Validator::make($request->all(), [
-            "code" => "string",
-            "description" => "string",
+            "code" => "string|nullable",
+            "description" => "string|nullable",
+            "prefix" => "string|nullable",
+            "starting_number" => "integer|nullable",
+            "ending_number" => "integer|nullable",
         ]);
 
         if ($validate->fails()) {
             return response()->json([
                 "message" => $validate->errors()->first()
             ], 400);
+        }
+
+        if($request->starting_number && $request->ending_number) {
+            if ($request->starting_number > $request->ending_number) {
+                return response()->json([
+                    "message" => "Starting number must be less than ending number"
+                ], 400);
+            }
         }
 
         $numberSequence = NumberSequence::find($id);
@@ -50,7 +74,7 @@ class NumberSequenceController extends Controller
             ], 404);
         }
 
-        $numberSequence->update($request->all('code', 'description'));
+        $numberSequence->update($request->all());
 
         return response()->json([
             "message" => "Number sequence updated"
@@ -123,6 +147,28 @@ class NumberSequenceController extends Controller
         return response()->json([
             "message" => "Number sequence list",
             "data" => $numberSequences
+        ], 200);
+    }
+
+    function generateNumber ($id) {
+        $numberSequence = NumberSequence::find($id);
+        if (!$numberSequence) {
+            return response()->json([
+                "message" => "Number sequence not found"
+            ], 404);
+        }
+
+        if ($numberSequence->starting_number > $numberSequence->current_number) {
+            $numberSequence->current_number = $numberSequence->starting_number;
+        }
+
+        $digits = strlen((string) $numberSequence->ending_number);
+        $prefix = $numberSequence->prefix ? $numberSequence->prefix : '';
+        $generated_number = $prefix . str_pad($numberSequence->current_number, $digits, '0', STR_PAD_LEFT);
+
+        return response()->json([
+            "message" => "Number generated",
+            "number" => $generated_number
         ], 200);
     }
 }

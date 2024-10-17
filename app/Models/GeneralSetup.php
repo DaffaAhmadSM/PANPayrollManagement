@@ -12,9 +12,4 @@ class GeneralSetup extends Model
     protected $guarded = [
         'id'
     ];
-
-    public function numberSequence()
-    {
-        return $this->belongsTo(NumberSequence::class, 'number_sequence_id');
-    }
 }
