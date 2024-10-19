@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('customer_timesheets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers');
-            $table->string('number');
-            $table->text('description');
-            $table->date('form_date');
+            $table->date('from_date');
             $table->date('to_date');
-            $table->enum('status', ['open', 'posted']);
+            $table->longText('description');
+            $table->string('filename');
+            $table->string('notes')->default('N/A');
+            $table->string('random_string')->index();
+            $table->foreignId('customer_id')->constrained('customers');
+            $table->string("customer_file_name");
+            $table->string("employee_file_name");
+            $table->integer("customer_total_imported")->default(0);
+            $table->integer("employee_total_imported")->default(0);
+            $table->enum('status', ['posted', 'open'])->default('open');
             $table->timestamps();
         });
     }

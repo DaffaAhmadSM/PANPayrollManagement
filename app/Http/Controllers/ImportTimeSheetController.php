@@ -8,6 +8,9 @@ use App\Imports\McdImport;
 use App\Imports\PnsImport;
 use App\Models\CalendarHoliday;
 use App\Models\Customer;
+use App\Models\CustomerTimesheet;
+use App\Models\CustomerTimesheetLine;
+use App\Models\CustomerTimesheetOvertime;
 use App\Models\PnsMcdDiff;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -629,6 +632,7 @@ class ImportTimeSheetController extends Controller
     
             TimeSheetLine::insert($temp_timesheet_lines->toArray());
             TimeSheetOvertime::insert($temp_timesheet_overtime->toArray());
+            $temptimesheet->update(['status' => 'moved']);
             DB::commit();    
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -645,4 +649,56 @@ class ImportTimeSheetController extends Controller
 
     }
 
+    public function moveToCustomerTimesheet($time_sheet_id) {
+        $timesheetid = TimeSheet::find($time_sheet_id);
+        if (!$timesheetid) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Data not found'
+            ],404);
+        }
+        $checkIfdataMoved = CustomerTimesheet::where('random_string', $timesheetid->random_string)->first();
+        if ($checkIfdataMoved) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Data already moved'
+            ],400);
+        }
+        $timesheetLine = TimeSheetLine::where('timesheet_id', $time_sheet_id)->get();
+        $timesheetOvertime = TimeSheetOvertime::where('random_string', $timesheetid->random_string)->get();
+
+        // move to customer timesheet
+
+        $CustomerTimesheet = CustomerTimesheet::create([
+            'from_date' => $timesheetid->from_date,
+            'to_date' => $timesheetid->to_date,
+            'description' => $timesheetid->description,
+            'filename' => $timesheetid->filename,
+            'user_id' => $timesheetid->user_id,
+            'status' => 'open',
+            'customer_id' => $timesheetid->customer_id,
+            'customer_file_name' => $timesheetid->customer_file_name,
+            'employee_file_name' => $timesheetid->employee_file_name,
+            'random_string' => $timesheetid->random_string,
+        ]);
+
+        $timesheetLine->map(function($item) use($CustomerTimesheet) {
+            $item->customer_timesheet_id = $CustomerTimesheet->id;
+            unset($item->timesheet_id);
+            // add new key
+            $item->amount = $item->paid_hours;
+            $item->invoiced = 'no';
+            $item->customer_invoice_id = 'N/A';
+            unset($item->meal_allowance, $item->no, $item->overtime_hours, $item->paid_leave, $item->transport_allowance);
+        });
+
+        CustomerTimesheetLine::insert($timesheetLine->toArray());
+        CustomerTimesheetOvertime::insert($timesheetOvertime->toArray());
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data moved successfully',
+            'data' => $timesheetLine
+        ]);
+    }
 }

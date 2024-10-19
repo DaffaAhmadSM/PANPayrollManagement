@@ -162,6 +162,9 @@ class NumberSequenceController extends Controller
             $numberSequence->current_number = $numberSequence->starting_number;
         }
 
+        $numberSequence->current_number++;
+        $numberSequence->save();
+
         $digits = strlen((string) $numberSequence->ending_number);
         $prefix = $numberSequence->prefix ? $numberSequence->prefix : '';
         $generated_number = $prefix . str_pad($numberSequence->current_number, $digits, '0', STR_PAD_LEFT);

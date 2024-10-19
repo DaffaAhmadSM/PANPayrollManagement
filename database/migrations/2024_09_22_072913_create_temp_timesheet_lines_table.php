@@ -18,6 +18,9 @@ return new class extends Migration
             // $table->foreignId('employee_id')->constrained('employees');
             $table->string('no');
             $table->foreignId('working_hours_id')->constrained('working_hours'); // init from Employee
+            $table->string('Kronos_job_number')->default('N/A');
+            $table->string('parent_id')->default('N/A');
+            $table->string('oracle_job_number')->default('N/A');
             // $table->foreignId('position_id')->constrained('positions');
             $table->date('date')->default(Carbon::parse('3000-06-20'));
             $table->decimal('basic_hours', 8, 2)->default(0); // init from Working Hours

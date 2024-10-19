@@ -480,6 +480,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search-pns/{temp_timesheet_id}', [ImportTimeSheetController::class, 'searchPNS']);
         Route::post('search-mcd/{temp_timesheet_id}', [ImportTimeSheetController::class, 'searchMCD']);
         Route::post('move-to-timesheet/{temp_timesheet_id}', [ImportTimeSheetController::class, 'moveToTimesheet']);
+        Route::post('generate-customer-timesheet/{time_sheet_id}', [ImportTimeSheetController::class, 'moveToCustomerTimesheet']);
     });
 
     Route::group(['prefix' => 'temp-timesheet'], function () {
@@ -513,8 +514,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 Route::post('login', [AuthController::class, 'login']);
-Route::get('validation-error', function () {
+Route::get('auth-err', function () {
     return response()->json([
-        "message" => "Validation error"
+        "message" => "Unauthenticated",
     ], 401);
 })->name('login');

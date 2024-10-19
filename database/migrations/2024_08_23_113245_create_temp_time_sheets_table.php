@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('to_date');
             $table->longText('description');
             $table->string('filename');
-            $table->enum('status', ['draft', 'completed', 'calculated', 'verified'])->default('draft');
+            $table->string('status')->default('draft');
             $table->string('notes')->default('N/A');
             $table->string('random_string')->index();
             $table->foreignId('customer_id')->constrained('customers');
