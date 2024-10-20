@@ -10,4 +10,14 @@ class CustomerTimesheetLine extends Model
     use HasFactory;
 
     protected $guarded = ["id"];
+
+    public function customerTimesheet()
+    {
+        return $this->belongsTo(CustomerTimesheet::class);
+    }
+
+    public function overtimeCustomerTimesheet()
+    {
+        return $this->hasMany(CustomerTimesheetOvertime::class, "custom_id", "custom_id");
+    }
 }

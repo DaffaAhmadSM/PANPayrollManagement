@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class CustomerTimesheetOvertime extends Model
 {
     use HasFactory;
+
+    protected $guarded = ["id"];
+
+    public function multiplicationSetup()
+    {
+        return $this->belongsTo(OvertimeMultiplicationSetup::class, "multiplication_id", "id");
+    }
 }

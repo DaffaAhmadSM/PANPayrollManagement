@@ -37,6 +37,8 @@ use App\Http\Controllers\Calculation\MultiplicationCalculationController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
 use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
 use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
+use App\Http\Controllers\CustomerInvoiceController;
+use App\Http\Controllers\CustomerTimesheetController;
 use App\Http\Controllers\Employee\EmploymentTypeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceController;
@@ -451,6 +453,17 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [LeaveRequestController::class, 'search']);
     });
 
+    Route::group(['prefix' => 'customer-timesheet'], function () {
+        Route::get('list', [CustomerTimesheetController::class, 'list']);
+        Route::get('detail/{customer_timesheet_str}', [CustomerTimesheetController::class, 'detail']);
+        Route::post('search', [CustomerTimesheetController::class, 'search']);
+        Route::post('generate-invoice/{id}', [CustomerTimesheetController::class, 'generateInvoice']);
+    });
+
+    Route::group(['prefix' => 'customer-invoice'], function () {
+        Route::get('list', [CustomerInvoiceController::class, 'list']);
+    });
+
     Route::group(['prefix' => 'leave-history'], function () {
         Route::post('create', [LeaveHistoryController::class, 'create']);
         Route::get('list', [LeaveHistoryController::class, 'list']);
@@ -492,12 +505,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['prefix'=>'timesheet-data'], function () {
         Route::get('list', [TimesheetController::class, 'list']);
-        Route::get('all', [TimesheetController::class, 'getAll']);
         Route::get('detail/{timesheet_str}', [TimesheetController::class, 'detail']);
         Route::post('update/{id}', [TimesheetController::class, 'update']);
         Route::post('delete/{id}', [TimesheetController::class, 'delete']);
         Route::post('search', [TimesheetController::class, 'search']);
     });
+
+    
 
 
     

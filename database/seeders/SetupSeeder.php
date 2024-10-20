@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\WorkingHour;
 use App\Models\NumberSequence;
+use App\Models\WorkingHoursDetail;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -14,17 +15,11 @@ class SetupSeeder extends Seeder
      */
     public function run(): void
     {
-        $working_hour = [
-            [
-                "code" => "6DAYS",
-                "description" => "six working days in one week"
-            ],
-            [
-                "code" => "5DAYS",
-                "description" => "five working days in one week"
-            ],
-        ];
 
+        $wk=WorkingHour::create([
+            "code" => "6DAYS",
+            "description" => "six working days in one week"
+         ]);
         $number_sequence = [
             [
                 "code" => "N/A",
@@ -36,7 +31,39 @@ class SetupSeeder extends Seeder
             ],
         ];
 
-        WorkingHour::insert($working_hour);
+        $working_hour_detail = [
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Monday",
+                "hours" => 8,
+            ],
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Tuesday",
+                "hours" => 8,
+            ],
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Wednesday",
+                "hours" => 8,
+            ],
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Thursday",
+                "hours" => 8,
+            ],
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Friday",
+                "hours" => 7,
+            ],
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Saturday",
+                "hours" => 6,
+            ]
+        ];
         NumberSequence::insert($number_sequence);
+        WorkingHoursDetail::insert($working_hour_detail);
     }
 }
