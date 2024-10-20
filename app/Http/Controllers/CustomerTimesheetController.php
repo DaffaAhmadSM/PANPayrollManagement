@@ -20,6 +20,12 @@ class CustomerTimesheetController extends Controller
         $timesheetLine = CustomerTimesheetLine::where('customer_timesheet_id', $timesheet->id)->get();
         $sequence = GeneralSetup::first();
         $customerContract = CustomerContract::where('customer_id', $timesheet->customer_id)->first();
+        if (!$customerContract) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Customer contract not found'
+            ], 500);
+        }
         $generated_number = NumberSequence::generateNumber($sequence->customer_invoice);
 
         $customerInvoiceLine = [];

@@ -10,7 +10,7 @@ class CustomerInvoiceController extends Controller
 {
     public function list (Request $request) {
         $page = $request->perpage ?? 75;
-        $list = CustomerInvoice::orderBy('id', 'desc')->with('customer')->cursorPaginate($page, ['id', 'customer_id', 'invoice_number', 'document_number', 'from_date', 'to_date', 'po_number', 'status']);
+        $list = CustomerInvoice::orderBy('id', 'desc')->cursorPaginate($page, ['id', 'customer_id', 'invoice_number', 'document_number', 'from_date', 'to_date', 'po_number', 'status']);
         return response()->json([
             'status' => 200,
             'data' => $list,
