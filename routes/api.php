@@ -462,6 +462,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['prefix' => 'customer-invoice'], function () {
         Route::get('list', [CustomerInvoiceController::class, 'list']);
+        Route::get('detail/{customer_invoice_str}', [CustomerInvoiceController::class, 'detail']);
     });
 
     Route::group(['prefix' => 'leave-history'], function () {

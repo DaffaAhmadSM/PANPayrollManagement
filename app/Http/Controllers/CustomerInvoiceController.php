@@ -23,9 +23,15 @@ class CustomerInvoiceController extends Controller
 
     }
 
-    public function detail($invoice_number)
+    public function detail($invoice_str)
     {
-        $invoice = CustomerInvoice::where('invoice_number', $invoice_number)->first();
+        $invoice = CustomerInvoice::where('document_number', $invoice_str)->first();
+        if (!$invoice) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Invoice not found'
+            ]);
+        }
         $page = $request->perpage ?? 70;
         $invoiceLine = CustomerInvoiceLine::where('customer_invoice_id', $invoice->id)->orderBy('id', 'asc')->cursorPaginate($page, ['id', 'description', 'type', 'amount', 'item']);
         return response()->json([

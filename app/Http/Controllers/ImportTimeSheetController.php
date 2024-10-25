@@ -71,7 +71,7 @@ class ImportTimeSheetController extends Controller
     public function importToTempMcd(Request $request) {
 
         $validator = Validator::make($request->all(), [
-            'csv' => 'required|mimes:xlsx,xls,csv',
+            'csv' => 'required|mimes:xlsx,xls,csv,txt',
             'temptimesheet_id' => 'required|integer'
         ]);
 
@@ -87,12 +87,12 @@ class ImportTimeSheetController extends Controller
         $excel = (new McdImport)->toCollection($request->file('csv'));
         // $data = (new HeadingRowImport)->toArray($request->file('file'));
         $collect = collect($excel->first());
-        $totals = $collect->pop();
+        // $totals = $collect->pop();
         $headers = $collect->first()->toArray();
         $rows = $collect->except(0)->values()->toArray();
 
         $flattenedData = [];
-        $dateHeaders = array_slice($headers, 7, -1);  // Extract date headers
+        $dateHeaders = array_slice($headers, 7);  // Extract date headers
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
                 $value = $row[$index + 7] !== null ? $row[$index + 7] : 0;  // Replace null with 0
@@ -133,9 +133,9 @@ class ImportTimeSheetController extends Controller
     }
 
     public function importToTempPns(Request $request) {
-
+        // dd($request->file('csv')->getMimeType(),$request->file('csv')->getClientOriginalExtension() );
         $validator = Validator::make($request->all(), [
-            'csv' => 'required|mimes:xlsx,xls,csv',
+            'csv' => 'required|mimes:xlsx,xls,csv,txt',
             'temptimesheet_id' => 'required|integer'
         ]);
 
@@ -151,24 +151,25 @@ class ImportTimeSheetController extends Controller
         $excel = (new PnsImport)->toCollection($request->file('csv'));
         // $data = (new HeadingRowImport)->toArray($request->file('file'));
         $collect = collect($excel->first());
-        $totals = $collect->pop();
+        // $totals = $collect->pop();
         $headers = $collect->first()->toArray();
         $rows = $collect->except(0)->values()->toArray();
 
         $flattenedData = [];
-        $dateHeaders = array_slice($headers, 7, -1);  // Extract date headers
+        $dateHeaders = array_slice($headers, 2);  // Extract date headers
+        // return $dateHeaders;
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
-                $value = $row[$index + 7] !== null ? $row[$index + 7] : 0;  // Replace null with 0
+                $value = $row[$index + 2] !== null ? $row[$index + 2] : 0;  // Replace null with 0
                 $flattenedData[] = [
                     "temp_time_sheet_id" => $request->temptimesheet_id,
-                    "kronos_job_number" => $row[0] ?? "N/A",
-                    "parent_id" => $row[1] ?? "N/A",
-                    "oracle_job_number" => $row[2] ?? 'N/A',
-                    "employee_name" => $row[3] ?? 'N/A',
-                    "leg_id" => $row[4] ?? 'N/A',
-                    "job_dissipline" => $row[5] ?? 'N/A',
-                    "slo_no" => $row[6] ?? 'N/A',
+                    "kronos_job_number" => "N/A",
+                    "parent_id" => "N/A",
+                    "oracle_job_number" => 'N/A',
+                    "employee_name" => $row[0] ?? 'N/A',
+                    "leg_id" => $row[1] ?? 'N/A',
+                    "job_dissipline" => 'N/A',
+                    "slo_no" => 'N/A',
                     "date" => Carbon::createFromFormat('d/m/Y', $date),
                     "value" => $value
                 ];
@@ -366,19 +367,14 @@ class ImportTimeSheetController extends Controller
     public function listPnsTemp(Request $request, $temp_timesheet_id) {
         $page = $request->perpage ?? 75;
 
-        $pns_data = TempPns::where('temp_time_sheet_id', $temp_timesheet_id)->cursorPaginate($page, ['id', 'kronos_job_number', 'oracle_job_number', 'parent_id', 'employee_name', 'leg_id', 'job_dissipline', 'slo_no', 'value', 'date']);
+        $pns_data = TempPns::where('temp_time_sheet_id', $temp_timesheet_id)->cursorPaginate($page, ['id', 'employee_name', 'leg_id', 'value', 'date']);
 
         return response()->json([
             'status' => 200,
             'data' =>  $pns_data,
             'header' => [
-                'Kronos Job Number',
-                'Oracle Job Number',
-                'Parent ID',
                 'Employee Name',
                 'Leg ID',
-                'Job Dissipline',
-                'SLO No',
                 'Value',
                 'Date'
             ],
