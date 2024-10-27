@@ -572,19 +572,14 @@ class ImportTimeSheetController extends Controller
             ], 400);
         }
 
-        $data = TempPns::where('temp_time_sheet_id', $temp_timesheet_id)->where('employee_name', 'like', '%'.$request->search.'%')->orWhere('date', 'like', '%'.$request->search.'%')->paginate($page, ['id', 'kronos_job_number', 'oracle_job_number', 'parent_id', 'employee_name', 'leg_id', 'job_dissipline', 'slo_no', 'value', 'date']);
+        $data = TempPns::where('temp_time_sheet_id', $temp_timesheet_id)->where('employee_name', 'like', '%'.$request->search.'%')->orWhere('date', 'like', '%'.$request->search.'%')->paginate($page, ['id', 'employee_name', 'leg_id', 'value', 'date']);
 
         return response()->json([
             'status' => 200,
             'data' =>  $data,
             'header' => [
-                'Kronos Job Number',
-                'Oracle Job Number',
-                'Parent ID',
                 'Employee Name',
                 'Leg ID',
-                'Job Dissipline',
-                'SLO No',
                 'Value',
                 'Date'
             ],
@@ -695,6 +690,24 @@ class ImportTimeSheetController extends Controller
             'status' => 200,
             'message' => 'Data moved successfully',
             'data' => $timesheetLine
+        ]);
+    }
+
+    public function cancelTempTimeSheet($temp_timesheet_id) {
+        $temptimesheet = TempTimeSheet::find($temp_timesheet_id);
+
+        if (!$temptimesheet) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Data not found'
+            ],404);
+        }
+
+        $temptimesheet->update(['status' => 'cancelled']);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data cancelled successfully'
         ]);
     }
 }

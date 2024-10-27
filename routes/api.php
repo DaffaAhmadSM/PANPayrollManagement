@@ -495,6 +495,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search-mcd/{temp_timesheet_id}', [ImportTimeSheetController::class, 'searchMCD']);
         Route::post('move-to-timesheet/{temp_timesheet_id}', [ImportTimeSheetController::class, 'moveToTimesheet']);
         Route::post('generate-customer-timesheet/{time_sheet_id}', [ImportTimeSheetController::class, 'moveToCustomerTimesheet']);
+        Route::post('cancel-pns-mcd/{temp_timesheet_id}', [ImportTimeSheetController::class, 'cancelTempTimesheet']);
     });
 
     Route::group(['prefix' => 'temp-timesheet'], function () {
