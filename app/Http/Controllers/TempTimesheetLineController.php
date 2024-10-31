@@ -60,9 +60,9 @@ class TempTimesheetLineController extends Controller
             if(!$working_day) {
                 $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
                 $holiday = $is_holiday ? true : false;
-                $working_day['hours'] = 0;
-                $deduction_hour = 0;
-                $overtime_hour = $item->value;    
+                $working_day['hours'] = $customer->working_hour_default;
+                $deduction_hour = $item->value < $customer->working_hour_default ? $customer->working_hour_default - $item->value : 0;
+                $overtime_hour = $item->value > $customer->working_hour_default ? $item->value - $customer->working_hour_default : 0;    
             }else{
                 $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
                 $holiday = $is_holiday ? true : false;
@@ -74,9 +74,14 @@ class TempTimesheetLineController extends Controller
             if ($overtime_hour > 0) {
                 if ($holiday) {
                     $overtime_multiplication = $overtime_multiplication_all->where('day_type', 'Holiday')->where('day', $day)->where('to_hours', '<=', $overtime_hour)->where('from_hours', '<=', $overtime_hour)->all();
-                    // return $overtime_multiplication;
+                    if (!$overtime_multiplication) {
+                        $overtime_multiplication = $overtime_multiplication_all->where('day_type', 'Holiday')->where('day', "all")->where('to_hours', '<=', $overtime_hour)->where('from_hours', '<=', $overtime_hour)->all();
+                    }
                 }else{
                     $overtime_multiplication = $overtime_multiplication_all->where('day_type', 'Normal')->where('day', $day)->where('to_hours', '<=', $overtime_hour)->where('from_hours', '<=', $overtime_hour)->all();
+                    if (!$overtime_multiplication){
+                        $overtime_multiplication = $overtime_multiplication_all->where('day_type', 'Normal')->where('day', 'all')->where('to_hours', '<=', $overtime_hour)->where('from_hours', '<=', $overtime_hour)->all();
+                    }
                 }
                 $remaining = $overtime_hour;
                 if ($overtime_multiplication) {
@@ -123,7 +128,7 @@ class TempTimesheetLineController extends Controller
                 'deduction_hours' => $deduction_hour,
                 'overtime_hours' => $overtime_hour,
                 'total_overtime_hours' => $total_overtime_hours,
-                'paid_hours' => $working_day['hours'] + $total_overtime_hours,
+                'paid_hours' => $working_day['hours'] + $total_overtime_hours - $deduction_hour,
                 'custom_id' => $temp_timesheet_str . '-' . $count++
             ];
         }

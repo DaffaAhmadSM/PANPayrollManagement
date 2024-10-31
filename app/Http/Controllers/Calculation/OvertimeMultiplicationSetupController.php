@@ -13,7 +13,7 @@ class OvertimeMultiplicationSetupController extends Controller
     function create (Request $request) {
         $validate = Validator::make($request->all(), [
             'day_type' => 'required|in:Normal,Holiday',
-            'day' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
+            'day' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,all',
             'from_hours' => 'required|decimal:0,2',
             'to_hours' => 'required|decimal:0,2',
             'multiplication_calc_id' => 'required|exists:multiplication_calculations,id'

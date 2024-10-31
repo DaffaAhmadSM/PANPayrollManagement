@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('overtime_multiplication_setups', function (Blueprint $table) {
             $table->id();
             $table->enum('day_type', ['Normal', 'Holiday']);    
-            $table->enum('day', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+            $table->enum('day', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'all']);
             $table->decimal('from_hours', 8, 2);
             $table->decimal('to_hours', 8, 2);
             $table->foreignId('multiplication_calc_id')->constrained('multiplication_calculations')->onDelete('cascade');

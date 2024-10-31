@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('number_sequence_id')->constrained('number_sequences');
             $table->foreignId('working_hour_id')->constrained('working_hours');
+            $table->integer('working_hour_default')->default(1);
             $table->string('no');
             $table->string('name');
             $table->string('address');

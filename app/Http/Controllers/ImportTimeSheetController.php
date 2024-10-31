@@ -69,6 +69,8 @@ class ImportTimeSheetController extends Controller
     }
 
     public function importToTempMcd(Request $request) {
+        set_time_limit(300);
+        ini_set('memory_limit', '2048M');
 
         $validator = Validator::make($request->all(), [
             'csv' => 'required|mimes:xlsx,xls,csv,txt',
@@ -105,7 +107,7 @@ class ImportTimeSheetController extends Controller
                     "leg_id" => $row[4] ?? 'N/A',
                     "job_dissipline" => $row[5] ?? 'N/A',
                     "slo_no" => $row[6] ?? 'N/A',
-                    "date" => Carbon::createFromFormat('d/m/Y', $date),
+                    "date" => Carbon::createFromFormat('m/d/Y', $date),
                     "value" => $value
                 ];
             }
@@ -133,6 +135,8 @@ class ImportTimeSheetController extends Controller
     }
 
     public function importToTempPns(Request $request) {
+        set_time_limit(300);
+        ini_set('memory_limit', '2048M');
         // dd($request->file('csv')->getMimeType(),$request->file('csv')->getClientOriginalExtension() );
         $validator = Validator::make($request->all(), [
             'csv' => 'required|mimes:xlsx,xls,csv,txt',
@@ -170,7 +174,7 @@ class ImportTimeSheetController extends Controller
                     "leg_id" => $row[1] ?? 'N/A',
                     "job_dissipline" => 'N/A',
                     "slo_no" => 'N/A',
-                    "date" => Carbon::createFromFormat('d/m/Y', $date),
+                    "date" => Carbon::createFromFormat('m/d/Y', $date),
                     "value" => $value
                 ];
             }

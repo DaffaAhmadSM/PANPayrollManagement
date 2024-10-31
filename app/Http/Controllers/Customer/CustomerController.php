@@ -38,8 +38,9 @@ class CustomerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // no from number sequence
-            'no' => 'required|string|unique:customers,no',
+            'no' => 'required|string',
             'name' => 'required|string',
+            'working_hour_default' => 'integer',
             'email' => 'required|email',
             'fax' => 'required|string',
             'phone' => 'required|string',
@@ -95,9 +96,10 @@ class CustomerController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'no' => 'string|unique:customers,no',
+            'no' => 'string',
             'name' => 'string',
             'email' => 'email',
+            'working_hour_default' => 'integer',
             'fax' => 'string',
             'phone' => 'string',
             'address' => 'string',
