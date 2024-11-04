@@ -4,29 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\TempMcd;
 use App\Models\TempPns;
+use App\Models\Customer;
+use App\Models\TimeSheet;
 use App\Imports\McdImport;
 use App\Imports\PnsImport;
-use App\Models\CalendarHoliday;
-use App\Models\Customer;
-use App\Models\CustomerTimesheet;
-use App\Models\CustomerTimesheetLine;
-use App\Models\CustomerTimesheetOvertime;
+use App\Jobs\ImportPnsMCD;
 use App\Models\PnsMcdDiff;
+use App\Models\WorkingHour;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\TempTimeSheet;
-use App\Models\TimeSheet;
-use App\Models\WorkingHour;
-use App\Models\WorkingHoursDetail;
+use App\Models\TimeSheetLine;
 use Illuminate\Support\Carbon;
+use App\Models\CalendarHoliday;
+use App\Models\CustomerTimesheet;
+use App\Models\tempTimesheetLine;
+use App\Models\TimeSheetOvertime;
+use App\Models\WorkingHoursDetail;
 use Illuminate\Support\Facades\DB;
+use App\Models\CustomerTimesheetLine;
+use App\Models\tempTimeSheetOvertime;
 use Maatwebsite\Excel\HeadingRowImport;
+use App\Models\CustomerTimesheetOvertime;
 use Illuminate\Support\Facades\Validator;
 use App\Models\OvertimeMultiplicationSetup;
-use App\Models\tempTimesheetLine;
-use App\Models\tempTimeSheetOvertime;
-use App\Models\TimeSheetLine;
-use App\Models\TimeSheetOvertime;
+use Illuminate\Support\Facades\Storage;
 
 class ImportTimeSheetController extends Controller
 {
@@ -55,7 +57,7 @@ class ImportTimeSheetController extends Controller
             'description' => $request->description,
             'filename' => $request->filename,
             'user_id' => auth()->user()->id,
-            'status' => 'draft',
+            'status' => 'importing ...',
             'customer_id' => $request->customer_id,
             'customer_file_name' => 'N/A',
             'employee_file_name' => 'N/A',
@@ -293,6 +295,43 @@ class ImportTimeSheetController extends Controller
             'status' => 200,
             'data' => $differeces
         ]);
+    }
+
+    public function importPnsMcdQueues(Request $request){
+        $validator = Validator::make($request->all(), [
+            'mcd_csv' => 'required|mimes:xlsx,xls,csv,txt',
+            'pns_csv' => 'mimes:xlsx,xls,csv,txt',
+            'temptimesheet_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        $pnsFile = Storage::disk('local')->putFileAs('pns/', $request->file('pns_csv'), Str::random(3) . strtotime("now") . $request->file('pns_csv')->getClientOriginalName());
+        $mcdFile = Storage::disk('local')->putFileAs('mcd/', $request->file('mcd_csv'), Str::random(3) . strtotime("now") . $request->file('mcd_csv')->getClientOriginalName());
+        $temptimesheet = TempTimeSheet::find($request->temptimesheet_id);
+        if (!$temptimesheet) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Data not found'
+            ]);
+        }
+
+        if($request->file('pns_csv') == null) {
+            ImportPnsMCD::dispatch($mcdFile, null, $temptimesheet);
+        }else{
+            ImportPnsMCD::dispatch($mcdFile, $pnsFile, $temptimesheet);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data importing ...'
+        ]);
+        
     }
 
     public function list (Request $request) {
