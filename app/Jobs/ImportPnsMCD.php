@@ -162,6 +162,14 @@ class ImportPnsMCD implements ShouldQueue
         $this->temptimesheet->update([
             'status' => 'failed',
         ]);
+        // delete the files
+        Storage::disk('local')->delete($this->mcdFileLocation);
+        Storage::disk('local')->delete($this->pnsFileLocation);
+
+        // delete the data from the database
+        TempMcd::where('temp_time_sheet_id', $this->temptimesheet->id)->delete();
+        TempPns::where('temp_time_sheet_id', $this->temptimesheet->id)->delete();
+        
         Log::error($exception);
         $this->delete();
     }
