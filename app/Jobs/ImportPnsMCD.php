@@ -3,21 +3,22 @@
 namespace App\Jobs;
 
 use App\Models\TempMcd;
+use App\Models\TempPns;
 use App\Imports\McdImport;
 use App\Imports\PnsImport;
-use App\Models\TempPns;
+use App\Models\PnsMcdDiff;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 use PhpParser\Node\Expr\Cast\String_;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ImportPnsMCD implements ShouldQueue
 {
@@ -155,6 +156,81 @@ class ImportPnsMCD implements ShouldQueue
             'customer_file_name' => $this->mcdFileLocation,
             'employee_file_name' => $this->pnsFileLocation
         ]);
+
+        // compare the data
+        try {
+        $pns = TempPns::where('temp_time_sheet_id', $this->temptimesheet->id)->get();
+        $mcd = TempMcd::where('temp_time_sheet_id', $this->temptimesheet->id)->get();
+
+        $sumPNS = $pns->groupBy(function($item) {
+            return $item['employee_name'] . '_' . $item['date'];
+        })->map(function($items) {
+            return [
+                'employee_name' => $items->first()->employee_name,
+                'date' => $items->first()->date,
+                'ids' => $items->pluck('id'),               
+                'value' => $items->sum('value')
+            ];;
+        });
+
+        $sumMCD = $mcd->groupBy(function($item) {
+            return $item['employee_name'] . '_' . $item['date'];
+        })->map(function($items) {
+            return [
+                'temp_time_sheet_id' => $this->temptimesheet->id,
+                'employee_name' => $items->first()->employee_name,
+                'date' => $items->first()->date,
+                'ids' => $items->pluck('id'),
+                'value' => $items->sum('value')
+            ];;
+        });
+
+        $differeces = [];
+        // PnsMcdDiff::create([
+        //     'temp_time_sheet_id' => $this->temptimesheet->id,
+        //     'employee_name' => $item1['employee_name'],
+        //     'date' => $item1['date'],
+        //     'mcd_ids' => $item2['ids'],
+        //     'pns_ids' => $item1['ids'],
+        //     'mcd_value' => $item2['value'],
+        //     'pns_value' => $item1['value']
+        // ]);
+
+        foreach ($sumPNS as $key => $item1) {
+            if($sumMCD->has($key)) {
+               $item2 = $sumMCD[$key];
+               if ($item1['value'] != $item2['value']) {
+                    $differeces[] = [
+                        'temp_time_sheet_id' => $this->temptimesheet->id,
+                        'employee_name' => $item1['employee_name'],
+                        'date' => $item1['date'],
+                        'mcd_ids' => $item2['ids'],
+                        'pns_ids' => $item1['ids'],
+                        'mcd_value' => $item2['value'],
+                        'pns_value' => $item1['value']
+                    ];
+                }
+            }else{
+                $differeces[] = [
+                    'temp_time_sheet_id' => $this->temptimesheet->id,
+                    'employee_name' => $item1['employee_name'],
+                    'date' => $item1['date'],
+                    'mcd_ids' => "[]",
+                    'pns_ids' => $item1['ids'],
+                    'mcd_value' => 0,
+                    'pns_value' => $item1['value']
+                ];
+            }
+        }
+
+        PnsMcdDiff::insert($differeces);
+        } catch (\Throwable $th) {
+            $this->failed($th);
+        }catch (\Exception $e) {
+            $this->failed($e);
+        }catch (\Error $e) {
+            $this->failed($e);
+        }
     }
 
     public function failed($exception)
