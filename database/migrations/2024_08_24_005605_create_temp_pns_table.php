@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('slo_no');
             $table->date('date');
             $table->integer('value');
+            $table->integer('rate')->default(1);
             $table->timestamps();
         });
     }

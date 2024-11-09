@@ -15,6 +15,12 @@ return new class extends Migration
             $table->string('employee_name')->nullable();
             $table->string('job_dissipline')->nullable();
             $table->string('leg_id')->nullable();
+            $table->string('slo_no')->nullable();
+            $table->dropColumn('slo_no');
+            $table->integer('rate')->default(1);
+            $table->string('amount_idr')->nullable();
+            $table->string('eti_bonus')->nullable();
+            $table->string('amount_total')->nullable();
         });
     }
 

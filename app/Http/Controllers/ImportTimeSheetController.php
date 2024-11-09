@@ -96,10 +96,10 @@ class ImportTimeSheetController extends Controller
         $rows = $collect->except(0)->values()->toArray();
 
         $flattenedData = [];
-        $dateHeaders = array_slice($headers, 7);  // Extract date headers
+        $dateHeaders = array_slice($headers, 8);  // Extract date headers
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
-                $value = $row[$index + 7] !== null ? $row[$index + 7] : 0;  // Replace null with 0
+                $value = $row[$index + 8] !== null ? $row[$index + 8] : 0;  // Replace null with 0
                 $flattenedData[] = [
                     "temp_time_sheet_id" => $request->temptimesheet_id,
                     "kronos_job_number" => $row[0] ?? "N/A",
@@ -110,6 +110,7 @@ class ImportTimeSheetController extends Controller
                     "job_dissipline" => $row[5] ?? 'N/A',
                     "slo_no" => $row[6] ?? 'N/A',
                     "date" => Carbon::createFromFormat('m/d/Y', $date),
+                    "rate" => $row[7] ?? 1,
                     "value" => $value
                 ];
             }
@@ -162,11 +163,11 @@ class ImportTimeSheetController extends Controller
         $rows = $collect->except(0)->values()->toArray();
 
         $flattenedData = [];
-        $dateHeaders = array_slice($headers, 2);  // Extract date headers
+        $dateHeaders = array_slice($headers, 3);  // Extract date headers
         // return $dateHeaders;
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
-                $value = $row[$index + 2] !== null ? $row[$index + 2] : 0;  // Replace null with 0
+                $value = $row[$index + 3] !== null ? $row[$index + 3] : 0;  // Replace null with 0
                 $flattenedData[] = [
                     "temp_time_sheet_id" => $request->temptimesheet_id,
                     "kronos_job_number" => "N/A",
@@ -176,6 +177,7 @@ class ImportTimeSheetController extends Controller
                     "leg_id" => $row[1] ?? 'N/A',
                     "job_dissipline" => 'N/A',
                     "slo_no" => 'N/A',
+                    "rate" => $row[2] ?? 1,
                     "date" => Carbon::createFromFormat('m/d/Y', $date),
                     "value" => $value
                 ];

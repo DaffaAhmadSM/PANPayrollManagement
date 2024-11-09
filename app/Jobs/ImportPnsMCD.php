@@ -44,11 +44,6 @@ class ImportPnsMCD implements ShouldQueue
      */
     public function handle(): void{
 
-        Log::info('MCD File location: ' . $this->mcdFileLocation);
-        Log::info('PNS File location: ' . $this->pnsFileLocation);
-
-        
-
         // import csv data to storage
 
         $this->temptimesheet->update([
@@ -64,10 +59,10 @@ class ImportPnsMCD implements ShouldQueue
             $mcdHeaders = $collectMcd->first()->toArray();
             $mcdRows = $collectMcd->except(0)->values()->toArray();
             $flattenedDataMcd = [];
-            $dateHeadersMcd = array_slice($mcdHeaders, 7);  // Extract date headers
+            $dateHeadersMcd = array_slice($mcdHeaders, 8);  // Extract date headers
             foreach ($mcdRows as $row) {
                 foreach ($dateHeadersMcd as $index => $date) {
-                    $value = $row[$index + 7] !== null ? $row[$index + 7] : 0;  // Replace null with 0
+                    $value = $row[$index + 8] !== null ? $row[$index + 8] : 0;  // Replace null with 0
                     $flattenedDataMcd[] = [
                         "temp_time_sheet_id" => $this->temptimesheet->id,
                         "kronos_job_number" => $row[0] ?? "N/A",
@@ -77,6 +72,7 @@ class ImportPnsMCD implements ShouldQueue
                         "leg_id" => $row[4] ?? 'N/A',
                         "job_dissipline" => $row[5] ?? 'N/A',
                         "slo_no" => $row[6] ?? 'N/A',
+                        "rate" => $row[7] ?? 1,
                         "date" => Carbon::createFromFormat('d/m/Y', $date),
                         "value" => $value
                     ];
@@ -111,10 +107,10 @@ class ImportPnsMCD implements ShouldQueue
                 $pnsHeaders = $collectPns->first()->toArray();
                 $pnsRows = $collectPns->except(0)->values()->toArray();
                 $flattenedDataPns = [];
-                $dateHeadersPns = array_slice($pnsHeaders, 2);
+                $dateHeadersPns = array_slice($pnsHeaders, 3);
                 foreach ($pnsRows as $row) {
                     foreach ($dateHeadersPns as $index => $date) {
-                        $value = $row[$index + 2] !== null ? $row[$index + 2] : 0;  // Replace null with 0
+                        $value = $row[$index + 3] !== null ? $row[$index + 3] : 0;  // Replace null with 0
                         $flattenedDataPns[] = [
                             "temp_time_sheet_id" => $this->temptimesheet->id,
                             "kronos_job_number" => "N/A",
@@ -124,6 +120,7 @@ class ImportPnsMCD implements ShouldQueue
                             "leg_id" => $row[1] ?? 'N/A',
                             "job_dissipline" => 'N/A',
                             "slo_no" => 'N/A',
+                            "rate" => $row[2] ?? 1,
                             "date" => Carbon::createFromFormat('d/m/Y', $date),
                             "value" => $value
                         ];
