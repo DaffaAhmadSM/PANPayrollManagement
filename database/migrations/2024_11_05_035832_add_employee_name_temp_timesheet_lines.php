@@ -15,8 +15,7 @@ return new class extends Migration
             $table->string('employee_name')->nullable();
             $table->string('job_dissipline')->nullable();
             $table->string('leg_id')->nullable();
-            $table->string('slo_no')->nullable();
-            $table->dropColumn('slo_no');
+            $table->string('slo_no')->nullable();  
             $table->integer('rate')->default(1);
             
         });
@@ -31,6 +30,7 @@ return new class extends Migration
             $table->dropColumn('employee_name');
             $table->dropColumn('job_dissipline');
             $table->dropColumn('leg_id');
+            $table->dropColumn('slo_no');
         });
     }
 };
