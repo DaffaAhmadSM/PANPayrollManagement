@@ -62,7 +62,7 @@ class ImportPnsMCD implements ShouldQueue
             $dateHeadersMcd = array_slice($mcdHeaders, 8);  // Extract date headers
             foreach ($mcdRows as $row) {
                 foreach ($dateHeadersMcd as $index => $date) {
-                    $value = $row[$index + 8] !== null ? $row[$index + 8] : 0;  // Replace null with 0
+                    (double)$value = (double)$row[$index + 8] !== null ? (double)$row[$index + 8] : 0;  // Replace null with 0
                     $flattenedDataMcd[] = [
                         "temp_time_sheet_id" => $this->temptimesheet->id,
                         "kronos_job_number" => $row[0] ?? "N/A",

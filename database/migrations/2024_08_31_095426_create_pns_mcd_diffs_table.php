@@ -20,8 +20,8 @@ return new class extends Migration
             $table->date('date');
             $table->jsonb('mcd_ids');
             $table->jsonb('pns_ids');
-            $table->integer('mcd_value');
-            $table->integer('pns_value');
+            $table->decimal('mcd_value', 8, 2)->default(0);
+            $table->decimal('pns_value', 8, 2)->default(0);
             $table->timestamps();
         });
     }

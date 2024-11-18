@@ -99,7 +99,7 @@ class ImportTimeSheetController extends Controller
         $dateHeaders = array_slice($headers, 8);  // Extract date headers
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
-                $value = $row[$index + 8] !== null ? $row[$index + 8] : 0;  // Replace null with 0
+                (double)$value = $row[$index + 8] !== null ? $row[$index + 8] : 0;  // Replace null with 0
                 $flattenedData[] = [
                     "temp_time_sheet_id" => $request->temptimesheet_id,
                     "kronos_job_number" => $row[0] ?? "N/A",
@@ -167,7 +167,7 @@ class ImportTimeSheetController extends Controller
         // return $dateHeaders;
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
-                $value = $row[$index + 3] !== null ? $row[$index + 3] : 0;  // Replace null with 0
+                (double)$value = $row[$index + 3] !== null ? $row[$index + 3] : 0;  // Replace null with 0
                 $flattenedData[] = [
                     "temp_time_sheet_id" => $request->temptimesheet_id,
                     "kronos_job_number" => "N/A",
