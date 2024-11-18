@@ -15,4 +15,9 @@ class tempTimeSheetOvertime extends Model
     {
         return $this->belongsTo(OvertimeMultiplicationSetup::class, "multiplication_id", "id");
     }
+
+    public function tempTimesheetLine()
+    {
+        return $this->belongsTo(tempTimesheetLine::class, "custom_id", "custom_id");
+    }
 }

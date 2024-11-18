@@ -35,32 +35,32 @@ class SetupSeeder extends Seeder
             [
                 "working_hours_id" => $wk->id,
                 "day" => "Monday",
-                "hours" => 8,
-            ],
-            [
-                "working_hours_id" => $wk->id,
-                "day" => "Tuesday",
-                "hours" => 8,
-            ],
-            [
-                "working_hours_id" => $wk->id,
-                "day" => "Wednesday",
-                "hours" => 8,
-            ],
-            [
-                "working_hours_id" => $wk->id,
-                "day" => "Thursday",
-                "hours" => 8,
-            ],
-            [
-                "working_hours_id" => $wk->id,
-                "day" => "Friday",
                 "hours" => 7,
             ],
             [
                 "working_hours_id" => $wk->id,
+                "day" => "Tuesday",
+                "hours" => 7,
+            ],
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Wednesday",
+                "hours" => 7,
+            ],
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Thursday",
+                "hours" => 7,
+            ],
+            [
+                "working_hours_id" => $wk->id,
+                "day" => "Friday",
+                "hours" => 5,
+            ],
+            [
+                "working_hours_id" => $wk->id,
                 "day" => "Saturday",
-                "hours" => 6,
+                "hours" => 7,
             ]
         ];
         NumberSequence::insert($number_sequence);

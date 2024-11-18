@@ -1,0 +1,70 @@
+<table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th style="border: 2px solid black;" rowspan="2" align="center" valign="center" width="25">Kronos Job Charge</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center" valign="center" width="25">Parent ID</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center" valign="center" width="25">Oracle Job Charge</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center" valign="center" width="25">Employee Name</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center" valign="center" width="25">Emp.</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center" valign="center" width="25">Classification</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center" valign="center" width="25">Service Order No.</th>
+            @foreach ($days as $day)
+                @if ($day['is_holiday'])
+                    <th colspan="3" align="center" valign="center" style="background-color: #f29a6e; border: 2px solid black;">{{$day['date']}}</th>
+                @else
+                    <th style="border: 2px solid black;" colspan="3" align="center" valign="center">{{$day['date']}}</th>
+                @endif
+            @endforeach
+        </tr>
+        <tr>
+            @foreach ($days as $day)
+                @if ($day['is_holiday'])
+                    <th style="border: 2px solid black;">2</th>
+                    <th style="border: 2px solid black;">3</th>
+                    <th style="border: 2px solid black;">4</th>
+                @else
+                    <th style="border: 2px solid black;">1</th>
+                    <th style="border: 2px solid black;">2</th>
+                    <th style="border: 2px solid black;">3</th>
+                @endif
+            @endforeach
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($output as $data_output)
+            @foreach ($data_output as $row)
+                <tr>
+                    <td>{{$row['Kronos_job_number']}}</td>
+                    <td>{{$row['parent_id']}}</td>
+                    <td>{{$row['oracle_job_number']}}</td>
+                    <td>{{$row['employee_name']}}</td>
+                    <td>{{$row['emp']}}</td>
+                    <td>{{$row['classification']}}</td>
+                    <td>{{$row['slo_no']}}</td>
+                    @foreach ($row['dates'] as $overtime)
+                        @for ($i = 0; $i < 3; $i++)
+                            @if (!$overtime['is_holiday'] && $i == 0)
+                                <td>{{$overtime['basic_hours']}}</td>
+                                @continue
+                            @endif
+                            @if (!$overtime['is_holiday'])
+                                @if (isset($overtime['overtime_timesheet'][$i-1]))
+                                    <td>{{$overtime['overtime_timesheet'][$i-1]}}</td>
+                                @else
+                                    <td></td>
+                                @endif
+                            @else
+                                @if (isset($overtime['overtime_timesheet'][$i]))
+                                    <td>{{$overtime['overtime_timesheet'][$i]}}</td>
+                                @else
+                                    <td></td>
+                                @endif
+                            @endif
+                        @endfor
+                    @endforeach
+                </tr>
+                
+            @endforeach
+        @endforeach
+    </tbody>
+</table>

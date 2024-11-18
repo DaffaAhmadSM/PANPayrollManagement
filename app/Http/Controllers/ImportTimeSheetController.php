@@ -300,6 +300,7 @@ class ImportTimeSheetController extends Controller
     }
 
     public function importPnsMcdQueues(Request $request){
+        ini_set('memory_limit', '2048M');
         $validator = Validator::make($request->all(), [
             'mcd_csv' => 'required|mimes:xlsx,xls,csv,txt',
             'pns_csv' => 'mimes:xlsx,xls,csv,txt',
