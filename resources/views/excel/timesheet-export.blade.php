@@ -44,17 +44,22 @@
                     @foreach ($row['dates'] as $overtime)
                         @for ($i = 0; $i < 3; $i++)
                             @if (!$overtime['is_holiday'] && $i == 0)
-                                <td>{{$overtime['basic_hours']}}</td>
-                                @continue
+                                @if ($overtime['basic_hours'] > 0)
+                                    <td>{{$overtime['basic_hours']}}</td>
+                                    
+                                @else
+                                    <td></td>
+                                @endif
+                            @continue
                             @endif
                             @if (!$overtime['is_holiday'])
-                                @if (isset($overtime['overtime_timesheet'][$i-1]))
+                                @if (isset($overtime['overtime_timesheet'][$i-1]) && $overtime['overtime_timesheet'][$i-1] != 0)
                                     <td>{{$overtime['overtime_timesheet'][$i-1]}}</td>
                                 @else
                                     <td></td>
                                 @endif
                             @else
-                                @if (isset($overtime['overtime_timesheet'][$i]))
+                                @if (isset($overtime['overtime_timesheet'][$i]) && $overtime['overtime_timesheet'][$i] != 0)
                                     <td>{{$overtime['overtime_timesheet'][$i]}}</td>
                                 @else
                                     <td></td>

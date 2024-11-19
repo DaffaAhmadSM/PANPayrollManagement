@@ -61,21 +61,16 @@ class TempTimesheetLineController extends Controller
             $date = Carbon::parse($item->date);
             $day = $date->dayName;
             $working_day = $working_hour_detail->firstWhere("day", $day);
-            if(!$working_day) {
-                $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
-                if ($date->dayOfWeek == 0) {
-                    $is_holiday = true;
-                }
-                $holiday = $is_holiday ? true : false;
+            $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
+            if ($date->dayOfWeek == 0) {
+                $is_holiday = true;
+            }
+            $holiday = $is_holiday ? true : false;
+            if(!$working_day || $holiday) {
                 $working_day['hours'] = 0;
                 $deduction_hour = 0;
                 $overtime_hour = $item->value;
             }else{
-                $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
-                if($date->dayOfWeek == 0) {
-                    $is_holiday = true;
-                }
-                $holiday = $is_holiday ? true : false;
                 $deduction_hour = $item->value < $working_day->hours ? $working_day->hours - $item->value : 0;
                 $overtime_hour = $item->value > $working_day->hours ? $item->value - $working_day->hours : 0;    
             }
