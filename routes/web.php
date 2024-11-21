@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Str;
 use App\Exports\TempTimesheetExport;
-use GuzzleHttp\Psr7\Request;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    (new TempTimesheetExport(2))->store('timesheet.xlsx', 'local');
+    $rand = Str::random(10);
+    $strtime = strtotime('now');
+    (new TempTimesheetExport(2))->store($rand . $strtime . '.xlsx', 'local');
 });

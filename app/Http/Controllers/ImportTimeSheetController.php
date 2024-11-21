@@ -492,7 +492,7 @@ class ImportTimeSheetController extends Controller
             'pns_mcd_diff_id' => 'required|integer',
             'side' => 'required|in:pns,mcd',
             'id' => 'required|integer',
-            'value' => 'required|integer',
+            'value' => 'required|decimal:0,5'
         ]);
 
         if ($validator->fails()) {

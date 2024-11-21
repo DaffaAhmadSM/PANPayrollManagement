@@ -15,6 +15,12 @@
                     <th style="border: 2px solid black;" colspan="3" align="center" valign="center">{{$day['date']}}</th>
                 @endif
             @endforeach
+            <th style="border: 2px solid black;" rowspan="2" align="center">Actual Hours</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center">Invoice Hours</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center">Rate</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center">Amount (IDR)</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center">ETI Bonus</th>
+            <th style="border: 2px solid black;" rowspan="2" align="center">Total Amount</th>
         </tr>
         <tr>
             @foreach ($days as $day)
@@ -24,15 +30,15 @@
                     <th style="border: 2px solid black;">4</th>
                 @else
                     <th style="border: 2px solid black;">1</th>
+                    <th style="border: 2px solid black;">1.5</th>
                     <th style="border: 2px solid black;">2</th>
-                    <th style="border: 2px solid black;">3</th>
                 @endif
             @endforeach
         </tr>
     </thead>
     <tbody>
         @foreach ($output as $data_output)
-            @foreach ($data_output as $row)
+            @foreach ($data_output["data"] as $row)
                 <tr>
                     <td>{{$row['Kronos_job_number']}}</td>
                     <td>{{$row['parent_id']}}</td>
@@ -67,9 +73,25 @@
                             @endif
                         @endfor
                     @endforeach
+                    <td>{{$row['actual_hours_total']}}</td>
+                    <td>{{$row['paid_hours_total']}}</td>
+                    <td>{{$row['rate']}}</td>
+                    <td>{{$row['rate'] * $row['paid_hours_total']}}</td>
                 </tr>
                 
             @endforeach
+            <tr>
+                @for ($i = 0; $i < 7; $i++)
+                    <td style="background-color: #d5d5d5;"></td>
+                @endfor
+                @foreach ($data_output["total_overtime_hours"] as $total)
+                <td style="background-color: #d5d5d5;"></td>
+                <td style="background-color: #d5d5d5;"></td>
+                <td style="background-color: #d5d5d5;">{{$total}}</td>
+                @endforeach
+                <td style="background-color: #d5d5d5;">{{$data_output["actual_hours_total"]}}</td>
+                <td style="background-color: #d5d5d5;">{{$data_output["paid_hours_total"]}}</td>
+            </tr>
         @endforeach
     </tbody>
 </table>

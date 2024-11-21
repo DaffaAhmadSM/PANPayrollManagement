@@ -61,18 +61,19 @@ class TempTimesheetLineController extends Controller
             $date = Carbon::parse($item->date);
             $day = $date->dayName;
             $working_day = $working_hour_detail->firstWhere("day", $day);
+            $working_day_hours = $working_day ? $working_day->hours : 0;
             $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
             if ($date->dayOfWeek == 0) {
                 $is_holiday = true;
             }
             $holiday = $is_holiday ? true : false;
             if(!$working_day || $holiday) {
-                $working_day['hours'] = 0;
+                $working_day_hours = 0;
                 $deduction_hour = 0;
                 $overtime_hour = $item->value;
             }else{
-                $deduction_hour = $item->value < $working_day->hours ? $working_day->hours - $item->value : 0;
-                $overtime_hour = $item->value > $working_day->hours ? $item->value - $working_day->hours : 0;    
+                $deduction_hour = $item->value < $working_day_hours ? $working_day_hours - $item->value : 0;
+                $overtime_hour = $item->value > $working_day_hours ? $item->value - $working_day_hours : 0;    
             }
            $total_overtime_hours = 0;
             
@@ -145,12 +146,12 @@ class TempTimesheetLineController extends Controller
                 'leg_id' => $item->leg_id,
                 'slo_no' => $item->slo_no,
                 'date' => $item->date,
-                'basic_hours' => $working_day['hours'],
+                'basic_hours' => $working_day_hours,
                 'actual_hours' => $item->value,
                 'deduction_hours' => $deduction_hour,
                 'overtime_hours' => $overtime_hour,
                 'total_overtime_hours' => $total_overtime_hours,
-                'paid_hours' => $working_day['hours'] + $total_overtime_hours - $deduction_hour,
+                'paid_hours' => $item->value + $total_overtime_hours,
                 'custom_id' => $temp_timesheet_str . '-' . $count++
             ];
         }
@@ -270,59 +271,83 @@ class TempTimesheetLineController extends Controller
             ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours']);
         $output = $data->groupBy(['employee_name', 'oracle_job_number', 'Kronos_job_number'])
         ->map(function ($byKronos) use (&$holiday) {
-            return $byKronos->map(function ($byOracle) use (&$holiday) {
-                return $byOracle->map(function ($byEmployee) use (&$holiday) {
-                    $emp = $byEmployee->first();
+            $total = [
+                'paid_hours_total' => 0,
+                'actual_hours_total' => 0,
+                'total_overtime_perdate' => [],
+            ];
 
-                    $result = [
-                        'emp' => $emp['no'],
-                        'classification' => $emp['job_dissipline'],
-                        'Kronos_job_number' => $emp["Kronos_job_number"],
-                        'parent_id' => $emp["parent_id"],
-                        'employee_name' => $emp["employee_name"],
-                        'slo_no' => $emp["slo_no"],
-                        'oracle_job_number' => $emp["oracle_job_number"],
-                        'rate' => $emp["rate"],
-                        'dates' => [],
-                        'paid_hours_total' => 0,
-                        'actual_hours_total' => 0,
-                        'overtime_hours_total' => 0
-                    ];
-                    $byEmployee->each(function ($employeeData) use (&$result, &$holiday) {
-                        $is_holiday = false;
-                        // if day is sunday then is_holiday = true
-                        $date = Carbon::parse($employeeData["date"]);
-                        $result['paid_hours_total'] += (double) $employeeData["paid_hours"];
-                        $result['actual_hours_total'] += (double) $employeeData["actual_hours"];
-                        if ($date->dayOfWeek == 0) {
-                            $is_holiday = true;
-                        }
-                        // check if day is holiday
-                        $holidayCheck = $holiday->firstWhere('date', $date->format('Y-m-d'));
-                        if ($holidayCheck) {
-                            $is_holiday = true;
-                        }
-                        // filter $employeeData->OvertimeTimesheet and get only hours value
-                        $employeeData->overtime_timesheet = $employeeData->OvertimeTimesheet->map(function ($overtime) use (&$result) {
-                            $result['overtime_hours_total'] += (double) $overtime->total_hours;
-                            return $overtime->hours;
-                            
-                        });
+            $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total) {
+                return $byOracle->map(function ($byEmployee) use (&$holiday, &$total) {
+                        $emp = $byEmployee->first();
 
-                        // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
-                        $date = $date->format('m-d-Y');
-                            $result['dates'][$date] = [
-                                'overtime_timesheet' => $employeeData->overtime_timesheet,
-                                'is_holiday' => $is_holiday,
-                                'basic_hours' => (double)$employeeData['basic_hours']- (double)$employeeData['deduction_hours'],
-                            ];
-                    });
+                        $result = [
+                            'emp' => $emp['no'],
+                            'classification' => $emp['job_dissipline'],
+                            'Kronos_job_number' => $emp["Kronos_job_number"],
+                            'parent_id' => $emp["parent_id"],
+                            'employee_name' => $emp["employee_name"],
+                            'slo_no' => $emp["slo_no"],
+                            'oracle_job_number' => $emp["oracle_job_number"],
+                            'rate' => $emp["rate"],
+                            'dates' => [],
+                            'paid_hours_total' => 0,
+                            'actual_hours_total' => 0,
+                            'overtime_hours_total' => 0
+                        ];
+                        $byEmployee->each(function ($employeeData) use (&$result, &$holiday, &$total) {
+                            $is_holiday = false;
+                            // if day is sunday then is_holiday = true
+                            $date = Carbon::parse($employeeData["date"]);
+                            $result['paid_hours_total'] += (double) $employeeData["paid_hours"];
+                            $result['actual_hours_total'] += (double) $employeeData["actual_hours"];
+                            if ($date->dayOfWeek == 0) {
+                                $is_holiday = true;
+                            }
+                            // check if day is holiday
+                            $holidayCheck = $holiday->firstWhere('date', $date->format('Y-m-d'));
+                            if ($holidayCheck) {
+                                $is_holiday = true;
+                            }
+                            // filter $employeeData->OvertimeTimesheet and get only hours value
+                            $employeeData->overtime_timesheet = $employeeData->OvertimeTimesheet->map(function ($overtime) use (&$result) {
+                                $result['overtime_hours_total'] += (double) $overtime->total_hours;
+                                return $overtime->hours;
+                                
+                            });
 
-                    return $result;
+                            // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
+                            $date = $date->format('m-d-Y');
+                                $result['dates'][$date] = [
+                                    'overtime_timesheet' => $employeeData->overtime_timesheet,
+                                    'is_holiday' => $is_holiday,
+                                    'basic_hours' => (double)$employeeData['basic_hours']- (double)$employeeData['deduction_hours'],
+                                ];
+                                //sum total overtime hours per date
+                                $sum = $employeeData->overtime_timesheet->sum(function ($overtime) {
+                                    return $overtime;
+                                }) + (double)$employeeData["basic_hours"];
+                                if (isset($total['total_overtime_perdate'][$date])) {
+                                    $total['total_overtime_perdate'][$date] += $sum;
+                                } else {
+                                    $total['total_overtime_perdate'][$date] = $sum;
+                                }
+
+                            });
+                        $total['paid_hours_total'] += (double) $result['paid_hours_total'];
+                        $total['actual_hours_total'] += (double) $result['actual_hours_total'];
+
+                        return $result;
+                    })->collapse();
                 });
-            })->collapse();
+            return [
+                "data" => $data,
+                // total overtime hours from data
+                "total_overtime_hours" => $total['total_overtime_perdate'],
+                "paid_hours_total" => $total['paid_hours_total'],
+                "actual_hours_total" => $total['actual_hours_total'],
+            ];
         })->sortKeys();
-
 
         // return view('excel.timesheet-export', compact('output', 'days'));
 
