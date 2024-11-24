@@ -52,7 +52,7 @@
                             @if (!$overtime['is_holiday'] && $i == 0)
                                 @if ($overtime['basic_hours'] > 0)
                                     <td>{{$overtime['basic_hours']}}</td>
-                                    
+
                                 @else
                                     <td></td>
                                 @endif
@@ -75,10 +75,17 @@
                     @endforeach
                     <td>{{$row['actual_hours_total']}}</td>
                     <td>{{$row['paid_hours_total']}}</td>
-                    <td>{{$row['rate']}}</td>
-                    <td>{{$row['rate'] * $row['paid_hours_total']}}</td>
+                    <td>44787</td>
+                    @php
+                        $amount = 44787 * $row['paid_hours_total'];
+                        $eti_bonus = $amount * ($temptimesheet["eti_bonus_percentage"]/100);
+                        $total = $amount + $eti_bonus;
+                    @endphp
+                    <td>{{$amount}}</td>
+                    <td>{{$eti_bonus}}</td>
+                    <td>{{$total}}</td>
                 </tr>
-                
+
             @endforeach
             <tr>
                 @for ($i = 0; $i < 7; $i++)

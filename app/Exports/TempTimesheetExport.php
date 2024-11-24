@@ -146,6 +146,6 @@ class TempTimesheetExport implements FromView, ShouldQueue
                 "actual_hours_total" => $total['actual_hours_total'],
             ];
         })->sortKeys();
-        return view('excel.timesheet-export', compact('days', 'output'));
+        return view('excel.timesheet-export', compact('days', 'output', 'temptimesheet'));
     }
 }
