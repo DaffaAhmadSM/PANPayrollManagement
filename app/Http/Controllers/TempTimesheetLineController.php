@@ -17,12 +17,13 @@ use Illuminate\Support\Facades\DB;
 use App\Models\tempTimeSheetOvertime;
 use Illuminate\Support\Facades\Validator;
 use App\Models\OvertimeMultiplicationSetup;
+use App\Models\PositionRate;
 
 class TempTimesheetLineController extends Controller
 {
     public function calculateOvertime(Request $request, $temp_timesheet_str)
     {
-        set_time_limit(200);
+        set_time_limit(300);
         $temptimesheet = TempTimeSheet::where('random_string', $temp_timesheet_str)->first();
 
         if (!$temptimesheet) {
@@ -51,11 +52,13 @@ class TempTimesheetLineController extends Controller
         $working_hour_detail = WorkingHoursDetail::where('working_hours_id', $customer->working_hour_id)->get();
         $calendar_holiday = CalendarHoliday::whereBetween('date', [$temptimesheet->from_date, $temptimesheet->to_date])->get();
         $overtime_multiplication_all = OvertimeMultiplicationSetup::all();
+        $position_rate = PositionRate::all();
 
         try {
         DB::beginTransaction();
         $processedMcd = [];
         $timesheet_overtime = [];
+        $create_position_rate = [];
         $count = 0;
         foreach ($mcd as $item) {
             $date = Carbon::parse($item->date);
@@ -132,6 +135,42 @@ class TempTimesheetLineController extends Controller
                 }
             }
 
+            $is_position_rate = $position_rate->firstWhere('position', $item->job_dissipline);
+            (double)$rate = 0;
+            if($item->rate > 1) {
+                // create new position rate
+                $create = [
+                    'position' => $item->job_dissipline,
+                    'from_date' => $temptimesheet->from_date,
+                    'to_date' => $temptimesheet->to_date,
+                    'type' => 'daily',
+                    'rate' => $item->rate,
+                    'meal_per_day' => 0
+                ];
+
+                $create_position_rate[] = $create;
+                $rate = $item->rate;
+                // add to position rate
+                $position_rate->push($create);
+            }else{
+                if ($is_position_rate) {
+                    $rate = $is_position_rate['rate'];
+                }else{
+                    $create = [
+                        'position' => $item->job_dissipline,
+                        'from_date' => $temptimesheet->from_date,
+                        'to_date' => $temptimesheet->to_date,
+                        'type' => 'daily',
+                        'rate' => $item->rate,
+                        'meal_per_day' => 0
+                    ];
+
+                    $create_position_rate[] = $create;
+                    $rate = $item->rate;
+                    // add to position rate
+                    $position_rate->push($create);
+                }
+            }
             // return $timesheet_overtime;
 
             $processedMcd[] = [
@@ -152,6 +191,7 @@ class TempTimesheetLineController extends Controller
                 'overtime_hours' => $overtime_hour,
                 'total_overtime_hours' => $total_overtime_hours,
                 'paid_hours' => $item->value + $total_overtime_hours,
+                'rate' => $rate,
                 'custom_id' => $temp_timesheet_str . '-' . $count++
             ];
         }
@@ -164,6 +204,9 @@ class TempTimesheetLineController extends Controller
         foreach ($timehseet_overtime_chunk as $key => $value) {
             tempTimeSheetOvertime::insert($value);
         }
+
+        PositionRate::insert($create_position_rate);
+
         $temptimesheet->update(['status' => 'calculated']);
         DB::commit();
         } catch (\Throwable $th) {

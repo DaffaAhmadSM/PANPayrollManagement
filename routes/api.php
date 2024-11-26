@@ -45,6 +45,7 @@ use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceCont
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProjectExperienceController;
 use App\Http\Controllers\ImportTimeSheetController;
 use App\Http\Controllers\LeaveHistoryController;
+use App\Http\Controllers\PositionRateController;
 use App\Http\Controllers\TempTimesheetLineController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\WorkingHour\WorkingHoursDetailController;
@@ -212,7 +213,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [CustomerContractController::class, 'detail']);
         Route::post('search', [CustomerContractController::class, 'search']);
     });
-
+    
     Route::group(['prefix' => 'customer-calendar-holiday'], function () {
         Route::post('create', [CustomerCalendarHolidayController::class, 'create']);
         Route::post('update/{id}', [CustomerCalendarHolidayController::class, 'update']);
@@ -298,14 +299,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [PositionControler::class, 'search']);
     });
     
-    Route::group(['prefix' => 'position'], function () {
-        Route::post('create', [PositionControler::class, 'create']);
-        Route::get('list', [PositionControler::class, 'list']);
-        Route::get('all', [PositionControler::class, 'getAll']);
-        Route::get('detail/{id}', [PositionControler::class, 'detail']);
-        Route::post('update/{id}', [PositionControler::class, 'update']);
-        Route::post('delete/{id}', [PositionControler::class, 'delete']);
-        Route::post('search', [PositionControler::class, 'search']);
+    Route::group(['prefix' => 'position-rate'], function () {
+        Route::post('create', [PositionRateController::class, 'create']);
+        Route::get('list', [PositionRateController::class, 'list']);
+        Route::get('all', [PositionRateController::class, 'getAll']);
+        Route::get('detail/{id}', [PositionRateController::class, 'detail']);
+        Route::post('update/{id}', [PositionRateController::class, 'update']);
+        Route::post('delete/{id}', [PositionRateController::class, 'delete']);
+        Route::post('search', [PositionRateController::class, 'search']);
     });
 
     Route::group(['prefix' => 'grade'], function () {

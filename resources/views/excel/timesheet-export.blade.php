@@ -75,9 +75,9 @@
                     @endforeach
                     <td>{{$row['actual_hours_total']}}</td>
                     <td>{{$row['paid_hours_total']}}</td>
-                    <td>44787</td>
+                    <td>{{$row['rate']}}</td>
                     @php
-                        $amount = 44787 * $row['paid_hours_total'];
+                        $amount = $row['rate'] * $row['paid_hours_total'];
                         $eti_bonus = $amount * ($temptimesheet["eti_bonus_percentage"]/100);
                         $total = $amount + $eti_bonus;
                     @endphp

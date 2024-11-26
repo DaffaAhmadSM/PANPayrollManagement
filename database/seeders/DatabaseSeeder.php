@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SetupSeeder::class);
         $this->call(multiplicationSetup::class);
         $this->call(EducationLevelSeeder::class);
+        $this->call(PositionRateSeeder::class);
 
         GeneralSetup::create([
             'customer' => 'N/A',

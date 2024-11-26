@@ -14,11 +14,11 @@ return new class extends Migration
     {
         Schema::create('position_rates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('position_id')->constrained('positions');
+            $table->string('position')->default('N/A')->index();
             $table->date('from_date')->default(Carbon::parse('3000-06-20'));
             $table->date('to_date')->default(Carbon::parse('3000-06-20'));
             $table->enum('type', ['hourly', 'daily'])->default('daily');
-            $table->decimal('rate', 8, 2)->default(0);
+            $table->decimal('rate', 12, 2)->default(0);
             $table->decimal('meal_per_day', 8, 2)->default(0);
             $table->timestamps();
         });
