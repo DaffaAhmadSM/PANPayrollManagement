@@ -7,5 +7,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     $rand = Str::random(10);
     $strtime = strtotime('now');
-    (new TempTimesheetExport(2))->store($rand . $strtime . '.xlsx', 'local');
+    (new TempTimesheetExport(5))->store($rand . $strtime . '.xlsx', 'local');
 });

@@ -5,8 +5,9 @@ namespace App\Imports;
 use App\Models\TempMcd;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class McdImport implements ToModel
+class McdImport implements ToModel, WithChunkReading
 {
     use Importable;
     /**
@@ -19,5 +20,10 @@ class McdImport implements ToModel
         return new TempMcd([
             //
         ]);
+    }
+
+    public function chunkSize(): int
+    {
+        return 500;
     }
 }

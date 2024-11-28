@@ -7,17 +7,19 @@ use DatePeriod;
 use DateInterval;
 use App\Models\TempMcd;
 use App\Models\Customer;
+use App\Models\EmployeeRate;
+use App\Models\PositionRate;
 use Illuminate\Http\Request;
 use App\Models\TempTimeSheet;
 use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
 use App\Models\tempTimesheetLine;
+use App\Models\EmployeeRateDetail;
 use App\Models\WorkingHoursDetail;
 use Illuminate\Support\Facades\DB;
 use App\Models\tempTimeSheetOvertime;
 use Illuminate\Support\Facades\Validator;
 use App\Models\OvertimeMultiplicationSetup;
-use App\Models\PositionRate;
 
 class TempTimesheetLineController extends Controller
 {
@@ -52,7 +54,7 @@ class TempTimesheetLineController extends Controller
         $working_hour_detail = WorkingHoursDetail::where('working_hours_id', $customer->working_hour_id)->get();
         $calendar_holiday = CalendarHoliday::whereBetween('date', [$temptimesheet->from_date, $temptimesheet->to_date])->get();
         $overtime_multiplication_all = OvertimeMultiplicationSetup::all();
-        $position_rate = PositionRate::all();
+        // $position_rate = PositionRate::all();
 
         try {
         DB::beginTransaction();
@@ -135,42 +137,41 @@ class TempTimesheetLineController extends Controller
                 }
             }
 
-            $is_position_rate = $position_rate->firstWhere('position', $item->job_dissipline);
-            (double)$rate = 0;
-            if($item->rate > 1) {
-                // create new position rate
-                $create = [
-                    'position' => $item->job_dissipline,
-                    'from_date' => $temptimesheet->from_date,
-                    'to_date' => $temptimesheet->to_date,
-                    'type' => 'daily',
-                    'rate' => $item->rate,
-                    'meal_per_day' => 0
-                ];
+            // $is_position_rate = $position_rate->firstWhere('position', $item->job_dissipline);
+            // if($item->rate > 1) {
+            //     // create new position rate
+            //     $create = [
+            //         'position' => $item->job_dissipline,
+            //         'from_date' => $temptimesheet->from_date,
+            //         'to_date' => $temptimesheet->to_date,
+            //         'type' => 'daily',
+            //         'rate' => $item->rate,
+            //         'meal_per_day' => 0
+            //     ];
 
-                $create_position_rate[] = $create;
-                $rate = $item->rate;
-                // add to position rate
-                $position_rate->push($create);
-            }else{
-                if ($is_position_rate) {
-                    $rate = $is_position_rate['rate'];
-                }else{
-                    $create = [
-                        'position' => $item->job_dissipline,
-                        'from_date' => $temptimesheet->from_date,
-                        'to_date' => $temptimesheet->to_date,
-                        'type' => 'daily',
-                        'rate' => $item->rate,
-                        'meal_per_day' => 0
-                    ];
+            //     $create_position_rate[] = $create;
+            //     $rate = $item->rate;
+            //     // add to position rate
+            //     $position_rate->push($create);
+            // }else{
+            //     if ($is_position_rate) {
+            //         $rate = $is_position_rate['rate'];
+            //     }else{
+            //         $create = [
+            //             'position' => $item->job_dissipline,
+            //             'from_date' => $temptimesheet->from_date,
+            //             'to_date' => $temptimesheet->to_date,
+            //             'type' => 'daily',
+            //             'rate' => $item->rate,
+            //             'meal_per_day' => 0
+            //         ];
 
-                    $create_position_rate[] = $create;
-                    $rate = $item->rate;
-                    // add to position rate
-                    $position_rate->push($create);
-                }
-            }
+            //         $create_position_rate[] = $create;
+            //         $rate = $item->rate;
+            //         // add to position rate
+            //         $position_rate->push($create);
+            //     }
+            // }
             // return $timesheet_overtime;
 
             $processedMcd[] = [
@@ -190,8 +191,8 @@ class TempTimesheetLineController extends Controller
                 'deduction_hours' => $deduction_hour,
                 'overtime_hours' => $overtime_hour,
                 'total_overtime_hours' => $total_overtime_hours,
-                'paid_hours' => $item->value + $total_overtime_hours,
-                'rate' => $rate,
+                'paid_hours' => $item->value + $total_overtime_hours - $overtime_hour,
+                'rate' => $item->rate,
                 'custom_id' => $temp_timesheet_str . '-' . $count++
             ];
         }
@@ -286,6 +287,9 @@ class TempTimesheetLineController extends Controller
             new DateInterval('P1D'),
             (new DateTime($endDate))->modify('+1 day')
         );
+        $employee_rates = EmployeeRate::where('random_string', $temptimesheet->rate_id)->first();
+        $employee_rate_details = EmployeeRateDetail::where('employee_rate_id', $employee_rates->id)->get();
+        unset($employee_rates);
 
         $days = [];
         foreach ($period as $date) {
@@ -312,18 +316,18 @@ class TempTimesheetLineController extends Controller
         $data = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
             ->with('overtimeTimesheet')
             ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours']);
-        $output = $data->groupBy(['employee_name', 'oracle_job_number', 'Kronos_job_number'])
-        ->map(function ($byKronos) use (&$holiday) {
+        $output = $data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_numbers'])
+        ->map(function ($byKronos) use (&$holiday, &$employee_rate_details) {
+           
             $total = [
                 'paid_hours_total' => 0,
                 'actual_hours_total' => 0,
                 'total_overtime_perdate' => [],
             ];
-
-            $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total) {
-                return $byOracle->map(function ($byEmployee) use (&$holiday, &$total) {
+            $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total, &$employee_rate_details) {
+                return $byOracle->map(function ($byEmployee) use (&$holiday, &$total, &$employee_rate_details) {
                         $emp = $byEmployee->first();
-
+                        $emp_rates = $employee_rate_details->where('emp_id', $emp['no'])->first();
                         $result = [
                             'emp' => $emp['no'],
                             'classification' => $emp['job_dissipline'],
@@ -332,7 +336,7 @@ class TempTimesheetLineController extends Controller
                             'employee_name' => $emp["employee_name"],
                             'slo_no' => $emp["slo_no"],
                             'oracle_job_number' => $emp["oracle_job_number"],
-                            'rate' => $emp["rate"],
+                            'rate' => $emp_rates->rate ?? 1,
                             'dates' => [],
                             'paid_hours_total' => 0,
                             'actual_hours_total' => 0,
@@ -364,21 +368,23 @@ class TempTimesheetLineController extends Controller
                                 $result['dates'][$date] = [
                                     'overtime_timesheet' => $employeeData->overtime_timesheet,
                                     'is_holiday' => $is_holiday,
-                                    'basic_hours' => (double)$employeeData['basic_hours']- (double)$employeeData['deduction_hours'],
+                                    'basic_hours' => (double)$employeeData['basic_hours'] - (double)$employeeData['deduction_hours'],
                                 ];
                                 //sum total overtime hours per date
                                 $sum = $employeeData->overtime_timesheet->sum(function ($overtime) {
                                     return $overtime;
-                                }) + (double)$employeeData["basic_hours"];
+                                }) + (double)$employeeData["basic_hours"] - (double)$employeeData["deduction_hours"];
                                 if (isset($total['total_overtime_perdate'][$date])) {
                                     $total['total_overtime_perdate'][$date] += $sum;
                                 } else {
                                     $total['total_overtime_perdate'][$date] = $sum;
                                 }
 
+                                
                             });
-                        $total['paid_hours_total'] += (double) $result['paid_hours_total'];
-                        $total['actual_hours_total'] += (double) $result['actual_hours_total'];
+
+                            $total['paid_hours_total'] += (double) $result['paid_hours_total'];
+                            $total['actual_hours_total'] += (double) $result['actual_hours_total'];
 
                         return $result;
                     })->collapse();

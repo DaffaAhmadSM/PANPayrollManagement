@@ -41,6 +41,8 @@ class ImportTimeSheetController extends Controller
             'description' => 'required|string',
             'filename' => 'required|string',
             'customer_id' => 'required|integer|exists:customers,id',
+            'eti_bonus_percentage' => 'required|decimal:0,5',
+            'rate_id' => 'string'
         ]);
 
         if ($validator->fails()) {
@@ -61,6 +63,8 @@ class ImportTimeSheetController extends Controller
             'customer_id' => $request->customer_id,
             'customer_file_name' => 'N/A',
             'employee_file_name' => 'N/A',
+            'eti_bonus_percentage' => $request->eti_bonus_percentage,
+            'rate_id' => $request->rate_id
         ]);
 
         return response()->json([

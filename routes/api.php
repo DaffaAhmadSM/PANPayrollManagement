@@ -43,6 +43,7 @@ use App\Http\Controllers\Employee\EmploymentTypeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProjectExperienceController;
+use App\Http\Controllers\EmployeeRateController;
 use App\Http\Controllers\ImportTimeSheetController;
 use App\Http\Controllers\LeaveHistoryController;
 use App\Http\Controllers\PositionRateController;
@@ -516,9 +517,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [TimesheetController::class, 'search']);
     });
 
-    
-
-
+    Route::group(['prefix'=>'employee-rates'], function () {
+        Route::post('import-excel', [EmployeeRateController::class, 'importRatesFromExcel']);
+        Route::get('all', [EmployeeRateController::class, 'all']);
+        Route::get('list', [EmployeeRateController::class, 'list']);
+    });
     
 
     Route::post('logout', [AuthController::class, 'logout']);

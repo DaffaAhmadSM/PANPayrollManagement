@@ -56,8 +56,11 @@ class ImportPnsMCD implements ShouldQueue
             $dataMcd = Excel::toCollection(new McdImport, $this->mcdFileLocation, 'local', \Maatwebsite\Excel\Excel::CSV);
             $collectMcd = collect($dataMcd->first());
         // $totals = $collect->pop();
+        // remove dataMcd from memory
+            unset($dataMcd);
             $mcdHeaders = $collectMcd->first()->toArray();
             $mcdRows = $collectMcd->except(0)->values()->toArray();
+            unset($collectMcd);
             $flattenedDataMcd = [];
             $dateHeadersMcd = array_slice($mcdHeaders, 8);  // Extract date headers
             foreach ($mcdRows as $row) {
@@ -78,6 +81,9 @@ class ImportPnsMCD implements ShouldQueue
                     ];
                 }
             }
+            unset($mcdRows);
+            unset($mcdHeaders);
+            unset($dateHeadersMcd);
             $chunk = array_chunk($flattenedDataMcd, 1000);
             foreach ($chunk as $data) {
                TempMcd::insert($data);
@@ -104,8 +110,11 @@ class ImportPnsMCD implements ShouldQueue
                 DB::beginTransaction();
                 $dataPns = Excel::toCollection(new PnsImport, $this->pnsFileLocation, 'local', \Maatwebsite\Excel\Excel::CSV);
                 $collectPns = collect($dataPns->first());
+                // remove dataPns from memory
+                unset($dataPns);
                 $pnsHeaders = $collectPns->first()->toArray();
                 $pnsRows = $collectPns->except(0)->values()->toArray();
+                unset($collectPns);
                 $flattenedDataPns = [];
                 $dateHeadersPns = array_slice($pnsHeaders, 3);
                 foreach ($pnsRows as $row) {
@@ -126,6 +135,10 @@ class ImportPnsMCD implements ShouldQueue
                         ];
                     }
                 }
+
+                unset($pnsRows);
+                unset($pnsHeaders);
+                unset($dateHeadersPns);
                 $chunk = array_chunk($flattenedDataPns, 1000);
                 foreach ($chunk as $data) {
                     TempPns::insert($data);

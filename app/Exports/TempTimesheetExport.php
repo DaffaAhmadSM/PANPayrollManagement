@@ -8,11 +8,14 @@ use DateInterval;
 use App\Models\TempTimeSheet;
 use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
+use App\Models\EmployeeRate;
+use App\Models\EmployeeRateDetail;
 use App\Models\tempTimesheetLine;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class TempTimesheetExport implements FromView, ShouldQueue
@@ -40,6 +43,10 @@ class TempTimesheetExport implements FromView, ShouldQueue
             (new DateTime($endDate))->modify('+1 day')
         );
 
+        $employee_rates = EmployeeRate::where('random_string', $temptimesheet->rate_id)->first();
+        $employee_rate_details = EmployeeRateDetail::where('employee_rate_id', $employee_rates->id)->get();
+        unset($employee_rates);
+
         $days = [];
         foreach ($period as $date) {
             $isholiday = false;
@@ -66,17 +73,17 @@ class TempTimesheetExport implements FromView, ShouldQueue
             ->with('overtimeTimesheet')
             ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours']);
         $output = $data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_numbers'])
-        ->map(function ($byKronos) use (&$holiday) {
+        ->map(function ($byKronos) use (&$holiday, &$employee_rate_details) {
            
             $total = [
                 'paid_hours_total' => 0,
                 'actual_hours_total' => 0,
                 'total_overtime_perdate' => [],
             ];
-            $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total) {
-                return $byOracle->map(function ($byEmployee) use (&$holiday, &$total) {
+            $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total, &$employee_rate_details) {
+                return $byOracle->map(function ($byEmployee) use (&$holiday, &$total, &$employee_rate_details) {
                         $emp = $byEmployee->first();
-
+                        $emp_rates = $employee_rate_details->where('emp_id', $emp['no'])->first();
                         $result = [
                             'emp' => $emp['no'],
                             'classification' => $emp['job_dissipline'],
@@ -85,7 +92,7 @@ class TempTimesheetExport implements FromView, ShouldQueue
                             'employee_name' => $emp["employee_name"],
                             'slo_no' => $emp["slo_no"],
                             'oracle_job_number' => $emp["oracle_job_number"],
-                            'rate' => $emp["rate"],
+                            'rate' => $emp_rates->rate ?? 1,
                             'dates' => [],
                             'paid_hours_total' => 0,
                             'actual_hours_total' => 0,

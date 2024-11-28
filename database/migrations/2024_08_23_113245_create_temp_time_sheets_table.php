@@ -27,6 +27,7 @@ return new class extends Migration
             $table->integer("customer_total_imported")->default(0);
             $table->integer("employee_total_imported")->default(0);
             $table->double("eti_bonus_percentage", 8, 2)->default(0);
+            $table->string("rate_id")->nullable();
             $table->timestamps();
         });
     }
