@@ -5,20 +5,19 @@ namespace App\Exports;
 use DateTime;
 use DatePeriod;
 use DateInterval;
+use App\Models\EmployeeRate;
 use App\Models\TempTimeSheet;
 use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
-use App\Models\EmployeeRate;
-use App\Models\EmployeeRateDetail;
 use App\Models\tempTimesheetLine;
+use App\Models\EmployeeRateDetail;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
-class TempTimesheetExport implements FromView, ShouldQueue
+class tempTimesheetExportMI implements FromView, ShouldQueue
 {
     use Exportable;
     /**
@@ -71,8 +70,19 @@ class TempTimesheetExport implements FromView, ShouldQueue
         // Build the query
         $data = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
             ->with('overtimeTimesheet')
-            ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours']);
-        $output = $data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number'])
+            ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
+        
+        // return $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name']);
+
+        // foreach ($data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number']) as $byKronos){
+        //     foreach ($byKronos as $byOracle){
+        //         foreach($byOracle as $byEmployee){
+        //             return $byEmployee;
+        //         }
+        //     }
+        // }
+
+        $output = $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name'])
         ->map(function ($byKronos) use (&$holiday, &$employee_rate_details) {
            
             $total = [
@@ -143,8 +153,8 @@ class TempTimesheetExport implements FromView, ShouldQueue
                             $total['actual_hours_total'] += (double) $result['actual_hours_total'];
 
                         return $result;
-                    })->collapse();
-                });
+                    });
+                })->collapse();
             return [
                 "data" => $data,
                 // total overtime hours from data
@@ -152,7 +162,7 @@ class TempTimesheetExport implements FromView, ShouldQueue
                 "paid_hours_total" => $total['paid_hours_total'],
                 "actual_hours_total" => $total['actual_hours_total'],
             ];
-        })->sortKeys();
+        });
         return view('excel.timesheet-export', compact('days', 'output', 'temptimesheet'));
     }
 }

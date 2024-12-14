@@ -25,7 +25,6 @@ class TempTimesheetLineController extends Controller
 {
     public function calculateOvertime(Request $request, $temp_timesheet_str)
     {
-        set_time_limit(300);
         $temptimesheet = TempTimeSheet::where('random_string', $temp_timesheet_str)->first();
 
         if (!$temptimesheet) {
@@ -76,7 +75,6 @@ class TempTimesheetLineController extends Controller
                 $is_holiday = true;
             }
             $holiday = $is_holiday ? true : false;
-            $total_actual_hour = 0;
             $deduction_hour = 0;
             if(!$working_day || $holiday) {
                 $working_day_hours = 0;
@@ -118,37 +116,10 @@ class TempTimesheetLineController extends Controller
                     $overtime_hour = $item->value > $working_day_hours ? $item->value - $working_day_hours : 0;
                 }
                 $total_overtime_hours = 0;
-                $total_actual_hour += $item->value;
                 // return $total_actual_hour;
 
                 
                 if ($overtime_hour > 0) {
-                    // if ($holiday) {
-                    //     $overtime_multiplication = $overtime_multiplication_all
-                    //     ->where('day_type', 'Holiday')->where('day', $day)
-                    //     // ->where('from_hours', '<=', $overtime_hour)
-                    //     ->all();
-                    //     if (!$overtime_multiplication) {
-                    //         $overtime_multiplication = $overtime_multiplication_all
-                    //         ->where('day_type', 'Holiday')
-                    //         ->where('day', "all")
-                    //         // ->where('from_hours', '<=', $overtime_hour)
-                    //         ->all();
-                    //     }
-                    // }else{
-                    //     $overtime_multiplication = $overtime_multiplication_all
-                    //     ->where('day_type', 'Normal')
-                    //     ->where('day', $day)
-                    //     // ->where('from_hours', '<=', $overtime_hour)
-                    //     ->all();
-                    //     if (!$overtime_multiplication){
-                    //         $overtime_multiplication = $overtime_multiplication_all
-                    //         ->where('day_type', 'Normal')
-                    //         ->where('day', 'all')
-                    //         // ->where('from_hours', '<=', $overtime_hour)
-                    //         ->all();
-                    //     }
-                    // }
                     $remaining = $overtime_hour;
                     if ($overtime_multiplication) {
                         foreach ($overtime_multiplication as $multiplication) {
@@ -190,44 +161,6 @@ class TempTimesheetLineController extends Controller
                         $total_overtime_hours = $overtime_hour;
                     }
                 }
-    
-                // $is_position_rate = $position_rate->firstWhere('position', $item->job_dissipline);
-                // if($item->rate > 1) {
-                //     // create new position rate
-                //     $create = [
-                //         'position' => $item->job_dissipline,
-                //         'from_date' => $temptimesheet->from_date,
-                //         'to_date' => $temptimesheet->to_date,
-                //         'type' => 'daily',
-                //         'rate' => $item->rate,
-                //         'meal_per_day' => 0
-                //     ];
-    
-                //     $create_position_rate[] = $create;
-                //     $rate = $item->rate;
-                //     // add to position rate
-                //     $position_rate->push($create);
-                // }else{
-                //     if ($is_position_rate) {
-                //         $rate = $is_position_rate['rate'];
-                //     }else{
-                //         $create = [
-                //             'position' => $item->job_dissipline,
-                //             'from_date' => $temptimesheet->from_date,
-                //             'to_date' => $temptimesheet->to_date,
-                //             'type' => 'daily',
-                //             'rate' => $item->rate,
-                //             'meal_per_day' => 0
-                //         ];
-    
-                //         $create_position_rate[] = $create;
-                //         $rate = $item->rate;
-                //         // add to position rate
-                //         $position_rate->push($create);
-                //     }
-                // }
-                // return $timesheet_overtime;
-    
                 $processedMcd[] = [
                     'temp_timesheet_id' => $temptimesheet->id,
                     'no' => $item->leg_id,
