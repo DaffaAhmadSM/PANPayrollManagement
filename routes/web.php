@@ -19,10 +19,10 @@ Route::get('/', function () {
 
 // Route::get('test', function () {
 //     ini_set('max_execution_time', 300);
-//     $temptimesheet = TempTimeSheet::find(4);
+//     $temptimesheet = TempTimeSheet::find(8);
 //         $startDate = Carbon::parse($temptimesheet->from_date);
 //         $endDate = Carbon::parse($temptimesheet->to_date);
-//         $tempTimesheetId = 4; // Replace 'x' with the actual temp_timesheet_id
+//         $tempTimesheetId = 8; // Replace 'x' with the actual temp_timesheet_id
 //         $holiday = CalendarHoliday::whereBetween('date', [$startDate, $endDate])->get();
 //         $period = new DatePeriod(
 //             new DateTime($startDate),
@@ -67,6 +67,8 @@ Route::get('/', function () {
 //         //         }
 //         //     }
 //         // }
+
+//         // return $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name']);
 
 //         $output = $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name'])
 //         ->map(function ($byKronos) use (&$holiday, &$employee_rate_details) {
@@ -117,11 +119,13 @@ Route::get('/', function () {
 
 //                             // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
 //                             $date = $date->format('m-d-Y');
+//                             if (!isset($result['dates'][$date])) {
 //                                 $result['dates'][$date] = [
 //                                     'overtime_timesheet' => $employeeData->overtime_timesheet,
 //                                     'is_holiday' => $is_holiday,
 //                                     'basic_hours' => (double)$employeeData['basic_hours'] - (double)$employeeData['deduction_hours'],
 //                                 ];
+//                             }
 //                                 //sum total overtime hours per date
 //                                 $sum = $employeeData->overtime_timesheet->sum(function ($overtime) {
 //                                     return $overtime;
@@ -139,7 +143,7 @@ Route::get('/', function () {
 //                             $total['actual_hours_total'] += (double) $result['actual_hours_total'];
 
 //                         return $result;
-//                     });
+//                     })->values();
 //                 })->collapse();
 //             return [
 //                 "data" => $data,
@@ -149,6 +153,7 @@ Route::get('/', function () {
 //                 "actual_hours_total" => $total['actual_hours_total'],
 //             ];
 //         });
+//         return $output;
 //         return view('excel.timesheet-export', compact('days', 'output', 'temptimesheet'));
 // });
 

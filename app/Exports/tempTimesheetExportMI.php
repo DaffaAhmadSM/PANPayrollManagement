@@ -153,7 +153,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue
                             $total['actual_hours_total'] += (double) $result['actual_hours_total'];
 
                         return $result;
-                    });
+                    })->values();
                 })->collapse();
             return [
                 "data" => $data,

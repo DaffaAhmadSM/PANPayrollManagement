@@ -213,8 +213,6 @@ class TempTimesheetLineController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Data calculated successfully',
-            'data' => $processedMcd,
-            'timesheet_overtime' => $timesheet_overtime
         ]);
     }
 

@@ -143,8 +143,8 @@ class TempTimesheetExport implements FromView, ShouldQueue
                             $total['actual_hours_total'] += (double) $result['actual_hours_total'];
 
                         return $result;
-                    })->collapse();
-                });
+                    })->values();
+                })->collapse();
             return [
                 "data" => $data,
                 // total overtime hours from data
