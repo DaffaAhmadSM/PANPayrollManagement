@@ -23,8 +23,11 @@ use App\Models\OvertimeMultiplicationSetup;
 
 class TempTimesheetLineController extends Controller
 {
+
     public function calculateOvertime(Request $request, $temp_timesheet_str)
     {
+        ini_set('max_execution_time', 300);
+
         $temptimesheet = TempTimeSheet::where('random_string', $temp_timesheet_str)->first();
 
         if (!$temptimesheet) {
@@ -51,7 +54,7 @@ class TempTimesheetLineController extends Controller
         $mcd = TempMcd::where('temp_time_sheet_id', $temptimesheet->id)->cursor();
         // return $mcd;
         // $mcd Group by employee name and date
-        $mcd = $mcd->groupBy(['employee_name', 'date'])->collapse();
+        $mcd = $mcd->groupBy(['leg_id', 'date'])->collapse();
         // return $mcd;
         $customer = Customer::find($temptimesheet->customer_id);
         $working_hour_detail = WorkingHoursDetail::where('working_hours_id', $customer->working_hour_id)->get();
