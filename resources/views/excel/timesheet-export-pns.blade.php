@@ -37,6 +37,26 @@
         </tr>
     </thead>
     <tbody>
+    @foreach ($output as $key => $depart)
+    <tr>
+        <td style="background-color: #44bd04;">{{$key}}</td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        @foreach ($days as $day)
+            <td style="background-color: #44bd04;"></td>
+        @endforeach
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+        <td style="background-color: #44bd04;"></td>
+    </tr>
+    <tr></tr>
         @php
             $super_amount = 0;
             $super_eti_bonus = 0;
@@ -44,12 +64,12 @@
             $super_actual_hours_total = 0;
             $super_paid_hours_total = 0;
         @endphp
-        @foreach ($output as $data_output)
-        @php
-            $emp_amount = 0;
-            $emp_eti_bonus = 0;
-            $emp_amount_total = 0;
-        @endphp
+        @foreach ($depart as $data_output)
+            @php
+                $emp_amount = 0;
+                $emp_eti_bonus = 0;
+                $emp_amount_total = 0;
+            @endphp
             @foreach ($data_output["data"] as $row)
                 <tr>
                     <td>{{$row['Kronos_job_number']}}</td>
@@ -132,6 +152,8 @@
                 $super_paid_hours_total = bcadd($super_paid_hours_total, $data_output["paid_hours_total"], 2);
             @endphp
         @endforeach
+    @endforeach
+           
         <tr>
             @for ($i = 0; $i < 7; $i++)
                 <td style="background-color: #d5d5d5;"></td>

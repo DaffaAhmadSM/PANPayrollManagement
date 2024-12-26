@@ -43,6 +43,7 @@ use App\Http\Controllers\Employee\EmploymentTypeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProjectExperienceController;
+use App\Http\Controllers\EmployeeDepartmentController;
 use App\Http\Controllers\EmployeeRateController;
 use App\Http\Controllers\ImportTimeSheetController;
 use App\Http\Controllers\LeaveHistoryController;
@@ -521,6 +522,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('import-excel', [EmployeeRateController::class, 'importRatesFromExcel']);
         Route::get('all', [EmployeeRateController::class, 'all']);
         Route::get('list', [EmployeeRateController::class, 'list']);
+    });
+
+    Route::group(["prefix" => "employee-department"], function () {
+        Route::get('list', [EmployeeDepartmentController::class, 'list']);
+        Route::get('all', [EmployeeDepartmentController::class, 'all']);
+        Route::post('create', [EmployeeDepartmentController::class, 'create']);
+        Route::post('update/{id}', [EmployeeDepartmentController::class, 'update']);
+        Route::post('import-csv', [EmployeeDepartmentController::class, 'importFromCsv']);
     });
     
 

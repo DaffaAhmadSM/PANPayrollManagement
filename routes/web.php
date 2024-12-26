@@ -9,6 +9,7 @@ use App\Models\tempTimesheetLine;
 use App\Models\EmployeeRateDetail;
 use App\Exports\TempTimesheetExport;
 use App\Exports\tempTimesheetExportMI;
+use App\Models\EmployeeDepartment;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,10 +20,10 @@ Route::get('/', function () {
 
 // Route::get('test', function () {
 //     ini_set('max_execution_time', 300);
-//     $temptimesheet = TempTimeSheet::find(8);
+//     $temptimesheet = TempTimeSheet::find(5);
 //         $startDate = Carbon::parse($temptimesheet->from_date);
 //         $endDate = Carbon::parse($temptimesheet->to_date);
-//         $tempTimesheetId = 8; // Replace 'x' with the actual temp_timesheet_id
+//         $tempTimesheetId = 5; // Replace 'x' with the actual temp_timesheet_id
 //         $holiday = CalendarHoliday::whereBetween('date', [$startDate, $endDate])->get();
 //         $period = new DatePeriod(
 //             new DateTime($startDate),
@@ -32,6 +33,8 @@ Route::get('/', function () {
 
 //         $employee_rates = EmployeeRate::where('random_string', $temptimesheet->rate_id)->first();
 //         $employee_rate_details = EmployeeRateDetail::where('employee_rate_id', $employee_rates->id)->get();
+//         $employee_department = EmployeeDepartment::orderBy('created_at', 'desc')->distinct("emp_id")->get();
+//         // return $employee_department;
 //         unset($employee_rates);
 
 //         $days = [];
@@ -53,43 +56,34 @@ Route::get('/', function () {
 //                 'is_holiday' => $isholiday
 //             ];
 //         }
-//         // return $days;
-
-//         // Build the query
 //         $data = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
 //             ->with('overtimeTimesheet')
 //             ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number']);
+//         // return $data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number']);
 
-//         // foreach ($data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number']) as $byKronos){
-//         //     foreach ($byKronos as $byOracle){
-//         //         foreach($byOracle as $byEmployee){
-//         //             return $byEmployee;
-//         //         }
-//         //     }
-//         // }
-
-//         // return $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name']);
-
-//         $output = $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name'])
-//         ->map(function ($byKronos) use (&$holiday, &$employee_rate_details) {
-           
+//         $output = $data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number'])
+//         ->map(function ($byKronos) use (&$holiday, &$employee_rate_details, &$employee_department) {
 //             $total = [
 //                 'paid_hours_total' => 0,
 //                 'actual_hours_total' => 0,
 //                 'total_overtime_perdate' => [],
 //             ];
-//             $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total, &$employee_rate_details) {
-//                 return $byOracle->map(function ($byEmployee) use (&$holiday, &$total, &$employee_rate_details) {
-//                         $emp = $byEmployee->first();
-//                         $emp_rates = $employee_rate_details->where('emp_id', $emp['no'])->first();
+       
+//             $employee = $byKronos->first()->first()->first();
+//             $dep = $employee_department->where('emp_id', $employee['no'])->first()["department"] ?? "N/A";
+
+//             $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total, &$employee_rate_details, &$employee) {
+//                 return $byOracle->map(function ($byEmployee) use (&$holiday, &$total, &$employee_rate_details, &$employee) {
+                        
+//                         $emp_rates = $employee_rate_details->where('emp_id', $employee['no'])->first();
 //                         $result = [
-//                             'emp' => $emp['no'],
-//                             'classification' => $emp['job_dissipline'],
-//                             'Kronos_job_number' => $emp["Kronos_job_number"],
-//                             'parent_id' => $emp["parent_id"],
-//                             'employee_name' => $emp["employee_name"],
-//                             'slo_no' => $emp["slo_no"],
-//                             'oracle_job_number' => $emp["oracle_job_number"],
+//                             'emp' => $employee['no'],
+//                             'classification' => $emp_rates->classification ?? $employee['job_dissipline'],
+//                             'Kronos_job_number' => $employee["Kronos_job_number"],
+//                             'parent_id' => $employee["parent_id"],
+//                             'employee_name' => $employee["employee_name"],
+//                             'slo_no' => $employee["slo_no"],
+//                             'oracle_job_number' => $employee["oracle_job_number"],
 //                             'rate' => $emp_rates->rate ?? 1,
 //                             'dates' => [],
 //                             'paid_hours_total' => 0,
@@ -145,20 +139,19 @@ Route::get('/', function () {
 //                         return $result;
 //                     })->values();
 //                 })->collapse();
-//             return [
+//             return[
+//                 "dep" => $dep,
 //                 "data" => $data,
-//                 // total overtime hours from data
 //                 "total_overtime_hours" => $total['total_overtime_perdate'],
 //                 "paid_hours_total" => $total['paid_hours_total'],
-//                 "actual_hours_total" => $total['actual_hours_total'],
-//             ];
+//                 "actual_hours_total" => $total['actual_hours_total'],];
 //         });
-//         return $output;
+//         return $output->groupBy('dep')->sortKeysUsing('strnatcasecmp');
 //         return view('excel.timesheet-export', compact('days', 'output', 'temptimesheet'));
 // });
 
 Route::get('test', function () {
     $dateTime = Carbon::now();
     $dateTime = $dateTime->format('YmdHis');
-    (new tempTimesheetExportMI(4))->store("TSMI" . $dateTime . '.xlsx', 'local');
+    (new tempTimesheetExportMI(5))->store("TSMI" . $dateTime . '.xlsx', 'local');
 });
