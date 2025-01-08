@@ -11,30 +11,37 @@ use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
 use App\Models\tempTimesheetLine;
 use App\Models\EmployeeRateDetail;
+use App\Models\InvoiceTotalAmount;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class tempTimesheetExportMI implements FromView, ShouldQueue
 {
-    use Exportable;
+    use Exportable, InteractsWithQueue, SerializesModels, Queueable;
     /**
     * @return \Illuminate\Support\Collection
     */
-    protected $temp_timesheet_id;
-    public function __construct($temp_timesheet_id)
+    protected $random_string;
+    protected $timesheet;
+    public function __construct($random_string, $timesheet)
     {
-        $this->temp_timesheet_id = $temp_timesheet_id;
+        $this->random_string = $random_string;
+        $this->timesheet = $timesheet;
     }
 
     public function view(): View
     {
-        $temptimesheet = TempTimeSheet::find($this->temp_timesheet_id);
+    try {
+        $temptimesheet = TempTimeSheet::where('random_string', $this->random_string)->first();
         $startDate = Carbon::parse($temptimesheet->from_date);
         $endDate = Carbon::parse($temptimesheet->to_date);
-        $tempTimesheetId = $this->temp_timesheet_id; // Replace 'x' with the actual temp_timesheet_id
+        $tempTimesheetId = $temptimesheet->id; // Replace 'x' with the actual temp_timesheet_id
         $holiday = CalendarHoliday::whereBetween('date', [$startDate, $endDate])->get();
         $period = new DatePeriod(
             new DateTime($startDate),
@@ -82,16 +89,18 @@ class tempTimesheetExportMI implements FromView, ShouldQueue
         //     }
         // }
 
+        $invoice_total_amounts = [];
+
         $output = $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name'])
-        ->map(function ($byKronos) use (&$holiday, &$employee_rate_details) {
+        ->map(function ($byKronos) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
            
             $total = [
                 'paid_hours_total' => 0,
                 'actual_hours_total' => 0,
                 'total_overtime_perdate' => [],
             ];
-            $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total, &$employee_rate_details) {
-                return $byOracle->map(function ($byEmployee) use (&$holiday, &$total, &$employee_rate_details) {
+            $data = $byKronos->map(function ($byOracle) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
+                return $byOracle->map(function ($byEmployee) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
                         $emp = $byEmployee->first();
                         $emp_rates = $employee_rate_details->where('emp_id', $emp['no'])->first();
                         $result = [
@@ -131,26 +140,45 @@ class tempTimesheetExportMI implements FromView, ShouldQueue
 
                             // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
                             $date = $date->format('m-d-Y');
-                                $result['dates'][$date] = [
-                                    'overtime_timesheet' => $employeeData->overtime_timesheet,
-                                    'is_holiday' => $is_holiday,
-                                    'basic_hours' => (double)$employeeData['basic_hours'] - (double)$employeeData['deduction_hours'],
-                                ];
-                                //sum total overtime hours per date
-                                $sum = $employeeData->overtime_timesheet->sum(function ($overtime) {
-                                    return $overtime;
-                                }) + (double)$employeeData["basic_hours"] - (double)$employeeData["deduction_hours"];
-                                if (isset($total['total_overtime_perdate'][$date])) {
-                                    $total['total_overtime_perdate'][$date] += $sum;
-                                } else {
-                                    $total['total_overtime_perdate'][$date] = $sum;
-                                }
+                            $result['dates'][$date] = [
+                                'overtime_timesheet' => $employeeData->overtime_timesheet,
+                                'is_holiday' => $is_holiday,
+                                'basic_hours' => (double)$employeeData['basic_hours'] - (double)$employeeData['deduction_hours'],
+                            ];
+                            //sum total overtime hours per date
+                            $sum = $employeeData->overtime_timesheet->sum(function ($overtime) {
+                                return $overtime;
+                            }) + (double)$employeeData["basic_hours"] - (double)$employeeData["deduction_hours"];
+                            if (isset($total['total_overtime_perdate'][$date])) {
+                                $total['total_overtime_perdate'][$date] += $sum;
+                            } else {
+                                $total['total_overtime_perdate'][$date] = $sum;
+                            }
 
                                 
-                            });
+                        });
 
-                            $total['paid_hours_total'] += (double) $result['paid_hours_total'];
-                            $total['actual_hours_total'] += (double) $result['actual_hours_total'];
+                        $total['paid_hours_total'] += (double) $result['paid_hours_total'];
+                        $total['actual_hours_total'] += (double) $result['actual_hours_total'];
+
+                        $amount = bcmul($result['actual_hours_total'], $result['rate'], 2);
+                        $total_hours = $result['actual_hours_total'];
+                        $eti_bonus = bcmul($amount,bcdiv($temptimesheet["eti_bonus_percentage"], 100, 2), 2);
+                        $amount_total = bcadd($amount, $eti_bonus, 2);
+
+                        if(!isset($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']])){
+                            $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']] = [
+                                'random_string' => $temptimesheet->random_string,
+                                'oracle_job_number' => $emp['oracle_job_number'],
+                                'parent_id' => $emp['parent_id'],
+                                'total_amount' => $amount_total,
+                                'total_hours' => $total_hours,
+                            ];
+                        }else{
+                            $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_amount'] = bcadd($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_amount'], $amount_total, 2);
+                            $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_hours'] = bcadd($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_hours'], $total_hours, 2);
+                        }
+
 
                         return $result;
                     })->values();
@@ -163,6 +191,25 @@ class tempTimesheetExportMI implements FromView, ShouldQueue
                 "actual_hours_total" => $total['actual_hours_total'],
             ];
         });
+
+        $chunk_invoice = array_chunk($invoice_total_amounts, 500);
+        foreach ($chunk_invoice as $key => $chunk) {
+            InvoiceTotalAmount::insert($chunk);
+        }
+    
+
+    } catch (\Throwable $th) {
+        $this->timesheet->update([
+            'status' => 'failed'
+        ]);
+        $this->fail($th);
+        return 0;
+    }
         return view('excel.timesheet-export', compact('days', 'output', 'temptimesheet'));
+    }
+
+    public function failed(\Throwable $exception)
+    {
+        Log::error($exception);
     }
 }

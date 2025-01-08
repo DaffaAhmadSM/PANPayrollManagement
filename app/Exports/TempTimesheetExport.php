@@ -17,26 +17,31 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class TempTimesheetExport implements FromView, ShouldQueue
 {
-    use Exportable;
+    use Exportable, SerializesModels, InteractsWithQueue;
     /**
     * @return \Illuminate\Support\Collection
     */
-    protected $temp_timesheet_id;
-    public function __construct($temp_timesheet_id)
+    protected $random_string;
+    protected $real_timesheet;
+    public function __construct($random_string, $real_timesheet)
     {
-        $this->temp_timesheet_id = $temp_timesheet_id;
+        $this->random_string = $random_string;
+        $this->real_timesheet = $real_timesheet;
     }
 
     public function view(): View
     {
-        $temptimesheet = TempTimeSheet::find($this->temp_timesheet_id);
+    try {
+        $temptimesheet = TempTimeSheet::where('random_string', $this->random_string)->first();
         $startDate = Carbon::parse($temptimesheet->from_date);
         $endDate = Carbon::parse($temptimesheet->to_date);
-        $tempTimesheetId = $this->temp_timesheet_id; // Replace 'x' with the actual temp_timesheet_id
+        $tempTimesheetId = $temptimesheet->id; // Replace 'x' with the actual temp_timesheet_id
         $holiday = CalendarHoliday::whereBetween('date', [$startDate, $endDate])->get();
         $period = new DatePeriod(
             new DateTime($startDate),
@@ -161,5 +166,17 @@ class TempTimesheetExport implements FromView, ShouldQueue
         })->sortKeys();
         $output =  $output->groupBy('dep')->sortKeysUsing('strnatcasecmp');
         return view('excel.timesheet-export-pns', compact('days', 'output', 'temptimesheet'));
+        } catch (\Throwable $th) {
+            $this->failed($th);
+        }
+    }
+
+    public function failed($exception)
+    {
+        Log::error($exception);
+        $this->real_timesheet->update([
+            'status' => 'failed'
+        ]);
+        $this->fail($exception);
     }
 }

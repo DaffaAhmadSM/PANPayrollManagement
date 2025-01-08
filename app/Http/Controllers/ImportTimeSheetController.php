@@ -22,13 +22,17 @@ use App\Models\tempTimesheetLine;
 use App\Models\TimeSheetOvertime;
 use App\Models\WorkingHoursDetail;
 use Illuminate\Support\Facades\DB;
+use App\Models\TimesheetAttachment;
+use App\Exports\TempTimesheetExport;
+use App\Exports\tempTimesheetExportMI;
+use App\Jobs\UpdateQueueStatus;
 use App\Models\CustomerTimesheetLine;
 use App\Models\tempTimeSheetOvertime;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\HeadingRowImport;
 use App\Models\CustomerTimesheetOvertime;
 use Illuminate\Support\Facades\Validator;
 use App\Models\OvertimeMultiplicationSetup;
-use Illuminate\Support\Facades\Storage;
 
 class ImportTimeSheetController extends Controller
 {
@@ -647,32 +651,27 @@ class ImportTimeSheetController extends Controller
             ],404);
         }
 
-        $temp_timesheet_lines = tempTimesheetLine::where('temp_timesheet_id', $temp_timesheet_id)->get();
-        $temp_timesheet_overtime = tempTimeSheetOvertime::where('random_string', $temptimesheet->random_string)->get();
+        $dateTime = Carbon::now();
+        $dateTime = $dateTime->format('YmdHis');
+
         try {
             DB::beginTransaction();
 
-            $real_timehseet =  TimeSheet::create([
+            $real_timesheet = TimeSheet::create([
+                'temp_timesheet_id' => $temptimesheet->id,
                 'from_date' => $temptimesheet->from_date,
                 "random_string" => $temptimesheet->random_string,
                 'to_date' => $temptimesheet->to_date,
                 'description' => $temptimesheet->description,
                 'filename' => $temptimesheet->filename,
                 'user_id' => $temptimesheet->user_id,
-                'status' => 'draft',
+                'status' => 'generating',
                 'customer_id' => $temptimesheet->customer_id,
                 'customer_file_name' => $temptimesheet->customer_file_name,
                 'employee_file_name' => $temptimesheet->employee_file_name,
+                'eti_bonus_percentage' => $temptimesheet->eti_bonus_percentage,
+                'file_path' => "timesheet/pns/TSPNS" . $dateTime . '.xlsx'
             ]);
-            // change temp_timesheet_id key to timesheet_id and change the id in temp_timesheet_lines to real_timesheet_id
-            $temp_timesheet_lines->map(function($item) use($real_timehseet) {
-                $item->timesheet_id = $real_timehseet->id;
-                // delete temp_timesheet_id key
-                unset($item->temp_timesheet_id);
-            });
-    
-            TimeSheetLine::insert($temp_timesheet_lines->toArray());
-            TimeSheetOvertime::insert($temp_timesheet_overtime->toArray());
             $temptimesheet->update(['status' => 'moved']);
             DB::commit();    
         } catch (\Throwable $th) {
@@ -682,10 +681,14 @@ class ImportTimeSheetController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
+
+        (new TempTimesheetExport($real_timesheet->random_string, $real_timesheet))->store("timesheet/pns/TSPNS" . $dateTime . '.xlsx', 'public')->chain([
+            new UpdateQueueStatus($real_timesheet, 'generated')
+        ]);
+
         return response()->json([
             'status' => 200,
             'message' => 'Data moved successfully',
-            'data' => $temp_timesheet_lines
         ]);
 
     }
@@ -705,41 +708,30 @@ class ImportTimeSheetController extends Controller
                 'message' => 'Data already moved'
             ],400);
         }
-        $timesheetLine = TimeSheetLine::where('timesheet_id', $time_sheet_id)->get();
-        $timesheetOvertime = TimeSheetOvertime::where('random_string', $timesheetid->random_string)->get();
 
         // move to customer timesheet
 
-        $CustomerTimesheet = CustomerTimesheet::create([
+        $customer_timesheet = CustomerTimesheet::create([
             'from_date' => $timesheetid->from_date,
             'to_date' => $timesheetid->to_date,
             'description' => $timesheetid->description,
             'filename' => $timesheetid->filename,
             'user_id' => $timesheetid->user_id,
-            'status' => 'open',
+            'status' => 'generating',
             'customer_id' => $timesheetid->customer_id,
             'customer_file_name' => $timesheetid->customer_file_name,
             'employee_file_name' => $timesheetid->employee_file_name,
             'random_string' => $timesheetid->random_string,
         ]);
 
-        $timesheetLine->map(function($item) use($CustomerTimesheet) {
-            $item->customer_timesheet_id = $CustomerTimesheet->id;
-            unset($item->timesheet_id);
-            // add new key
-            $item->amount = $item->paid_hours;
-            $item->invoiced = 'no';
-            $item->customer_invoice_id = 'N/A';
-            unset($item->meal_allowance, $item->no, $item->overtime_hours, $item->paid_leave, $item->transport_allowance);
-        });
-
-        CustomerTimesheetLine::insert($timesheetLine->toArray());
-        CustomerTimesheetOvertime::insert($timesheetOvertime->toArray());
+        (new tempTimesheetExportMI($customer_timesheet->random_string, $customer_timesheet))->store("timesheet/customer/TSMI" . $timesheetid->random_string . '.xlsx', 'public')->chain([
+            new UpdateQueueStatus($timesheetid, 'moved'),
+            new UpdateQueueStatus($customer_timesheet, 'generated')
+        ]);
 
         return response()->json([
             'status' => 200,
             'message' => 'Data moved successfully',
-            'data' => $timesheetLine
         ]);
     }
 

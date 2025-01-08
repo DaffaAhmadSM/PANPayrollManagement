@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer("customer_total_imported")->default(0);
             $table->integer("employee_total_imported")->default(0);
             $table->double("eti_bonus_percentage", 8, 2)->default(0);
-            $table->enum('status', ['posted', 'open'])->default('open');
+            $table->string('status')->default('open')->index();
             $table->timestamps();
         });
     }

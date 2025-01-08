@@ -257,6 +257,6 @@ class ImportPnsMCD implements ShouldQueue
         TempPns::where('temp_time_sheet_id', $this->temptimesheet->id)->delete();
         
         Log::error($exception);
-        $this->delete();
+        $this->fail();
     }
 }

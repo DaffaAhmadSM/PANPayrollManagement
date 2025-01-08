@@ -15,4 +15,9 @@ class TimeSheet extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function attachments()
+    {
+        return $this->hasMany(TimeSheetAttachment::class, 'timesheet_id');
+    }
 }

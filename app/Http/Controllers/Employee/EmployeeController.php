@@ -105,7 +105,7 @@ class EmployeeController extends Controller
 
         if($request->hasFile('img')) {
             $random = Str::random(5);
-            $imageName = time(). $random .'.'.$request->img_picture->extension();
+            $imageName = time(). $random .'.'.$request->img->extension();
             Storage::disk('public')->putFileAs('images/employee/', $request->img, $imageName);
             $request->merge(['img_picture' => 'images/employee/' . $imageName]);
         }
