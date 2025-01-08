@@ -105,7 +105,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue
                         $emp_rates = $employee_rate_details->where('emp_id', $emp['no'])->first();
                         $result = [
                             'emp' => $emp['no'],
-                            'classification' => $emp['job_dissipline'],
+                            'classification' => $emp_rates->classification ?? $emp['job_dissipline'],
                             'Kronos_job_number' => $emp["Kronos_job_number"],
                             'parent_id' => $emp["parent_id"],
                             'employee_name' => $emp["employee_name"],

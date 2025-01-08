@@ -94,14 +94,15 @@ class TempTimesheetExport implements FromView, ShouldQueue
                 return $byOracle->map(function ($byEmployee) use (&$holiday, &$total, &$employee_rate_details, &$employee) {
                         
                         $emp_rates = $employee_rate_details->where('emp_id', $employee['no'])->first();
+                        $current_oracle = $byEmployee->first();
                         $result = [
                             'emp' => $employee['no'],
                             'classification' => $emp_rates->classification ?? $employee['job_dissipline'],
-                            'Kronos_job_number' => $employee["Kronos_job_number"],
-                            'parent_id' => $employee["parent_id"],
-                            'employee_name' => $employee["employee_name"],
-                            'slo_no' => $employee["slo_no"],
-                            'oracle_job_number' => $employee["oracle_job_number"],
+                            'Kronos_job_number' => $current_oracle["Kronos_job_number"],
+                            'parent_id' => $current_oracle["parent_id"],
+                            'employee_name' => $current_oracle["employee_name"],
+                            'slo_no' => $current_oracle["slo_no"],
+                            'oracle_job_number' => $current_oracle["oracle_job_number"],
                             'rate' => $emp_rates->rate ?? 1,
                             'dates' => [],
                             'paid_hours_total' => 0,
