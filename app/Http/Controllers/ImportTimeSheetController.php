@@ -724,7 +724,10 @@ class ImportTimeSheetController extends Controller
             'random_string' => $timesheetid->random_string,
         ]);
 
-        (new tempTimesheetExportMI($customer_timesheet->random_string, $customer_timesheet))->store("timesheet/customer/TSMI" . $timesheetid->random_string . '.xlsx', 'public')->chain([
+        $string = Carbon::now();
+        $string = $string->format('YmdHis');
+
+        (new tempTimesheetExportMI($customer_timesheet->random_string, $customer_timesheet))->store("timesheet/customer/TSMI" . $string . '.xlsx', 'public')->chain([
             new UpdateQueueStatus($timesheetid, 'moved'),
             new UpdateQueueStatus($customer_timesheet, 'generated')
         ]);

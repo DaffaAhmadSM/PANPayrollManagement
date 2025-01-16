@@ -20,8 +20,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class TempTimesheetExport implements FromView, ShouldQueue
+class TempTimesheetExport implements FromView, ShouldQueue, ShouldAutoSize, WithStyles
 {
     use Exportable, SerializesModels, InteractsWithQueue;
     /**
@@ -76,10 +79,11 @@ class TempTimesheetExport implements FromView, ShouldQueue
         }
         $data = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
             ->with('overtimeTimesheet')
-            ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number']);
+            // ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['Kronos_job_number', 'oracle_job_number']);
+            ->lazy()->sortBy(['employee_name', 'Kronos_job_number', 'oracle_job_number']);
         // return $data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number']);
 
-        $output = $data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number'])
+        $output = $data->groupBy(['no', 'Kronos_job_number', 'oracle_job_number'])
         ->map(function ($byKronos) use (&$holiday, &$employee_rate_details, &$employee_department) {
             $total = [
                 'paid_hours_total' => 0,
@@ -179,5 +183,10 @@ class TempTimesheetExport implements FromView, ShouldQueue
             'status' => 'failed'
         ]);
         $this->fail($exception);
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->setShowGridlines(false);
     }
 }

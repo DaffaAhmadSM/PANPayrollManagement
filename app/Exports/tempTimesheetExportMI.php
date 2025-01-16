@@ -20,8 +20,11 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class tempTimesheetExportMI implements FromView, ShouldQueue
+class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, WithStyles
 {
     use Exportable, InteractsWithQueue, SerializesModels, Queueable;
     /**
@@ -72,26 +75,14 @@ class tempTimesheetExportMI implements FromView, ShouldQueue
                 'is_holiday' => $isholiday
             ];
         }
-        // return $days;
-
-        // Build the query
         $data = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
             ->with('overtimeTimesheet')
-            ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
-        
-        // return $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name']);
-
-        // foreach ($data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number']) as $byKronos){
-        //     foreach ($byKronos as $byOracle){
-        //         foreach($byOracle as $byEmployee){
-        //             return $byEmployee;
-        //         }
-        //     }
-        // }
+            // ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
+            ->lazy()->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
 
         $invoice_total_amounts = [];
 
-        $output = $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name'])
+        $output = $data->groupBy(['oracle_job_number', 'parent_id', 'no'])
         ->map(function ($byKronos) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
            
             $total = [
@@ -182,7 +173,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue
 
                         return $result;
                     })->values();
-                })->collapse();
+                });
             return [
                 "data" => $data,
                 // total overtime hours from data
@@ -211,5 +202,10 @@ class tempTimesheetExportMI implements FromView, ShouldQueue
     public function failed(\Throwable $exception)
     {
         Log::error($exception);
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->setShowGridlines(false);
     }
 }

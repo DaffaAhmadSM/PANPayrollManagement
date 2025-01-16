@@ -61,7 +61,8 @@ Route::get('test', function () {
     // Build the query
     $data = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
         ->with('overtimeTimesheet')
-        ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
+        // ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
+        ->lazy()->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
     
     // return $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name']);
 
@@ -75,7 +76,7 @@ Route::get('test', function () {
 
     $invoice_total_amounts = [];
 
-    $output = $data->groupBy(['Kronos_job_number', 'oracle_job_number', 'employee_name'])
+    $output = $data->groupBy(['oracle_job_number','parent_id', 'no'])
     ->map(function ($byKronos) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
        
         $total = [
@@ -165,7 +166,7 @@ Route::get('test', function () {
 
                     return $result;
                 })->values();
-            })->collapse();
+            });
         return [
             "data" => $data,
             // total overtime hours from data
@@ -174,11 +175,13 @@ Route::get('test', function () {
             "actual_hours_total" => $total['actual_hours_total'],
         ];
     });
+    
+    return $output;
 
-    $chunk_invoice = array_chunk($invoice_total_amounts, 500);
-        foreach ($chunk_invoice as $key => $chunk) {
-            InvoiceTotalAmount::insert($chunk);
-    }
+    // $chunk_invoice = array_chunk($invoice_total_amounts, 500);
+    //     foreach ($chunk_invoice as $key => $chunk) {
+    //         InvoiceTotalAmount::insert($chunk);
+    // }
     return view('excel.timesheet-export', compact('days', 'output', 'temptimesheet'));
 });
 
