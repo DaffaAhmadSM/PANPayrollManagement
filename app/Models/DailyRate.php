@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class DailyRate extends Model
 {
-    //
+    protected $guarded = ["id"];
 }

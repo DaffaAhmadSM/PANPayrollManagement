@@ -13,6 +13,18 @@ return new class extends Migration
     {
         Schema::create('daily_rate_details', function (Blueprint $table) {
             $table->id();
+            $table->string('daily_rate_string')->index();
+            // make foreign key from daily_rate_string
+            $table->foreign('daily_rate_string')->references('string_id')->on('daily_rates')->onDelete('cascade');
+            $table->string('employee_name');
+            $table->string('leg_id');
+            $table->string('classification');
+            $table->string('SLO');
+            $table->string('kronos_job_number');
+            $table->string('parent_id');
+            $table->string('oracle_job_number');
+            $table->decimal('value', 8,2);
+            $table->date('date');
             $table->timestamps();
         });
     }

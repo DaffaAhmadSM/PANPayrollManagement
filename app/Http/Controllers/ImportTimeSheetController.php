@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TempMcd;
 use App\Models\TempPns;
 use App\Models\Customer;
+use App\Models\DailyRate;
 use App\Models\TimeSheet;
 use App\Imports\McdImport;
 use App\Imports\PnsImport;
@@ -16,7 +17,9 @@ use Illuminate\Http\Request;
 use App\Models\TempTimeSheet;
 use App\Models\TimeSheetLine;
 use Illuminate\Support\Carbon;
+use App\Jobs\UpdateQueueStatus;
 use App\Models\CalendarHoliday;
+use App\Imports\DailyRateImport;
 use App\Models\CustomerTimesheet;
 use App\Models\tempTimesheetLine;
 use App\Models\TimeSheetOvertime;
@@ -24,13 +27,13 @@ use App\Models\WorkingHoursDetail;
 use Illuminate\Support\Facades\DB;
 use App\Models\TimesheetAttachment;
 use App\Exports\TempTimesheetExport;
-use App\Exports\tempTimesheetExportMI;
-use App\Jobs\UpdateQueueStatus;
 use App\Models\CustomerTimesheetLine;
 use App\Models\tempTimeSheetOvertime;
+use App\Exports\tempTimesheetExportMI;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\HeadingRowImport;
 use App\Models\CustomerTimesheetOvertime;
+use App\Models\DailyRateDetail;
 use Illuminate\Support\Facades\Validator;
 use App\Models\OvertimeMultiplicationSetup;
 
@@ -754,5 +757,84 @@ class ImportTimeSheetController extends Controller
             'status' => 200,
             'message' => 'Data cancelled successfully'
         ]);
+    }
+
+    public function importDailyRate(Request $request){
+        $validator = Validator::make($request->all(), [
+            'csv' => 'required|mimes:xlsx,xls,csv,txt',
+            'temp_timesheet_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        $temptimesheet = TempTimeSheet::find($request->temp_timesheet_id);
+
+        
+
+        $excel = (new DailyRateImport)->toCollection($request->file('csv'));
+
+        $collect = collect($excel->first());
+        $headers = $collect->first()->toArray();
+
+        $rows = $collect->except(0)->values()->toArray();
+        $flattenedData = [];
+        $daily_rate = [];
+        $topPointer = 7;
+        $buttomPointer = 6;
+        $removeTop = array_slice($headers, $topPointer);
+        $dateHeaders = array_slice($removeTop, 0, count($removeTop) - $buttomPointer);
+        $buttomIndex = count($dateHeaders) + 7;
+
+        $random_string_count = 0;
+        foreach ($rows as $row) {
+            $daily_rate [] = [
+                'temptimesheet_string' => $temptimesheet->random_string,
+                'string_id' => $temptimesheet->random_string."-".$random_string_count,
+                'work_hours_total' => $row[$buttomIndex + 0] ?? 0,
+                'invoice_hours_total' => $row[$buttomIndex + 1] ?? 0,
+                'amount_total' => $row[$buttomIndex + 3] ?? 0,
+                'eti_bonus_total' => $row[$buttomIndex + 4] ?? 0,
+                'grand_total' => $row[$buttomIndex + 5] ?? 0,
+                "rate" => $row[$buttomIndex + 2] ?? 0,
+            ];
+            foreach ($dateHeaders as $index => $date) {
+                (double)$value = $row[$index + 7] !== null ? $row[$index + 7] : 0;  // Replace null with 0
+                $flattenedData[] = [
+                    "daily_rate_string" => $temptimesheet->random_string."-".$random_string_count,
+                    "employee_name" => $row[0] ?? "N/A",
+                    "leg_id" => $row[1] ?? "N/A",
+                    "classification" => $row[2] ?? 'N/A',
+                    "SLO" => $row[3] ?? 'N/A',
+                    "kronos_Job_Number" => $row[4] ?? 'N/A',
+                    "parent_ID" => $row[5] ?? 'N/A',
+                    "oracle_Job_Number" => $row[6] ?? 'N/A',
+                    "value" => $value,
+                    "date" => Carbon::createFromFormat('m/d/Y', $date),
+                ];
+            }
+            $random_string_count++;
+        }
+
+        try {
+            DailyRate::insert($daily_rate);
+            $chunk = array_chunk($flattenedData, 1000);
+            foreach ($chunk as $data) {
+                DailyRateDetail::insert($data);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data imported successfully.',
+        ], 200);
     }
 }
