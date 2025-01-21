@@ -166,30 +166,36 @@
                 @endforeach
                 <tr>
                     @for ($i = 0; $i < 7; $i++)
-                        <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
+                        <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                     @endfor
                     @foreach ($data_output['total_overtime_hours'] as $total)
-                        <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
-                        <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
+                        <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                        <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                         @if ($total > 0)
-                            <td data-format="0.0" style="background-color: #d5d5d5; border: 2px solid black;">
+                            <td data-format="0.0"
+                                style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                                 {{ $total }}</td>
                         @else
-                            <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
+                            <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                         @endif
                     @endforeach
-                    <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                         {{ $data_output['actual_hours_total'] }}
                     </td>
-                    <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                         {{ $data_output['paid_hours_total'] }}
                     </td>
-                    <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
-                    <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+                    <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                         {{ $emp_amount }}</td>
-                    <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                         {{ $emp_eti_bonus }}</td>
-                    <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                         {{ $emp_amount_total }}</td>
                 </tr>
                 <tr>
@@ -206,24 +212,160 @@
 
         <tr>
             @for ($i = 0; $i < 7; $i++)
-                <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
+                <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
             @endfor
             @foreach ($days as $day)
-                <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
-                <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
-                <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
+                <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
             @endforeach
-            <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+            <td data-format="#,##0.00" style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                 {{ $super_actual_hours_total }}</td>
-            <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+            <td data-format="#,##0.00" style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                 {{ $super_paid_hours_total }}</td>
-            <td style="background-color: #d5d5d5; border: 2px solid black;"></td>
-            <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+            <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+            <td data-format="#,##0.00" style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                 {{ $super_amount }}</td>
-            <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+            <td data-format="#,##0.00" style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                 {{ $super_eti_bonus }}</td>
-            <td data-format="#,##0.00" style="background-color: #d5d5d5; border: 2px solid black;">
+            <td data-format="#,##0.00" style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
                 {{ $super_amount_total }}</td>
         </tr>
+
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
     </tbody>
+
+    <thead>
+        @php
+            $dayCount = count($days);
+        @endphp
+        <tr>
+            <th colspan="{{ $dayCount * 3 + 13 }}"
+                style="background-color: lightblue; border: 2px solid #000000; font-weight: bold;">STAFF DAILY RATES
+            </th>
+        </tr>
+        <tr>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Employee Name</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">EMP</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Classification</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Service Order No</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Kronos Job Charge</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Parent ID</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Oracle Job Charge</th>
+            <th style="border: 2px solid black" valign="center" align="center" colspan="{{ $dayCount }}">Date
+            </th>
+            @foreach ($days as $day)
+                <th style="border: 2px solid black" valign="center" align="center"></th>
+                <th style="border: 2px solid black" valign="center" align="center"></th>
+            @endforeach
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Work Hours</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Invoice Hours</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Rate IDR</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Amount</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">ETI</th>
+            <th style="border: 2px solid black" valign="center" align="center" rowspan="2">Total</th>
+
+        </tr>
+        <tr>
+            @foreach ($days as $day)
+                <th style="border: 2px solid black" valign="center" align="center">
+                    {{ explode(' ', $day['date'])[1] }}</th>
+            @endforeach
+        </tr>
+    </thead>
+    @if(!empty($dailyRates))
+        <tbody>
+            @php
+                $total_work_hours = 0;
+                $total_invoice_hours = 0;
+                $total_eti_bonus = 0;
+                $total_amount = 0;
+                $total_grand_total = 0;
+            @endphp
+            @foreach ($dailyRates as $dailyRate)
+                @php
+                    $total_work_hours = bcadd($total_work_hours, $dailyRate->work_hours_total, 6);
+                    $total_invoice_hours = bcadd($total_invoice_hours, $dailyRate->invoice_hours_total, 6);
+                    $total_amount = bcadd($total_amount, $dailyRate->amount_total, 6);
+                    $total_eti_bonus = bcadd($total_eti_bonus, $dailyRate->eti_bonus_total, 6);
+                    $total_grand_total = bcadd($total_grand_total, $dailyRate->grand_total, 6);
+                @endphp
+                <tr>
+                    <td style="border: 2px solid black">{{ $dailyRate->employee_name }}</td>
+                    <td style="border: 2px solid black">{{ $dailyRate->leg_id }}</td>
+                    <td style="border: 2px solid black">{{ $dailyRate->classification }}</td>
+                    <td style="border: 2px solid black">{{ $dailyRate->SLO }}</td>
+                    <td style="border: 2px solid black">{{ $dailyRate->kronos_job_number }}</td>
+                    <td style="border: 2px solid black">{{ $dailyRate->parent_id }}</td>
+                    <td style="border: 2px solid black">{{ $dailyRate->oracle_job_number }}</td>
+                    @foreach ($dailyRate->dailyDetails as $date)
+                        @if ($date->value > 0)
+                            <td data-format="0.0" style="border: 2px solid black">{{ $date->value }}</td>
+                        @else
+                            <td style="border: 2px solid black"></td>
+                        @endif
+                    @endforeach
+                    @foreach ($dailyRate->dailyDetails as $date)
+                        <td style="border: 2px solid black"></td>
+                        <td style="border: 2px solid black"></td>
+                    @endforeach
+                    <td data-format="#,##0.00" style="border: 2px solid black">{{ $dailyRate->work_hours_total }}</td>
+                    <td data-format="#,##0.00" style="border: 2px solid black">{{ $dailyRate->invoice_hours_total }}</td>
+                    <td data-format="#,##0.00" style="border: 2px solid black">{{ $dailyRate->rate }}</td>
+                    <td data-format="#,##0.00" style="border: 2px solid black">{{ $dailyRate->amount_total }}</td>
+                    <td data-format="#,##0.00" style="border: 2px solid black">{{ $dailyRate->eti_bonus_total }}</td>
+                    <td data-format="#,##0.00" style="border: 2px solid black">{{ $dailyRate->grand_total }}</td>
+                </tr>
+            @endforeach
+            {{-- total daily rate --}}
+            <tr>
+                <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;">Total
+                </td>
+                <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                @foreach ($dailyRate->dailyDetails as $date)
+                    <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                    <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                    <td style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;"></td>
+                @endforeach
+                <td data-format="#,##0.00" style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;">
+                    {{ $total_work_hours }}</td>
+                <td data-format="#,##0.00" style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;">
+                    {{ $total_invoice_hours }}</td>
+                <td data-format="#,##0.00" style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;">
+                </td>
+                <td data-format="#,##0.00" style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;">
+                    {{ $total_amount }}</td>
+                <td data-format="#,##0.00" style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;">
+                    {{ $total_eti_bonus }}</td>
+                <td data-format="#,##0.00" style="border: 2px solid black; background-color: #d5d5d5; font-weight: bold;">
+                    {{ $total_grand_total }}</td>
+            </tr>
+            <tr></tr>
+            <tr></tr>
+
+            <tr>
+                <td style="border: 2px solid black; font-weight: bold; font-size: 22rem"
+                    colspan="{{ count($dailyRate->dailyDetails) * 3 + 7 }}">GRAND TOTAL</td>
+                <td data-format="#,##0.00" style="border: 2px solid black; font-weight: bold; font-size: 13rem">
+                    {{ bcadd($total_work_hours, $super_actual_hours_total, 6) }}</td>
+                <td data-format="#,##0.00" style="border: 2px solid black; font-weight: bold; font-size: 13rem">
+                    {{ bcadd($total_invoice_hours, $super_paid_hours_total, 6) }}</td>
+                <td data-format="#,##0.00" style="border: 2px solid black; font-weight: bold; font-size: 13rem"></td>
+                <td data-format="#,##0.00" style="border: 2px solid black; font-weight: bold; font-size: 13rem">
+                    {{ bcadd($total_amount, $super_amount, 6) }}
+                </td>
+                <td data-format="#,##0.00" style="border: 2px solid black; font-weight: bold; font-size: 13rem">
+                    {{ bcadd($total_eti_bonus, $super_eti_bonus, 6) }}</td>
+                <td data-format="#,##0.00" style="border: 2px solid black; font-weight: bold; font-size: 13rem">
+                    {{ bcadd($total_grand_total, $super_amount_total, 6) }}</td>
+            </tr>
+        </tbody>
+    @endif
 </table>

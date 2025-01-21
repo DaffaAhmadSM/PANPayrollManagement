@@ -21,6 +21,13 @@ return new class extends Migration
             $table->decimal('eti_bonus_total', 18, 6);
             $table->decimal('grand_total',18, 6);
             $table->decimal('rate', 12,2);
+            $table->string('employee_name');
+            $table->string('leg_id');
+            $table->string('classification');
+            $table->string('SLO');
+            $table->string('kronos_job_number');
+            $table->string('parent_id');
+            $table->string('oracle_job_number');
             $table->timestamps();
         });
     }

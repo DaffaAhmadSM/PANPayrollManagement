@@ -801,18 +801,18 @@ class ImportTimeSheetController extends Controller
                 'eti_bonus_total' => $row[$buttomIndex + 4] ?? 0,
                 'grand_total' => $row[$buttomIndex + 5] ?? 0,
                 "rate" => $row[$buttomIndex + 2] ?? 0,
+                "employee_name" => $row[0] ?? "N/A",
+                "leg_id" => $row[1] ?? "N/A",
+                "classification" => $row[2] ?? 'N/A',
+                "SLO" => $row[3] ?? 'N/A',
+                "kronos_Job_Number" => $row[4] ?? 'N/A',
+                "parent_ID" => $row[5] ?? 'N/A',
+                "oracle_Job_Number" => $row[6] ?? 'N/A',
             ];
             foreach ($dateHeaders as $index => $date) {
                 (double)$value = $row[$index + 7] !== null ? $row[$index + 7] : 0;  // Replace null with 0
                 $flattenedData[] = [
                     "daily_rate_string" => $temptimesheet->random_string."-".$random_string_count,
-                    "employee_name" => $row[0] ?? "N/A",
-                    "leg_id" => $row[1] ?? "N/A",
-                    "classification" => $row[2] ?? 'N/A',
-                    "SLO" => $row[3] ?? 'N/A',
-                    "kronos_Job_Number" => $row[4] ?? 'N/A',
-                    "parent_ID" => $row[5] ?? 'N/A',
-                    "oracle_Job_Number" => $row[6] ?? 'N/A',
                     "value" => $value,
                     "date" => Carbon::createFromFormat('m/d/Y', $date),
                 ];

@@ -5,6 +5,7 @@ namespace App\Exports;
 use DateTime;
 use DatePeriod;
 use DateInterval;
+use App\Models\DailyRate;
 use App\Models\EmployeeRate;
 use App\Models\TempTimeSheet;
 use Illuminate\Support\Carbon;
@@ -13,15 +14,15 @@ use App\Models\tempTimesheetLine;
 use App\Models\EmployeeRateDetail;
 use App\Models\InvoiceTotalAmount;
 use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Concerns\Exportable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Maatwebsite\Excel\Concerns\FromView;
+use Illuminate\Foundation\Queue\Queueable;
+use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, WithStyles
@@ -75,6 +76,9 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                 'is_holiday' => $isholiday
             ];
         }
+
+        $dailyRates = DailyRate::where('temptimesheet_string', $temptimesheet->random_string)->with('DailyDetails:daily_rate_string,value,date')->get();
+
         $data = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
             ->with('overtimeTimesheet')
             // ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
@@ -196,7 +200,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         $this->fail($th);
         return 0;
     }
-        return view('excel.timesheet-export', compact('days', 'output', 'temptimesheet'));
+        return view('excel.timesheet-export', compact('days', 'output', 'temptimesheet', 'dailyRates'));
     }
 
     public function failed(\Throwable $exception)

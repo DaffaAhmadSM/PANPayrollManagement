@@ -9,6 +9,7 @@ use App\Models\EmployeeRate;
 use App\Models\TempTimeSheet;
 use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
+use App\Models\DailyRate;
 use App\Models\tempTimesheetLine;
 use App\Models\EmployeeDepartment;
 use App\Models\EmployeeRateDetail;
@@ -57,6 +58,8 @@ class TempTimesheetExport implements FromView, ShouldQueue, ShouldAutoSize, With
         $employee_department = EmployeeDepartment::orderBy('created_at', 'desc')->distinct("emp_id")->get();
         // return $employee_department;
         unset($employee_rates);
+
+        $dailyRates = DailyRate::where('temptimesheet_string', $temptimesheet->random_string)->with('DailyDetails:daily_rate_string,value,date')->get();
 
         $days = [];
         foreach ($period as $date) {
@@ -170,7 +173,7 @@ class TempTimesheetExport implements FromView, ShouldQueue, ShouldAutoSize, With
                 "actual_hours_total" => $total['actual_hours_total'],];
         })->sortKeys();
         $output =  $output->groupBy('dep')->sortKeysUsing('strnatcasecmp');
-        return view('excel.timesheet-export-pns', compact('days', 'output', 'temptimesheet'));
+        return view('excel.timesheet-export-pns', compact('days', 'output', 'temptimesheet', 'dailyRates'));
         } catch (\Throwable $th) {
             $this->failed($th);
         }
