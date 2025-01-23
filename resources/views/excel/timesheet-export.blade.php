@@ -77,7 +77,112 @@
             $super_actual_hours_total = 0;
             $super_paid_hours_total = 0;
         @endphp
-        @foreach ($output as $data_output)
+        @foreach ($data_kronos as $data_output)
+            @php
+                $emp_amount = 0;
+                $emp_eti_bonus = 0;
+                $emp_amount_total = 0;
+            @endphp
+            @foreach ($data_output['data'] as $parent_id)
+                @foreach ($parent_id as $row)
+                    <tr>
+                        <td style="border: 2px solid black;">{{ $row['Kronos_job_number'] }}</td>
+                        <td style="border: 2px solid black;">{{ $row['parent_id'] }}</td>
+                        <td style="border: 2px solid black;">{{ $row['oracle_job_number'] }}</td>
+                        <td style="border: 2px solid black;">{{ $row['employee_name'] }}</td>
+                        <td style="border: 2px solid black;">{{ $row['emp'] }}</td>
+                        <td style="border: 2px solid black;">{{ $row['classification'] }}</td>
+                        <td style="border: 2px solid black;">{{ $row['slo_no'] }}</td>
+                        @foreach ($row['dates'] as $overtime)
+                            @for ($i = 0; $i < 3; $i++)
+                                @if (!$overtime['is_holiday'] && $i == 0)
+                                    @if ($overtime['basic_hours'] > 0)
+                                        <td style="border: 2px solid black;" data-format="0.0">
+                                            {{ $overtime['basic_hours'] }}</td>
+                                    @else
+                                        <td style="border: 2px solid black;"></td>
+                                    @endif
+                                    @continue
+                                @endif
+                                @if (!$overtime['is_holiday'])
+                                    @if (isset($overtime['overtime_timesheet'][$i - 1]) && $overtime['overtime_timesheet'][$i - 1] != 0)
+                                        <td style="border: 2px solid black;" data-format="0.0">
+                                            {{ $overtime['overtime_timesheet'][$i - 1] }}</td>
+                                    @else
+                                        <td style="border: 2px solid black;"></td>
+                                    @endif
+                                @else
+                                    @if (isset($overtime['overtime_timesheet'][$i]) && $overtime['overtime_timesheet'][$i] != 0)
+                                        <td style="border: 2px solid black;" data-format="0.0">
+                                            {{ $overtime['overtime_timesheet'][$i] }}</td>
+                                    @else
+                                        <td style="border: 2px solid black;"></td>
+                                    @endif
+                                @endif
+                            @endfor
+                        @endforeach
+                        <td style="border: 2px solid black;" data-format="#,##0.00">{{ $row['actual_hours_total'] }}
+                        </td>
+                        <td style="border: 2px solid black;" data-format="#,##0.00">{{ $row['paid_hours_total'] }}
+                        </td>
+                        <td style="border: 2px solid black;" data-format="#,##">{{ $row['rate'] }}</td>
+                        @php
+                            $amount = bcmul($row['rate'], $row['paid_hours_total'], 6);
+                            // $eti_bonus = $amount * ($temptimesheet["eti_bonus_percentage"]/100);
+                            $eti_bonus = bcdiv(bcmul($amount, $temptimesheet['eti_bonus_percentage'], 6), 100, 6);
+                            // $total = $amount + $eti_bonus;
+                            $total = bcadd($amount, $eti_bonus, 6);
+
+                            //precision
+                            $emp_amount = bcadd($emp_amount, $amount, 6);
+                            $emp_eti_bonus = bcadd($emp_eti_bonus, $eti_bonus, 6);
+                            $emp_amount_total = bcadd($emp_amount_total, $total, 6);
+                        @endphp
+                        <td style="border: 2px solid black;" data-format="#,##0.00">{{ $amount }}</td>
+                        <td style="border: 2px solid black;" data-format="#,##0.00">{{ $eti_bonus }}</td>
+                        <td style="border: 2px solid black;" data-format="#,##0.00">{{ $total }}</td>
+                    </tr>
+                @endforeach
+                <tr>
+                    @for ($i = 0; $i < 7; $i++)
+                        <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                    @endfor
+                    @foreach ($data_output['total_overtime_hours'] as $total)
+                        <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                        <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                        <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                    @endforeach
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
+                        {{ $data_output['actual_hours_total'] }}
+                    </td>
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
+                        {{ $data_output['paid_hours_total'] }}
+                    </td>
+                    <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
+                        {{ $emp_amount }}</td>
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
+                        {{ $emp_eti_bonus }}</td>
+                    <td data-format="#,##0.00"
+                        style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;">
+                        {{ $emp_amount_total }}</td>
+                </tr>
+                <tr>
+                </tr>
+            @endforeach
+            @php
+                $super_amount = bcadd($super_amount, $emp_amount, 6);
+                $super_eti_bonus = bcadd($super_eti_bonus, $emp_eti_bonus, 6);
+                $super_amount_total = bcadd($super_amount_total, $emp_amount_total, 6);
+                $super_actual_hours_total = bcadd($super_actual_hours_total, $data_output['actual_hours_total'], 6);
+                $super_paid_hours_total = bcadd($super_paid_hours_total, $data_output['paid_hours_total'], 6);
+            @endphp
+        @endforeach
+        @foreach ($data_nk as $data_output)
             @php
                 $emp_amount = 0;
                 $emp_eti_bonus = 0;

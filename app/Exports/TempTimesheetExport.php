@@ -171,7 +171,7 @@ class TempTimesheetExport implements FromView, ShouldQueue, ShouldAutoSize, With
                 "total_overtime_hours" => $total['total_overtime_perdate'],
                 "paid_hours_total" => $total['paid_hours_total'],
                 "actual_hours_total" => $total['actual_hours_total'],];
-        })->sortKeys();
+        });
         $output =  $output->groupBy('dep')->sortKeysUsing('strnatcasecmp');
         return view('excel.timesheet-export-pns', compact('days', 'output', 'temptimesheet', 'dailyRates'));
         } catch (\Throwable $th) {
