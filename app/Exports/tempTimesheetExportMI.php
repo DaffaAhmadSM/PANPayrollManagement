@@ -78,6 +78,10 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         }
 
         $dailyRates = DailyRate::where('temptimesheet_string', $temptimesheet->random_string)->with('DailyDetails:daily_rate_string,value,date')->get();
+        
+        if($dailyRates->isEmpty()){
+            $dailyRates = [];
+        }
 
         $data_kronos = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
         ->where('parent_id','not regexp', '^NK')

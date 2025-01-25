@@ -352,6 +352,7 @@
             @endforeach
         </tr>
     </thead>
+    @if(!empty($dailyRates))
     <tbody>
         @php
             $total_work_hours = 0;
@@ -443,4 +444,5 @@
                 {{ bcadd($total_grand_total, $super_amount_total, 6) }}</td>
         </tr>
     </tbody>
+    @endif
 </table>

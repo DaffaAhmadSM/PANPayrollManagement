@@ -83,7 +83,10 @@ class TempTimesheetExport implements
             )
                 ->with("DailyDetails:daily_rate_string,value,date")
                 ->get();
-
+                
+            if ($dailyRates->isEmpty()) {
+                $dailyRates = [];
+            }
             $days = [];
             foreach ($period as $date) {
                 $isholiday = false;

@@ -29,8 +29,8 @@ class ImportPnsMCD implements ShouldQueue
      */
 
   protected $pnsFileLocation;
-  protected $mcdFileLocation; 
-  protected $temptimesheet;   
+  protected $mcdFileLocation;
+  protected $temptimesheet;
   public function __construct($mcdCsv, $pnsCsv, $temptimesheet)
   {
       $this->pnsFileLocation = $pnsCsv;
@@ -65,6 +65,9 @@ class ImportPnsMCD implements ShouldQueue
             $dateHeadersMcd = array_slice($mcdHeaders, 8);  // Extract date headers
             foreach ($mcdRows as $row) {
                 foreach ($dateHeadersMcd as $index => $date) {
+                    if ($row[3] == null) {
+                        continue;
+                    }
                     (double)$value = (double)$row[$index + 8] !== null ? (double)$row[$index + 8] : 0;  // Replace null with 0
                     $flattenedDataMcd[] = [
                         "temp_time_sheet_id" => $this->temptimesheet->id,
@@ -119,6 +122,9 @@ class ImportPnsMCD implements ShouldQueue
                 $dateHeadersPns = array_slice($pnsHeaders, 3);
                 foreach ($pnsRows as $row) {
                     foreach ($dateHeadersPns as $index => $date) {
+                        if ($row[0] == null) {
+                            continue;
+                        }
                         $value = $row[$index + 3] !== null ? $row[$index + 3] : 0;  // Replace null with 0
                         $flattenedDataPns[] = [
                             "temp_time_sheet_id" => $this->temptimesheet->id,
@@ -160,7 +166,7 @@ class ImportPnsMCD implements ShouldQueue
             }
         }
 
-        
+
 
         $this->temptimesheet->update([
             'customer_file_name' => $this->mcdFileLocation,
@@ -178,7 +184,7 @@ class ImportPnsMCD implements ShouldQueue
             return [
                 'employee_name' => $items->first()->employee_name,
                 'date' => $items->first()->date,
-                'ids' => $items->pluck('id'),               
+                'ids' => $items->pluck('id'),
                 'value' => $items->sum('value')
             ];;
         });
@@ -255,7 +261,7 @@ class ImportPnsMCD implements ShouldQueue
         // delete the data from the database
         TempMcd::where('temp_time_sheet_id', $this->temptimesheet->id)->delete();
         TempPns::where('temp_time_sheet_id', $this->temptimesheet->id)->delete();
-        
+
         Log::error($exception);
         $this->fail();
     }

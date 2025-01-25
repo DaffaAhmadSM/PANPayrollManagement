@@ -96,7 +96,7 @@ class ImportTimeSheetController extends Controller
                 'message' => $validator->errors()->first()
             ], 400);
         }
-        
+
         $temptimesheet = TempTimeSheet::find($request->temptimesheet_id);
 
         $excel = (new McdImport)->toCollection($request->file('csv'));
@@ -163,7 +163,7 @@ class ImportTimeSheetController extends Controller
                 'message' => $validator->errors()->first()
             ], 400);
         }
-        
+
 
         $temptimesheet = TempTimeSheet::find($request->temptimesheet_id);
         $excel = (new PnsImport)->toCollection($request->file('csv'));
@@ -230,7 +230,7 @@ class ImportTimeSheetController extends Controller
         }
 
         $temptimesheet = TempTimeSheet::where('random_string', $request->random_string)->first();
-        
+
         if (!$temptimesheet) {
             return response()->json([
                 'status' => 400,
@@ -247,7 +247,7 @@ class ImportTimeSheetController extends Controller
             return [
                 'employee_name' => $items->first()->employee_name,
                 'date' => $items->first()->date,
-                'ids' => $items->pluck('id'),               
+                'ids' => $items->pluck('id'),
                 'value' => $items->sum('value')
             ];;
         });
@@ -345,7 +345,7 @@ class ImportTimeSheetController extends Controller
             'status' => 200,
             'message' => 'Data importing ...'
         ]);
-        
+
     }
 
     public function list (Request $request) {
@@ -465,7 +465,7 @@ class ImportTimeSheetController extends Controller
 
     public function diffList ($temp_timesheet_id) {
 
-       
+
 
         $diff_data = PnsMcdDiff::where('temp_time_sheet_id', $temp_timesheet_id)->get();
         $diff_data->map(function ($item) {
@@ -655,7 +655,8 @@ class ImportTimeSheetController extends Controller
         }
 
         $dateTime = Carbon::now();
-        $dateTime = $dateTime->format('YmdHis');
+        $datestr = Carbon::parse($temptimesheet->from_date)->format('M') . Carbon::parse($temptimesheet->from_date)->format('d') . '-' . Carbon::parse($temptimesheet->to_date)->format('M') . Carbon::parse($temptimesheet->to_date)->format('d');
+        $dateTime = $datestr . "_" . $dateTime->format('YmdHis');
 
         try {
             DB::beginTransaction();
@@ -676,7 +677,7 @@ class ImportTimeSheetController extends Controller
                 'file_path' => "timesheet/pns/TSPNS" . $dateTime . '.xlsx'
             ]);
             $temptimesheet->update(['status' => 'moved']);
-            DB::commit();    
+            DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
@@ -685,7 +686,7 @@ class ImportTimeSheetController extends Controller
             ], 500);
         }
 
-        (new TempTimesheetExport($real_timesheet->random_string, $real_timesheet))->store("timesheet/pns/TSPNS" . $dateTime . '.xlsx', 'public')->chain([
+        (new TempTimesheetExport($real_timesheet->random_string, $real_timesheet))->store("timesheet/pns/TSPNS". "_" . $dateTime . '.xlsx', 'public')->chain([
             new UpdateQueueStatus($real_timesheet, 'generated')
         ]);
 
@@ -728,9 +729,11 @@ class ImportTimeSheetController extends Controller
         ]);
 
         $string = Carbon::now();
-        $string = $string->format('YmdHis');
+        // $date = SEP16-OCT15
+        $datestr = Carbon::parse($timesheetid->from_date)->format('M') . Carbon::parse($timesheetid->from_date)->format('d') . '-' . Carbon::parse($timesheetid->to_date)->format('M') . Carbon::parse($timesheetid->to_date)->format('d');
+        $string = $datestr. "_" . $string->format('YmdHis');
 
-        (new tempTimesheetExportMI($customer_timesheet->random_string, $customer_timesheet))->store("timesheet/customer/TSMI" . $string . '.xlsx', 'public')->chain([
+        (new tempTimesheetExportMI($customer_timesheet->random_string, $customer_timesheet))->store("timesheet/customer/TSMI". "_" . $string . '.xlsx', 'public')->chain([
             new UpdateQueueStatus($timesheetid, 'moved'),
             new UpdateQueueStatus($customer_timesheet, 'generated')
         ]);
@@ -774,7 +777,7 @@ class ImportTimeSheetController extends Controller
 
         $temptimesheet = TempTimeSheet::find($request->temp_timesheet_id);
 
-        
+
 
         $excel = (new DailyRateImport)->toCollection($request->file('csv'));
 
@@ -814,7 +817,7 @@ class ImportTimeSheetController extends Controller
                 $flattenedData[] = [
                     "daily_rate_string" => $temptimesheet->random_string."-".$random_string_count,
                     "value" => $value,
-                    "date" => Carbon::createFromFormat('m/d/Y', $date),
+                    "date" => Carbon::createFromFormat('d/m/Y', $date),
                 ];
             }
             $random_string_count++;
