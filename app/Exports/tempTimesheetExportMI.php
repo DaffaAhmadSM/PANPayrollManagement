@@ -78,7 +78,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         }
 
         $dailyRates = DailyRate::where('temptimesheet_string', $temptimesheet->random_string)->with('DailyDetails:daily_rate_string,value,date')->get();
-        
+
         if($dailyRates->isEmpty()){
             $dailyRates = [];
         }
@@ -94,13 +94,13 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         ->with('overtimeTimesheet')
 
         // ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
-        ->lazy()->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);    
+        ->lazy()->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
 
         $invoice_total_amounts = [];
 
         $data_kronos = $data_kronos->groupBy(['oracle_job_number', 'parent_id', 'no'])
         ->map(function ($byKronos) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
-        
+
             $total = [
                 'paid_hours_total' => 0,
                 'actual_hours_total' => 0,
@@ -142,7 +142,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                             $employeeData->overtime_timesheet = $employeeData->OvertimeTimesheet->map(function ($overtime) use (&$result) {
                                 $result['overtime_hours_total'] += (double) $overtime->total_hours;
                                 return $overtime->hours;
-                                
+
                             });
 
                             // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
@@ -162,7 +162,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                                 $total['total_overtime_perdate'][$date] = $sum;
                             }
 
-                                
+
                         });
 
                         $total['paid_hours_total'] += (double) $result['paid_hours_total'];
@@ -201,7 +201,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
 
         $data_nk = $output = $data_nk->groupBy(['oracle_job_number', 'parent_id', 'no'])
         ->map(function ($byKronos) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
-        
+
             $total = [
                 'paid_hours_total' => 0,
                 'actual_hours_total' => 0,
@@ -211,6 +211,9 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                 return $byOracle->map(function ($byEmployee) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
                         $emp = $byEmployee->first();
                         $emp_rates = $employee_rate_details->where('emp_id', $emp['no'])->first();
+                        if (!$emp_rates) {
+                            $emp_rates = $employee_rate_details->where('classification', $emp['job_dissipline'])->first();
+                        }
                         $result = [
                             'emp' => $emp['no'],
                             'classification' => $emp_rates->classification ?? $emp['job_dissipline'],
@@ -243,7 +246,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                             $employeeData->overtime_timesheet = $employeeData->OvertimeTimesheet->map(function ($overtime) use (&$result) {
                                 $result['overtime_hours_total'] += (double) $overtime->total_hours;
                                 return $overtime->hours;
-                                
+
                             });
 
                             // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
@@ -263,7 +266,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                                 $total['total_overtime_perdate'][$date] = $sum;
                             }
 
-                                
+
                         });
 
                         $total['paid_hours_total'] += (double) $result['paid_hours_total'];
@@ -304,7 +307,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         foreach ($chunk_invoice as $key => $chunk) {
             InvoiceTotalAmount::insert($chunk);
         }
-    
+
 
     } catch (\Throwable $th) {
         $this->timesheet->update([

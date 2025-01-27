@@ -83,7 +83,7 @@ class TempTimesheetExport implements
             )
                 ->with("DailyDetails:daily_rate_string,value,date")
                 ->get();
-                
+
             if ($dailyRates->isEmpty()) {
                 $dailyRates = [];
             }
@@ -158,6 +158,11 @@ class TempTimesheetExport implements
                                     $emp_rates = $employee_rate_details
                                         ->where("emp_id", $employee["no"])
                                         ->first();
+                                    if (!$emp_rates) {
+                                        $emp_rates = $employee_rate_details
+                                            ->where("classification", $employee["job_dissipline"])
+                                            ->first();
+                                    }
                                     $current_oracle = $byEmployee->first();
                                     $result = [
                                         "emp" => $employee["no"],
