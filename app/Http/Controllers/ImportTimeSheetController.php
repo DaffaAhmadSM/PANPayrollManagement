@@ -674,7 +674,7 @@ class ImportTimeSheetController extends Controller
                 'customer_file_name' => $temptimesheet->customer_file_name,
                 'employee_file_name' => $temptimesheet->employee_file_name,
                 'eti_bonus_percentage' => $temptimesheet->eti_bonus_percentage,
-                'file_path' => "timesheet/pns/TSPNS" . $dateTime . '.xlsx'
+                'file_path' => "timesheet/pns/TSPNS". "_" . $dateTime . '.xlsx'
             ]);
             $temptimesheet->update(['status' => 'moved']);
             DB::commit();
