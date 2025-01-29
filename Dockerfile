@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y \
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN docker-php-ext-install pdo_mysql exif pcntl bcmath gd xml iconv simplexml zlib xmlreader intl soap zip
-RUN docker-php-ext-configure intl
+RUN docker-php-ext-install pdo_mysql exif pcntl bcmath gd xml iconv simplexml xmlreader intl soap zip
+RUN docker-php-ext-configure intl zip
 
 # Configure PHP
 RUN sed -i -e "s/upload_max_filesize = .*/upload_max_filesize = 1G/g" \
