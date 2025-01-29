@@ -37,6 +37,8 @@ class TempTimesheetExport implements
      */
     protected $random_string;
     protected $real_timesheet;
+    public $timeout = 360;
+    public $failOnTimeout = true;
     public function __construct($random_string, $real_timesheet)
     {
         $this->random_string = $random_string;
@@ -297,7 +299,8 @@ class TempTimesheetExport implements
                 compact("days", "output", "temptimesheet", "dailyRates")
             );
         } catch (\Throwable $th) {
-            $this->failed($th);
+            $this->fail($th);
+            return 0;
         }
     }
 
@@ -307,7 +310,6 @@ class TempTimesheetExport implements
         $this->real_timesheet->update([
             "status" => "failed",
         ]);
-        $this->fail($exception);
     }
 
     public function styles(Worksheet $sheet)

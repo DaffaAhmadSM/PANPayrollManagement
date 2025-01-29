@@ -39,6 +39,8 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         $this->random_string = $random_string;
         $this->timesheet = $timesheet;
     }
+    public $timeout = 360;
+    public $failOnTimeout = true;
 
     public function view(): View
     {
@@ -312,9 +314,6 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
 
 
     } catch (\Throwable $th) {
-        $this->timesheet->update([
-            'status' => 'failed'
-        ]);
         $this->fail($th);
         return 0;
     }
@@ -324,6 +323,9 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
     public function failed(?Throwable $exception)
     {
         Log::error($exception);
+        $this->timesheet->update([
+            'status' => 'failed'
+        ]);
     }
 
     public function styles(Worksheet $sheet)
