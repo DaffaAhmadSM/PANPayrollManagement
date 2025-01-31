@@ -18,6 +18,6 @@ class TimeSheet extends Model
 
     public function attachments()
     {
-        return $this->hasMany(TimeSheetAttachment::class, 'timesheet_id');
+        return $this->hasMany(TimesheetAttachment::class, 'timesheet_id');
     }
 }
