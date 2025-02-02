@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer("employee_total_imported")->default(0);
             $table->double("eti_bonus_percentage", 8, 2)->default(0);
             $table->string('status')->default('open')->index();
+            $table->string('file_path')->nullable();
             $table->timestamps();
         });
     }

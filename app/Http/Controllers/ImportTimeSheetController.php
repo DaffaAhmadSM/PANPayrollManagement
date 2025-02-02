@@ -713,6 +713,11 @@ class ImportTimeSheetController extends Controller
             ],400);
         }
 
+        $string = Carbon::now();
+        // $date = SEP16-OCT15
+        $datestr = Carbon::parse($timesheetid->from_date)->format('M') . Carbon::parse($timesheetid->from_date)->format('d') . '-' . Carbon::parse($timesheetid->to_date)->format('M') . Carbon::parse($timesheetid->to_date)->format('d');
+        $string = $datestr. "_" . $string->format('YmdHis');
+
         // move to customer timesheet
 
         $customer_timesheet = CustomerTimesheet::create([
@@ -726,12 +731,10 @@ class ImportTimeSheetController extends Controller
             'customer_file_name' => $timesheetid->customer_file_name,
             'employee_file_name' => $timesheetid->employee_file_name,
             'random_string' => $timesheetid->random_string,
+            'file_path' => "timesheet/customer/TSMI". "_" . $string . '.xlsx'
         ]);
 
-        $string = Carbon::now();
-        // $date = SEP16-OCT15
-        $datestr = Carbon::parse($timesheetid->from_date)->format('M') . Carbon::parse($timesheetid->from_date)->format('d') . '-' . Carbon::parse($timesheetid->to_date)->format('M') . Carbon::parse($timesheetid->to_date)->format('d');
-        $string = $datestr. "_" . $string->format('YmdHis');
+        
 
         (new tempTimesheetExportMI($customer_timesheet->random_string, $customer_timesheet))->store("timesheet/customer/TSMI". "_" . $string . '.xlsx', 'public')->chain([
             new UpdateQueueStatus($timesheetid, 'moved'),
