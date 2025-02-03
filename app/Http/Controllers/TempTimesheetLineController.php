@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CalculateDailyRate;
 use DateTime;
 use DatePeriod;
 use DateInterval;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\TempTimeSheet;
 use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
+use App\Models\DailyRate;
 use App\Models\tempTimesheetLine;
 use App\Models\EmployeeRateDetail;
 use App\Models\WorkingHoursDetail;
@@ -398,5 +400,26 @@ class TempTimesheetLineController extends Controller
             'status' => 200,
             'data' => $output,
         ]);
+    }
+
+    public function calculateDailyRate($temp_timesheet_str){
+        $daily_rate_data = DailyRate::where('temptimesheet_string', $temp_timesheet_str)->with("DailyDetails")->get(["id", "temptimesheet_string", "string_id", "employee_name", "kronos_job_number", "oracle_job_number", "parent_id", "leg_id", "rate", "work_hours_total", "invoice_hours_total", "amount_total", "eti_bonus_total", "grand_total"]);
+        $temp_timesheet = TempTimeSheet::where('random_string', $temp_timesheet_str)->first();
+        $rate = EmployeeRate::where('random_string', $temp_timesheet->rate_id)->first();
+        $employee_rate_details = EmployeeRateDetail::where('employee_rate_id', $rate->id)->get();
+
+        $daily_rate_data->map(function ($daily_rate) use (&$temp_timesheet, &$employee_rate_details) {
+            $rate = $employee_rate_details->where('emp_id', $daily_rate->leg_id)->first();
+            $val =  $daily_rate->DailyDetails->where('value', '>', 0);
+            $sum = $val->sum('value');
+            $daily_rate->work_hours_total = $sum;
+            $daily_rate->invoice_hours_total = $val->count();
+            $daily_rate->amount_total = $daily_rate->invoice_hours_total * $daily_rate->rate??$rate->rate;
+            $daily_rate->eti_bonus_total = $daily_rate->amount_total * $temp_timesheet->eti_bonus_percentage/100;
+            $daily_rate->grand_total = $daily_rate->amount_total + $daily_rate->eti_bonus_total;
+
+            $daily_rate->save();
+        });
+        return $daily_rate_data;
     }
 }
