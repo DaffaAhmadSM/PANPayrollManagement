@@ -53,7 +53,7 @@ class TempTimesheetLineController extends Controller
             tempTimeSheetOvertime::where("random_string", $temp_timesheet_str)->delete();
         }
 
-        $mcd = TempMcd::where('temp_time_sheet_id', $temptimesheet->id)->cursor();
+        $mcd = TempMcd::where('temp_time_sheet_id', $temptimesheet->id)->lazy();
         // return $mcd;
         // $mcd Group by employee name and date
         $mcd = $mcd->groupBy(['leg_id', 'date'])->collapse();
@@ -420,6 +420,9 @@ class TempTimesheetLineController extends Controller
 
             $daily_rate->save();
         });
-        return $daily_rate_data;
+        return response()->json([
+            'status' => 200,
+            'message' => 'Daily rate calculated successfully'
+        ]);
     }
 }

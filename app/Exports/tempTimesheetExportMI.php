@@ -102,16 +102,16 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         $invoice_total_amounts = [];
 
         $data_kronos = $data_kronos->groupBy(['oracle_job_number', 'parent_id', 'no', 'Kronos_job_number'])
-        ->map(function ($byOracle) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
-
-            $total = [
-                'paid_hours_total' => 0,
-                'actual_hours_total' => 0,
-                'total_overtime_perdate' => [],
-            ];
-            return $byOracle->map(function ($byParentID) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
-                $data = $byParentID->map(function ($byKronos) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
-                    return $byKronos->map(function ($byNo) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
+        ->map(function ($byOracle, $oracleID) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
+            return $byOracle->map(function ($byParentID, $parentID) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet, $oracleID) {
+                $total = [
+                    'paid_hours_total' => 0,
+                    'actual_hours_total' => 0,
+                    'total_overtime_perdate' => [],
+                    'total_amount' => 0,
+                ];
+                $data = $byParentID->map(function ($byKronos) use (&$holiday, &$total, &$employee_rate_details, &$temptimesheet) {
+                    return $byKronos->map(function ($byNo) use (&$holiday, &$total, &$employee_rate_details, &$temptimesheet) {
                             $emp = $byNo->first();
                             $emp_rates = $employee_rate_details->where('emp_id', $emp['no'])->first();
                             $result = [
@@ -172,28 +172,26 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                             $total['paid_hours_total'] += (double) $result['paid_hours_total'];
                             $total['actual_hours_total'] += (double) $result['actual_hours_total'];
 
-                            $amount = bcmul($result['actual_hours_total'], $result['rate'], 2);
-                            $total_hours = $result['actual_hours_total'];
-                            $eti_bonus = bcmul($amount,bcdiv($temptimesheet["eti_bonus_percentage"], 100, 2), 2);
-                            $amount_total = bcadd($amount, $eti_bonus, 2);
+                            $amount = bcmul($result['paid_hours_total'], $result['rate'], 6);
+                            $eti_bonus = bcdiv(bcmul($amount, $temptimesheet["eti_bonus_percentage"], 6), 100, 6);
+                            $amount_total = bcadd($amount, $eti_bonus, 6);
 
-                            if(!isset($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']])){
-                                $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']] = [
-                                    'random_string' => $temptimesheet->random_string,
-                                    'oracle_job_number' => $emp['oracle_job_number'],
-                                    'parent_id' => $emp['parent_id'],
-                                    'total_amount' => $amount_total,
-                                    'total_hours' => $total_hours,
-                                ];
-                            }else{
-                                $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_amount'] = bcadd($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_amount'], $amount_total, 2);
-                                $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_hours'] = bcadd($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_hours'], $total_hours, 2);
-                            }
+                            $total['total_amount'] = bcadd($total['total_amount'], $amount_total, 6);
 
 
                             return $result;
-                        })->values();
-                    });
+                    })->values();
+                });
+
+                if(!isset($invoice_total_amounts[$oracleID . "_" . $parentID])){
+                    $invoice_total_amounts[$oracleID . "_" . $parentID] = [
+                        'random_string' => $temptimesheet->random_string,
+                        'oracle_job_number' => $oracleID,
+                        'parent_id' => $parentID,
+                        'total_amount' => $total['total_amount'],
+                        'total_hours' => $total['actual_hours_total'],
+                    ];
+                }
                 return [
                     "data" => $data,
                     // total overtime hours from data
@@ -205,16 +203,16 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         });
 
         $data_nk = $data_nk->groupBy(['oracle_job_number', 'parent_id', 'no', 'Kronos_job_number'])
-        ->map(function ($byOracle) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
-
-            $total = [
-                'paid_hours_total' => 0,
-                'actual_hours_total' => 0,
-                'total_overtime_perdate' => [],
-            ];
-            return $byOracle->map(function ($byParentID) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
-                $data = $byParentID->map(function ($byKronos) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
-                    return $byKronos->map(function ($byNo) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
+        ->map(function ($byOracle, $oracleID) use (&$holiday, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet) {
+            return $byOracle->map(function ($byParentID, $parentID) use (&$holiday, &$total, &$employee_rate_details, &$invoice_total_amounts, &$temptimesheet, $oracleID) {
+                $total = [
+                    'paid_hours_total' => 0,
+                    'actual_hours_total' => 0,
+                    'total_overtime_perdate' => [],
+                    'total_amount' => 0,
+                ];
+                $data = $byParentID->map(function ($byKronos) use (&$holiday, &$total, &$employee_rate_details, &$temptimesheet) {
+                    return $byKronos->map(function ($byNo) use (&$holiday, &$total, &$employee_rate_details, &$temptimesheet) {
                             $emp = $byNo->first();
                             $emp_rates = $employee_rate_details->where('emp_id', $emp['no'])->first();
                             $result = [
@@ -275,28 +273,26 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                             $total['paid_hours_total'] += (double) $result['paid_hours_total'];
                             $total['actual_hours_total'] += (double) $result['actual_hours_total'];
 
-                            $amount = bcmul($result['actual_hours_total'], $result['rate'], 2);
-                            $total_hours = $result['actual_hours_total'];
-                            $eti_bonus = bcmul($amount,bcdiv($temptimesheet["eti_bonus_percentage"], 100, 2), 2);
-                            $amount_total = bcadd($amount, $eti_bonus, 2);
+                            $amount = bcmul($result['paid_hours_total'], $result['rate'], 6);
+                            $eti_bonus = bcdiv(bcmul($amount, $temptimesheet["eti_bonus_percentage"], 6), 100, 6);
+                            $amount_total = bcadd($amount, $eti_bonus, 6);
 
-                            if(!isset($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']])){
-                                $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']] = [
-                                    'random_string' => $temptimesheet->random_string,
-                                    'oracle_job_number' => $emp['oracle_job_number'],
-                                    'parent_id' => $emp['parent_id'],
-                                    'total_amount' => $amount_total,
-                                    'total_hours' => $total_hours,
-                                ];
-                            }else{
-                                $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_amount'] = bcadd($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_amount'], $amount_total, 2);
-                                $invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_hours'] = bcadd($invoice_total_amounts[$emp['oracle_job_number'] . "_" . $emp['parent_id']]['total_hours'], $total_hours, 2);
-                            }
+                            $total['total_amount'] = bcadd($total['total_amount'], $amount_total, 6);
 
 
                             return $result;
-                        })->values();
-                    });
+                    })->values();
+                });
+
+                if(!isset($invoice_total_amounts[$oracleID . "_" . $parentID])){
+                    $invoice_total_amounts[$oracleID . "_" . $parentID] = [
+                        'random_string' => $temptimesheet->random_string,
+                        'oracle_job_number' => $oracleID,
+                        'parent_id' => $parentID,
+                        'total_amount' => $total['total_amount'],
+                        'total_hours' => $total['actual_hours_total'],
+                    ];
+                }
                 return [
                     "data" => $data,
                     // total overtime hours from data
@@ -306,6 +302,9 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                 ];
             });
         });
+
+        $data_kronos = $data_kronos->collect();
+        $data_nk = $data_nk->collect();
 
         $chunk_invoice = array_chunk($invoice_total_amounts, 500);
         foreach ($chunk_invoice as $key => $chunk) {
