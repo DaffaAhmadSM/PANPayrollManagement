@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('parent_id')->default('N/A')->index();
             $table->string('oracle_job_number')->default('N/A')->index();
             // $table->foreignId('position_id')->constrained('positions');
-            $table->date('date')->default(Carbon::parse('3000-06-20'));
+            $table->date('date')->default(Carbon::parse('3000-06-20'))->index();
             $table->decimal('basic_hours', 8, 2)->default(0); // init from Working Hours
             $table->decimal('actual_hours', 8, 2)->default(0);
             $table->decimal('deduction_hours', 8, 2)->default(0); // if Actual Hours < Basic Hours

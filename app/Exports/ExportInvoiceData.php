@@ -6,12 +6,14 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class ExportInvoice implements WithMultipleSheets
+class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle
 {
+
     use Exportable;
     /**
     * @return \Illuminate\Support\Collection
@@ -29,21 +31,21 @@ class ExportInvoice implements WithMultipleSheets
         $this->customerData = $customerData;
     }
 
-    public function sheets(): array
+    public function view(): View
     {
-        $sheets = [];
-        $count = 1;
 
-        $sheets[] = new ExportInvoiceData($this->dataKronos, $this->dataNonKronos, $this->tempTimesheet, $this->customerData);
+        $dataKronos = $this->dataKronos;
+        $dataNonKronos = $this->dataNonKronos;
+        $customerData = $this->customerData;
+        $tempTimesheet = $this->tempTimesheet;
 
-        foreach ($this->dataKronos as $dataKey => $data) {
-            foreach ($data as $key => $chunk) {
-                $sheets[] = new InvoiceItemGroup($chunk, $this->tempTimesheet, $this->customerData, (string)$count, $dataKey);
-                $count++; 
-                
-            }
-        }
+        return view('excel.invoice', compact('dataKronos', 'dataNonKronos', 'customerData', 'tempTimesheet'));
+    }
 
-        return $sheets;
+    public function title(): string
+    {
+        $date = Carbon::parse($this->tempTimesheet->start_date)->format('M') . ' ' . Carbon::parse($this->tempTimesheet->start_date)->format('Y');
+        return 'Summary Invoice ' . $date;
     }
 }
+
