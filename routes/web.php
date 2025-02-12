@@ -21,11 +21,11 @@ use Illuminate\Support\Facades\View;
 
 Route::get('invoice', function () {
 
-    $tempTimesheet = TempTimeSheet::where('random_string', 'cVBWz1737706275')->first();
+    $tempTimesheet = TempTimeSheet::where('random_string', 'P9PX11737713339')->first();
 
     $customerData = Customer::where('id', $tempTimesheet->customer_id)->first();
 
-    $dataKronos = InvoiceTotalAmount::where('random_string', 'cVBWz1737706275')
+    $dataKronos = InvoiceTotalAmount::where('random_string', 'P9PX11737713339')
     ->where('parent_id','not regexp', '^NK')
     ->get()->groupBy(['parent_id']);
 
@@ -33,14 +33,30 @@ Route::get('invoice', function () {
         return $item->chunk(15);
     });
 
-    $dataNonKronos = InvoiceTotalAmount::where('random_string', 'cVBWz1737706275')
-    ->where('parent_id','regexp', '^NK')
+    $dataNonKronos = InvoiceTotalAmount::where('random_string', 'P9PX11737713339')
+    ->where('parent_id','regexp', '^NK$')
     ->get()->groupBy(['parent_id']);
 
-    $dataNonKronos = $dataNonKronos->map(function($item){
+    $dataNonKronosPlus = InvoiceTotalAmount::where('random_string', 'P9PX11737713339')
+    ->where('parent_id','regexp', '^NK-')
+    ->get()->groupBy(['parent_id']);
+
+    $dataNonKronosPlus = $dataNonKronosPlus->map(function($item){
         return $item->chunk(15);
     });
 
-    return (new ExportInvoice($dataKronos, $dataNonKronos, $tempTimesheet, $customerData))->download('invoice.xlsx');
+    $dataDailyRate = DailyRate::where('temptimesheet_string', 'P9PX11737713339')->get();
+
+    $dataNonKronos = [
+        "NK" => $dataNonKronos->collapse(),
+        "NK-" => $dataNonKronosPlus,
+        "Daily"=> $dataDailyRate
+    ];
+
+
+    $dateTime = Carbon::now();
+    $filename = "INVOICE_" . Carbon::parse($tempTimesheet->from_date)->format("Md") ."-" . Carbon::parse($tempTimesheet->to_date)->format("Md") . "_" .  $dateTime->format('YmdHis');
+
+    return (new ExportInvoice($dataKronos, $dataNonKronos, $tempTimesheet, $customerData))->download((string)$filename . '.xlsx');
 
 });

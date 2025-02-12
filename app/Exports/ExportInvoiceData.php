@@ -44,7 +44,7 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle
 
     public function title(): string
     {
-        $date = Carbon::parse($this->tempTimesheet->start_date)->format('M') . ' ' . Carbon::parse($this->tempTimesheet->start_date)->format('Y');
+        $date = Carbon::parse($this->tempTimesheet->from_date)->format('M') . ' ' . Carbon::parse($this->tempTimesheet->from_date)->format('Y');
         return 'Summary Invoice ' . $date;
     }
 }

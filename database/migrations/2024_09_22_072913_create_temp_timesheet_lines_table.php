@@ -18,7 +18,7 @@ return new class extends Migration
             // $table->foreignId('employee_id')->constrained('employees');
             $table->string('no');
             $table->foreignId('working_hours_id')->constrained('working_hours'); // init from Employee
-            $table->string('Kronos_job_number')->default('N/A')->index();
+            $table->string('Kronos_job_number')->default('N/A');
             $table->string('parent_id')->default('N/A')->index();
             $table->string('oracle_job_number')->default('N/A')->index();
             // $table->foreignId('position_id')->constrained('positions');

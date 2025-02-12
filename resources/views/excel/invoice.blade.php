@@ -87,10 +87,12 @@
                         <td style="border: 1px solid #000000;">###</td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[0]->parent_id }}</td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[0]->oracle_job_number }}</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[0]->total_hours }}</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[0]->total_amount }}</td>
-                        <td style="border: 1px solid #000000;" rowspan="{{ count($itemGroup) }}" align="center"
-                            valign="center">
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[0]->total_hours }}
+                        </td>
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[0]->total_amount }}
+                        </td>
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00" rowspan="{{ count($itemGroup) }}"
+                            align="center" valign="center">
                             {{ $sumTotalIDR }}</td>
                     </tr>
                     @php
@@ -100,10 +102,12 @@
                     <tr>
                         <td style="border: 1px solid #000000;">{{ $i + 1 }}</td>
                         <td style="border: 1px solid #000000;">###</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[0]->parent_id }}</td>
+                        <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->parent_id }}</td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->oracle_job_number }}</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->total_hours }}</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->total_amount }}</td>
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[$i]->total_hours }}
+                        </td>
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00">
+                            {{ $itemGroup[$i]->total_amount }}</td>
                     </tr>
                 @endif
             @endfor
@@ -115,9 +119,12 @@
         <td style="border: 1px solid #000000; background-color: #DAE4C0">Total Kronos</td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0">{{ $totalWorkHours }}</td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0">{{ $totalAmountIDR }}</td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0">{{ $totalAmountIDR }}</td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">{{ $totalWorkHours }}
+        </td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">{{ $totalAmountIDR }}
+        </td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">{{ $totalAmountIDR }}
+        </td>
 
     </tr>
 
@@ -134,7 +141,7 @@
     @php
         $countItemGroup = 1;
     @endphp
-    @foreach ($dataNonKronos as $dataParentID)
+    @foreach ($dataNonKronos['NK-'] as $dataParentID)
         @foreach ($dataParentID as $itemGroup)
             @php
                 $sumTotalIDR = $itemGroup->sum('total_amount');
@@ -150,12 +157,14 @@
                         </td>
                         <td style="border: 1px solid #000000;">{{ $i + 1 }}</td>
                         <td style="border: 1px solid #000000;">###</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[0]->parent_id }}</td>
+                        <td style="border: 1px solid #000000;"></td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[0]->oracle_job_number }}</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[0]->total_hours }}</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[0]->total_amount }}</td>
-                        <td style="border: 1px solid #000000;" rowspan="{{ count($itemGroup) }}" align="center"
-                            valign="center">
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[0]->total_hours }}
+                        </td>
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[0]->total_amount }}
+                        </td>
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00" rowspan="{{ count($itemGroup) }}"
+                            align="center" valign="center">
                             {{ $sumTotalIDR }}</td>
                     </tr>
                     @php
@@ -165,14 +174,83 @@
                     <tr>
                         <td style="border: 1px solid #000000;">{{ $i + 1 }}</td>
                         <td style="border: 1px solid #000000;">###</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[0]->parent_id }}</td>
+                        <td style="border: 1px solid #000000;"></td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->oracle_job_number }}</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->total_hours }}</td>
-                        <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->total_amount }}</td>
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[$i]->total_hours }}
+                        </td>
+                        <td style="border: 1px solid #000000;" data-format="#,##0.00">
+                            {{ $itemGroup[$i]->total_amount }}</td>
                     </tr>
                 @endif
             @endfor
         @endforeach
+    @endforeach
+
+    @php
+        $sumTotalIDR = $dataNonKronos['NK']->sum('total_amount');
+        $totalWorkHoursNK += $dataNonKronos['NK']->sum('total_hours');
+        $totalAmountIDRNK += $sumTotalIDR;
+    @endphp
+    @foreach ($dataNonKronos['NK'] as $itemGroup)
+        <tr>
+            <td style="border: 1px solid #000000;" align="center" valign="center">{{ $countItemGroup }}
+            </td>
+            <td style="border: 1px solid #000000;"></td>
+            <td style="border: 1px solid #000000;">###</td>
+            <td style="border: 1px solid #000000;"></td>
+            <td style="border: 1px solid #000000;">{{ $itemGroup->oracle_job_number }}</td>
+            <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup->total_hours }}
+            </td>
+            <td style="border: 1px solid #000000;" data-format="#,##0.00">
+                {{ $itemGroup->total_amount }}</td>
+            <td style="border: 1px solid #000000;" data-format="#,##0.00">
+                {{ $itemGroup->total_amount }}</td>
+        </tr>
+
+        @php
+            $countItemGroup++;
+        @endphp
+    @endforeach
+
+
+    @php
+        $sumTotalIDR = $dataNonKronos['Daily']->sum('grand_total');
+        $totalWorkHoursNK += $dataNonKronos['Daily']->sum('work_hours_total');
+        $totalAmountIDRNK += $sumTotalIDR;
+    @endphp
+    @foreach ($dataNonKronos['Daily'] as $key => $itemGroup)
+        @if ($key == 0)
+            <tr>
+                <td style="border: 1px solid #000000;" rowspan="{{ count($dataNonKronos['Daily']) }}" align="center"
+                    valign="center">{{ $countItemGroup }}
+                </td>
+                <td style="border: 1px solid #000000;"></td>
+                <td style="border: 1px solid #000000;">###</td>
+                <td style="border: 1px solid #000000;"></td>
+                <td style="border: 1px solid #000000;">{{ $itemGroup->oracle_job_number }}</td>
+                <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup->work_hours_total }}
+                </td>
+                <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup->grand_total }}
+                </td>
+                <td style="border: 1px solid #000000;" data-format="#,##0.00"
+                    rowspan="{{ count($dataNonKronos['Daily']) }}" align="center" valign="center">
+                    {{ $sumTotalIDR }}</td>
+            </tr>
+            @php
+                $countItemGroup++;
+            @endphp
+        @else
+            <tr>
+                <td style="border: 1px solid #000000;"></td>
+                <td style="border: 1px solid #000000;">###</td>
+                <td style="border: 1px solid #000000;"></td>
+                <td style="border: 1px solid #000000;">{{ $itemGroup->oracle_job_number }}</td>
+                <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup->work_hours_total }}
+                </td>
+                <td style="border: 1px solid #000000;" data-format="#,##0.00">
+                    {{ $itemGroup->grand_total }}</td>
+            </tr>
+        @endif
     @endforeach
 
     <tr>
@@ -181,9 +259,15 @@
         <td style="border: 1px solid #000000; background-color: #DAE4C0">Total Kronos</td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0">{{ $totalWorkHours }}</td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0">{{ $totalAmountIDR }}</td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0">{{ $totalAmountIDR }}</td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">
+            {{ $totalWorkHoursNK }}
+        </td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">
+            {{ $totalAmountIDRNK }}
+        </td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">
+            {{ $totalAmountIDRNK }}
+        </td>
 
     </tr>
     {{-- end of block --}}
