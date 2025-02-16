@@ -8,14 +8,17 @@ use DateInterval;
 use Carbon\Carbon;
 use App\Models\EmployeeRate;
 use App\Models\CalendarHoliday;
-use App\Models\EmployeeRateDetail;
 use App\Models\tempTimesheetLine;
+use App\Models\EmployeeRateDetail;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle
+class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyles
 {
 
     protected $oracle_job_number;
@@ -46,6 +49,26 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle
         $this->date1end = $date1end;
         $this->date2start = $date2start;
         $this->date2 = $date2;
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+
+        $sheet->getStyle("A:Z")->getFont()->setName("Times New Roman");
+        $sheet->getStyle("A:Z")->getFont()->setSize(9);
+        $sheet->setShowGridlines(false);
+
+        $sheet->getParentOrThrow()->getDefaultStyle()->applyFromArray([
+            'font' => [
+                'name' => 'Times New Roman',
+                'size' => 9
+            ]
+        ]);
+
+        $sheet->getSheetView()->setView('pageBreakPreview');
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $sheet->getPageSetup()->setFitToHeight(0);
+        $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
     }
 
     public function view() : View { 

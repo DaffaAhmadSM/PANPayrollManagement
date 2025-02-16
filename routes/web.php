@@ -21,6 +21,9 @@ use Illuminate\Support\Facades\View;
 
 Route::get('invoice', function () {
 
+    // set timeout to 360
+    ini_set('max_execution_time', 360);
+
     $tempTimesheet = TempTimeSheet::where('random_string', 'P9PX11737713339')->first();
 
     $customerData = Customer::where('id', $tempTimesheet->customer_id)->first();

@@ -5,9 +5,11 @@ use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class InvoiceItemGroup implements FromView, ShouldAutoSize, WithTitle
+class InvoiceItemGroup implements FromView, ShouldAutoSize, WithTitle, WithStyles
 {
 
     use Exportable;
@@ -34,6 +36,23 @@ class InvoiceItemGroup implements FromView, ShouldAutoSize, WithTitle
         $customerData = $this->customerData;
         $prCode = $this->prCode;
         return view('excel.invoice.invoice-item-group', compact('data', 'tempTimesheet', 'customerData', 'prCode'));
+    }
+
+    public function styles(Worksheet $sheet){
+
+        $sheet->getStyle("A:Z")->getFont()->setName("Times New Roman");
+        $sheet->getStyle("A:Z")->getFont()->setSize(9);
+        $sheet->setShowGridlines(false);
+
+        $sheet->getParentOrThrow()->getDefaultStyle()->applyFromArray([
+            'font' => [
+                'name' => 'Times New Roman',
+                'size' => 9
+            ]
+            ]);
+            $sheet->getSheetView()->setView('pageBreakPreview');
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $sheet->getPageSetup()->setFitToHeight(0);
     }
 
 

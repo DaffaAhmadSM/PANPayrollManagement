@@ -29,19 +29,21 @@
     <thead>
         <tr>
             <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
-                width="6">No.</th>
+                width="4">No.</th>
 
             <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
                 colspan="2" width="30">Name</th>
 
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
-                width="25">I.D No.
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word" rowspan="2" align="center"
+                valign="center" width="11">
+                I.D No.
             </th>
             <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
                 width="25">
                 Classification</th>
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
-                width="25">Service
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word" rowspan="2" align="center"
+                valign="center" width="11">
+                Service
                 Order No.</th>
             @foreach ($days1 as $day)
                 @if ($day['is_holiday'])
@@ -54,37 +56,41 @@
                         {{ $day['date'] }}</th>
                 @endif
             @endforeach
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center">
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word; font-size: 6rem;"
+                rowspan="2" align="center" valign="center" width="9">
                 Actual
                 Work
                 Hours</th>
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center">
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word; font-size: 6rem;"
+                rowspan="2" align="center" valign="center" width="9">
                 Invoice
                 Work
                 Hours</th>
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center">
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word; font-size: 7rem;"
+                rowspan="2" align="center" valign="center" width="10">
                 Rate
                 (IDR)
             </th>
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center">
+            <th style="border: 2px solid black; font-weight: bold; font-size: 7rem;" rowspan="2" align="center"
+                valign="center">
                 Amount
                 (IDR)</th>
         </tr>
         <tr>
             @foreach ($days1 as $day)
                 @if ($day['is_holiday'])
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">2</th>
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">3</th>
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">4</th>
                 @else
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">1</th>
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">1.5</th>
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">2</th>
                 @endif
             @endforeach
@@ -96,12 +102,9 @@
             $grandTotalPaidHours = 0;
             $grandTotalAmount = 0;
             $total_eti_bonus = 0;
+            $no = 1;
         @endphp
         @foreach ($data1 as $row)
-            @php
-                $no = 1;
-            @endphp
-
             @if ((int) $row['actual_hours_total'] > 0)
                 <tr>
                     <td style="border: 2px solid black;">{{ $no }}</td>
@@ -164,17 +167,22 @@
                     @endphp
                     <td style="border: 2px solid black;" data-format="#,##0.00">{{ $amount }}</td>
                 </tr>
+
+                @php
+                    $no++;
+                @endphp
             @endif
-            @php
-                $no++;
-            @endphp
         @endforeach
         <tr>
-            <td style="border: 2px solid black;" colspan="{{ 6 + count($days1) * 3 }}">Total I</td>
-            <td style="border: 2px solid black;" data-format="#,##0.00">{{ $grandTotalActualHours }}</td>
-            <td style="border: 2px solid black;" data-format="#,##0.00">{{ $grandTotalPaidHours }}</td>
+            <td style="border: 2px solid black; font-weight: bold;" colspan="{{ 6 + count($days1) * 3 }}">Total I
+            </td>
+            <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
+                {{ $grandTotalActualHours }}</td>
+            <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">{{ $grandTotalPaidHours }}
+            </td>
             <td style="border: 2px solid black;"></td>
-            <td style="border: 2px solid black;" data-format="#,##0.00">{{ $grandTotalAmount }}</td>
+            <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">{{ $grandTotalAmount }}
+            </td>
         </tr>
         <tr></tr>
         <tr></tr>
@@ -185,19 +193,21 @@
     <thead>
         <tr>
             <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
-                width="6">No.</th>
+                width="4">No.</th>
 
             <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
                 colspan="2" width="30">Name</th>
 
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
-                width="25">I.D No.
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word" rowspan="2"
+                align="center" valign="center" width="11">
+                I.D No.
             </th>
             <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
                 width="25">
                 Classification</th>
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center"
-                width="25">Service
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word" rowspan="2"
+                align="center" valign="center" width="11">
+                Service
                 Order No.</th>
             @foreach ($days2 as $day)
                 @if ($day['is_holiday'])
@@ -210,40 +220,58 @@
                         {{ $day['date'] }}</th>
                 @endif
             @endforeach
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center">
+
+            @for ($i = 0; $i < count($days1) - count($days2); $i++)
+                <th style="border: 2px solid black; font-weight: bold;" colspan="3" align="center"
+                    valign="center"></th>
+            @endfor
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word; font-size: 6rem;"
+                rowspan="2" align="center" valign="center" width="9">
                 Actual
                 Work
                 Hours</th>
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center">
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word; font-size: 6rem;"
+                rowspan="2" align="center" valign="center" width="9">
                 Invoice
                 Work
                 Hours</th>
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center">
+            <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word; font-size: 7rem;"
+                rowspan="2" align="center" valign="center" width="10">
                 Rate
                 (IDR)
             </th>
-            <th style="border: 2px solid black; font-weight: bold;" rowspan="2" align="center" valign="center">
+            <th style="border: 2px solid black; font-weight: bold; font-size: 7rem;" rowspan="2" align="center"
+                valign="center">
                 Amount
                 (IDR)</th>
         </tr>
         <tr>
             @foreach ($days2 as $day)
                 @if ($day['is_holiday'])
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">2</th>
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">3</th>
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">4</th>
                 @else
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">1</th>
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">1.5</th>
-                    <th style="border: 2px solid black; font-weight: bold;" width="10" align="center"
+                    <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                         valign="center">2</th>
                 @endif
             @endforeach
+
+            @for ($i = 0; $i < count($days1) - count($days2); $i++)
+                <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
+                    valign="center"></th>
+                <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
+                    valign="center"></th>
+                <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
+                    valign="center"></th>
+            @endfor
         </tr>
     </thead>
     <tbody>
@@ -251,12 +279,9 @@
             $grandTotalActualHours2 = 0;
             $grandTotalPaidHours2 = 0;
             $grandTotalAmount2 = 0;
+            $no = 1;
         @endphp
         @foreach ($data2 as $row)
-            @php
-                $no = 1;
-            @endphp
-
             @if ((int) $row['actual_hours_total'] > 0)
                 <tr>
                     <td style="border: 2px solid black;">{{ $no }}</td>
@@ -292,6 +317,11 @@
                             @endif
                         @endfor
                     @endforeach
+                    @for ($i = 0; $i < count($days1) - count($days2); $i++)
+                        <td style="border: 2px solid black;"></td>
+                        <td style="border: 2px solid black;"></td>
+                        <td style="border: 2px solid black;"></td>
+                    @endfor
                     <td style="border: 2px solid black;" data-format="#,##0.00">
                         {{ $row['actual_hours_total'] }}
                     </td>
@@ -318,17 +348,22 @@
                     @endphp
                     <td style="border: 2px solid black;" data-format="#,##0.00">{{ $amount }}</td>
                 </tr>
+
+                @php
+                    $no++;
+                @endphp
             @endif
-            @php
-                $no++;
-            @endphp
         @endforeach
         <tr>
-            <td style="border: 2px solid black;" colspan="{{ 6 + count($days2) * 3 }}">Total II</td>
-            <td style="border: 2px solid black;" data-format="#,##0.00">{{ $grandTotalActualHours2 }}</td>
-            <td style="border: 2px solid black;" data-format="#,##0.00">{{ $grandTotalPaidHours2 }}</td>
+            <td style="border: 2px solid black; font-weight: bold;" colspan="{{ 6 + count($days1) * 3 }}">Total II
+            </td>
+            <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
+                {{ $grandTotalActualHours2 }}</td>
+            <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
+                {{ $grandTotalPaidHours2 }}</td>
             <td style="border: 2px solid black;"></td>
-            <td style="border: 2px solid black;" data-format="#,##0.00">{{ $grandTotalAmount2 }}</td>
+            <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">{{ $grandTotalAmount2 }}
+            </td>
         </tr>
         <tr></tr>
         <tr></tr>
@@ -340,13 +375,16 @@
 <tr></tr>
 
 <tr>
-    <td style="border: 4px solid black;"colspan="{{ 6 + count($days2) * 3 }}">Grand Total (Total I + Total II)</td>
-    <td style="border: 2px solid black;" data-format="#,##0.00">
+    <td style="border: 4px solid black; font-weight: bold;"colspan="{{ 6 + count($days1) * 3 }}">Grand Total (Total I
+        + Total II)</td>
+    <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
         {{ $grandTotalActualHours2 + $grandTotalActualHours }}</td>
-    <td style="border: 2px solid black;" data-format="#,##0.00">{{ $grandTotalPaidHours2 + $grandTotalPaidHours }}
+    <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
+        {{ $grandTotalPaidHours2 + $grandTotalPaidHours }}
     </td>
     <td style="border: 2px solid black;"></td>
-    <td style="border: 2px solid black;" data-format="#,##0.00">{{ $grandTotalAmount2 + $grandTotalAmount }}</td>
+    <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
+        {{ $grandTotalAmount2 + $grandTotalAmount }}</td>
 </tr>
 
 <tr>
@@ -354,14 +392,15 @@
 </tr>
 
 <tr>
-    <td colspan="{{ 6 + count($days2) * 3 }}"></td>
-    <td style="border: 2px solid black;" colspan="3">E T I Bonus {{ $temptimesheet->eti_bonus_percentage }}%</td>
-    <td style="border: 2px solid black;" data-format="#,##0.00">{{ $total_eti_bonus }}</td>
+    <td colspan="{{ 6 + count($days1) * 3 }}"></td>
+    <td style="border: 2px solid black; font-weight: bold;" colspan="3">E T I Bonus
+        {{ $temptimesheet->eti_bonus_percentage }}%</td>
+    <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">{{ $total_eti_bonus }}</td>
 </tr>
 
 <tr>
-    <td colspan="{{ 6 + count($days2) * 3 }}"></td>
-    <td style="border: 2px solid black;" colspan="3">Total Invoice</td>
-    <td style="border: 2px solid black;" data-format="#,##0.00">
+    <td colspan="{{ 6 + count($days1) * 3 }}"></td>
+    <td style="border: 2px solid black; font-weight: bold;" colspan="3">Total Invoice</td>
+    <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
         {{ $total_eti_bonus + $grandTotalAmount + $grandTotalAmount2 }}</td>
 </tr>

@@ -112,9 +112,7 @@ class ExportInvoice implements WithMultipleSheets
                 foreach ($chunk as $key => $value) {
                     $sheets[] = new InvoiceItemDetail($value->oracle_job_number, $this->tempTimesheet, $this->customerData, (string)$count, $days1, $days2, $employee_rate_details, $holiday, $date1, $date1end, $date2start, $date2);
                 }
-
                 $count++; 
-
             }
         }
 
