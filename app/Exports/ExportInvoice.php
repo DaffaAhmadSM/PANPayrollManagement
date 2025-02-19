@@ -106,15 +106,75 @@ class ExportInvoice implements WithMultipleSheets
         $sheets[] = new ExportInvoiceData($this->dataKronos, $this->dataNonKronos, $this->tempTimesheet, $this->customerData);
 
         foreach ($this->dataKronos as $dataKey => $data) {
+
             foreach ($data as $key => $chunk) {
+               $oracle_job = $chunk->pluck("oracle_job_number")->toArray();
                 $sheets[] = new InvoiceItemGroup($chunk, $this->tempTimesheet, $this->customerData, (string)$count, $dataKey);
 
+                $data1 = $data1 = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
+                ->whereIn("oracle_job_number", $oracle_job)
+                ->whereBetween("date", [$date1, $date1end])
+                ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
+
+                $data2 = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
+                ->whereIn("oracle_job_number", $oracle_job)
+                ->whereBetween("date", [$date2start, $date2])
+                ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
+
                 foreach ($chunk as $key => $value) {
-                    $sheets[] = new InvoiceItemDetail($value->oracle_job_number, $this->tempTimesheet, $this->customerData, (string)$count, $days1, $days2, $employee_rate_details, $holiday, $date1, $date1end, $date2start, $date2);
+                    $sheets[] = new InvoiceItemDetail($data1[$value->oracle_job_number], $this->tempTimesheet, $data2[$value->oracle_job_number], (string)$count, $days1, $days2, $employee_rate_details, $holiday, $value->oracle_job_number);
                 }
-                $count++; 
+                $count++;
             }
         }
+
+        foreach ($this->dataNonKronos["NK-"] as $dataKey => $data) {
+
+            foreach ($data as $key => $chunk) {
+               $oracle_job = $chunk->pluck("oracle_job_number")->toArray();
+                $sheets[] = new InvoiceItemGroup($chunk, $this->tempTimesheet, $this->customerData, (string)$count, $dataKey);
+
+                $data1 = $data1 = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
+                ->whereIn("oracle_job_number", $oracle_job)
+                ->whereBetween("date", [$date1, $date1end])
+                ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
+
+                $data2 = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
+                ->whereIn("oracle_job_number", $oracle_job)
+                ->whereBetween("date", [$date2start, $date2])
+                ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
+
+                foreach ($chunk as $key => $value) {
+                    $sheets[] = new InvoiceItemDetail($data1[$value->oracle_job_number], $this->tempTimesheet, $data2[$value->oracle_job_number], (string)$count, $days1, $days2, $employee_rate_details, $holiday, $value->oracle_job_number);
+                }
+                $count++;
+            }
+        }
+        
+
+        $oracle_job = $this->dataNonKronos["NK"]->pluck("oracle_job_number")->toArray();
+        $data1 = $data1 = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
+        ->whereIn("oracle_job_number", $oracle_job)
+        ->whereBetween("date", [$date1, $date1end])
+        ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
+
+        $data2 = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
+        ->whereIn("oracle_job_number", $oracle_job)
+        ->whereBetween("date", [$date2start, $date2])
+        ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
+
+        foreach ($this->dataNonKronos["NK"] as $dataKey => $data) {
+            $sheets[] = new InvoiceItemGroup(collect([$data]), $this->tempTimesheet, $this->customerData, (string)$count, $dataKey);
+           
+            $sheets[] = new InvoiceItemDetail($data1[$data->oracle_job_number], $this->tempTimesheet, $data2[$data->oracle_job_number], (string)$count, $days1, $days2, $employee_rate_details, $holiday, $data->oracle_job_number);
+           $count++;
+        }
+
+
+        // $sheets[] = new InvoiceItemGroup($this->dataNonKronos["Daily"], $this->tempTimesheet, $this->customerData, (string)$count, $dataKey);
+        // foreach ($this->dataNonKronos["Daily"] as $dataKey => $data) {
+        //     $sheets[] = new InvoiceItemDetail($data->oracle_job_number, $this->tempTimesheet, $this->customerData, (string)$count, $days1, $days2, $employee_rate_details, $holiday, $date1, $date1end, $date2start, $date2);
+        // }
 
         return $sheets;
     }

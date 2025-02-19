@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\View;
 Route::get('invoice', function () {
 
     // set timeout to 360
-    ini_set('max_execution_time', 360);
+    ini_set('max_execution_time', 520);
 
     $tempTimesheet = TempTimeSheet::where('random_string', 'P9PX11737713339')->first();
 
@@ -30,7 +30,7 @@ Route::get('invoice', function () {
 
     $dataKronos = InvoiceTotalAmount::where('random_string', 'P9PX11737713339')
     ->where('parent_id','not regexp', '^NK')
-    ->get()->groupBy(['parent_id']);
+    ->lazy()->groupBy(['parent_id']);
 
     $dataKronos = $dataKronos->map(function($item){
         return $item->chunk(15);

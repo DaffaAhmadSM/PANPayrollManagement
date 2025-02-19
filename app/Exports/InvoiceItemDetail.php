@@ -11,6 +11,8 @@ use App\Models\CalendarHoliday;
 use App\Models\tempTimesheetLine;
 use App\Models\EmployeeRateDetail;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -20,10 +22,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyles
 {
-
-    protected $oracle_job_number;
     protected $tempTimesheet;
-    protected $customerData;
     protected $title = '1';
     protected $days1;
     protected $days2;
@@ -33,22 +32,23 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
     protected $date1end;
     protected $date2start;
     protected $date2;
+    protected $data1;
+    protected $data2;
+
+    protected $oracle_job_number;
 
 
-    public function __construct($oracle_job_number,  $tempTimesheet, &$customerData, $title,  $days1, $days2, &$employee_rate_details, $holiday, $date1, $date1end, $date2start, $date2)
+    public function __construct(Collection $data1, $tempTimesheet, Collection $data2, string $title,  $days1, $days2, &$employee_rate_details, $holiday, $oracle_job_number)
     {
-        $this->oracle_job_number = $oracle_job_number;
+        $this->data1 = $data1;
+        $this->data2 = $data2;
         $this->tempTimesheet = $tempTimesheet;
-        $this->customerData = $customerData;
         $this->title = $title;
         $this->days1 = $days1;
         $this->days2 = $days2;
         $this->employee_rate_details = $employee_rate_details;
         $this->holiday = $holiday;
-        $this->date1 = $date1;
-        $this->date1end = $date1end;
-        $this->date2start = $date2start;
-        $this->date2 = $date2;
+        $this->oracle_job_number = $oracle_job_number;
     }
 
     public function styles(Worksheet $sheet)
@@ -75,33 +75,17 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
         
         $employee_rate_details = $this->employee_rate_details;
         $holiday = $this->holiday;
-        $date1 = $this->date1;
-        $date1end = $this->date1end;
-        $date2start = $this->date2start;
-        $date2 = $this->date2;
         $days1 = $this->days1;
         $days2 = $this->days2;
         $temptimesheet = $this->tempTimesheet;
         $oracle_job_number = $this->oracle_job_number;
         
-
-        // $data = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
-        // ->where("oracle_job_number", $value->oracle_job_number)
-        // ->lazy()
-        // ->sortBy([ "employee_name", "Kronos_job_number", "oracle_job_number",]);
-
         // data1 from date1 to date1end
-        $data1 = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
-        ->where("oracle_job_number", $this->oracle_job_number)
-        ->whereBetween("date", [$date1, $date1end])
-        ->lazy();
+        $data1 = $this->data1;
 
         // data2 from date2start to date2
 
-        $data2 = tempTimesheetLine::where("temp_timesheet_id", $this->tempTimesheet->id)->with("overtimeTimesheet")
-        ->where("oracle_job_number", $this->oracle_job_number)
-        ->whereBetween("date", [$date2start, $date2])
-        ->lazy();
+        $data2 = $this->data2;
 
         $data1 = $data1->groupBy("no")
         ->map(function($item) use (&$employee_rate_details, &$holiday) {

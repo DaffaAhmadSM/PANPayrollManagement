@@ -172,7 +172,7 @@
             <td style="border-left: 1px solid black; border-bottom: 1px solid black;" colspan="3" height="40">
                 Address Bank
             </td>
-            <td style="word-wrap: break-word; border-bottom: 1px solid black;" colspan="2" height="40">: Jln.
+            <td style="word-wrap: break-word; border-bottom: 1px solid black;" colspan="2" height="60">: Jln.
                 Raja Ali Haji,
                 Nagoya Batam, Kepulauan
                 Riau, Indonesia</td>
