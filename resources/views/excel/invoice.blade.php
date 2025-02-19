@@ -147,9 +147,6 @@
         $totalWorkHoursNK = 0;
         $totalAmountIDRNK = 0;
     @endphp
-    @php
-        $countItemGroup = 1;
-    @endphp
     @foreach ($dataNonKronos['NK-'] as $dataParentID)
         @foreach ($dataParentID as $itemGroup)
             @php
@@ -268,7 +265,7 @@
     <tr>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0" colspan="2">Total Kronos</td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" colspan="2">Total Non Kronos</td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">

@@ -126,6 +126,15 @@
                 $total += $dataItem->total_amount;
             @endphp
         @endforeach
+        @for ($i = 0; $i < 15 - count($data); $i++)
+            <tr>
+                <td style="border-left: 1px solid black; border-right: 1px solid black"></td>
+                <td style="border-right: 1px solid black" colspan="2"></td>
+                <td style="border-right: 1px solid black" colspan="3"></td>
+                <td style="border-right: 1px solid black" colspan="2"></td>
+                <td style="border-right: 1px solid black" colspan="2"></td>
+            </tr>
+        @endfor
         <tr>
             <td style="border-left: 1px solid black; border-right: 1px solid black"></td>
             <td style="border-right: 1px solid black" colspan="2"></td>

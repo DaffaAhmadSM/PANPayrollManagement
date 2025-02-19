@@ -101,7 +101,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [MultiplicationCalculationController::class, 'search']);
     });
 
-    Route::group(['prefix' => 'overtime-multiplication-setup'], function() {
+    Route::group(['prefix' => 'overtime-multiplication-setup'], function () {
         Route::post('create', [OvertimeMultiplicationSetupController::class, 'create']);
         Route::get('all', [OvertimeMultiplicationSetupController::class, 'list']);
         Route::get('detail/{id}', [OvertimeMultiplicationSetupController::class, 'detail']);
@@ -167,7 +167,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [EducationLevelController::class, 'delete']);
         Route::post('search', [EducationLevelController::class, 'search']);
     });
-    
+
     Route::group(['prefix' => 'job-skill'], function () {
         Route::post('create', [JobSkillController::class, 'create']);
         Route::get('list', [JobSkillController::class, 'getList']);
@@ -177,15 +177,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [JobSkillController::class, 'search']);
     });
 
-    Route::group(['prefix'=> 'app-setting'], function() {
+    Route::group(['prefix' => 'app-setting'], function () {
         Route::get('all', [AppSettingController::class, 'getAll']);
         Route::post('create', [AppSettingController::class, 'create']);
         Route::post('update/{id}', [AppSettingController::class, 'update']);
         Route::post('delete/{id}', [AppSettingController::class, 'delete']);
     });
 
-    Route::group(['prefix'=> 'user'], function() {
-        Route::get('current', function(){
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('current', function () {
             return response()->json(Auth::user(), 200);
         });
         Route::post('create', [UserController::class, 'createUser']);
@@ -196,7 +196,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [UserController::class, 'searchUser']);
     });
 
-    Route::group(['prefix'=> 'customer'], function() {
+    Route::group(['prefix' => 'customer'], function () {
         Route::post('create', [CustomerController::class, 'create']);
         Route::post('update/{id}', [CustomerController::class, 'update']);
         Route::post('delete/{id}', [CustomerController::class, 'delete']);
@@ -215,7 +215,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('detail/{id}', [CustomerContractController::class, 'detail']);
         Route::post('search', [CustomerContractController::class, 'search']);
     });
-    
+
     Route::group(['prefix' => 'customer-calendar-holiday'], function () {
         Route::post('create', [CustomerCalendarHolidayController::class, 'create']);
         Route::post('update/{id}', [CustomerCalendarHolidayController::class, 'update']);
@@ -300,7 +300,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [PositionControler::class, 'delete']);
         Route::post('search', [PositionControler::class, 'search']);
     });
-    
+
     Route::group(['prefix' => 'position-rate'], function () {
         Route::post('create', [PositionRateController::class, 'create']);
         Route::get('list', [PositionRateController::class, 'list']);
@@ -372,7 +372,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [EmploymentTypeController::class, 'search']);
     });
 
-    
+
 
     Route::group(['prefix' => 'employee-certificate'], function () {
         Route::post('create', [EmployeeCertificateController::class, 'create']);
@@ -403,7 +403,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [EmployeeSkillController::class, 'delete']);
         Route::post('search', [EmployeeSkillController::class, 'search']);
     });
-    
+
     Route::group(['prefix' => 'employee-professional-experience'], function () {
         Route::post('create', [EmployeeProfessionalExperienceController::class, 'create']);
         Route::get('list', [EmployeeProfessionalExperienceController::class, 'list']);
@@ -413,7 +413,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [EmployeeProfessionalExperienceController::class, 'delete']);
         Route::post('search', [EmployeeProfessionalExperienceController::class, 'search']);
     });
-    
+
     Route::group(['prefix' => 'employee-project-experience'], function () {
         Route::post('create', [EmployeeProjectExperienceController::class, 'create']);
         Route::get('list', [EmployeeProjectExperienceController::class, 'list']);
@@ -460,7 +460,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('list', [CustomerTimesheetController::class, 'list']);
         Route::get('detail/{customer_timesheet_str}', [CustomerTimesheetController::class, 'detail']);
         Route::post('search', [CustomerTimesheetController::class, 'search']);
-        Route::post('generate-invoice/{id}', [CustomerTimesheetController::class, 'generateInvoice']);
+        Route::post('generate-invoice/{string_id}', [CustomerTimesheetController::class, 'generateInvoice']);
     });
 
     Route::group(['prefix' => 'customer-invoice'], function () {
@@ -511,7 +511,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('overtime-calculation/generate-excel/{temp_timesheet_id}', [TempTimesheetLineController::class, 'generateExcel']);
     });
 
-    Route::group(['prefix'=>'timesheet-data'], function () {
+    Route::group(['prefix' => 'timesheet-data'], function () {
         Route::get('list', [TimesheetController::class, 'list']);
         Route::get('detail/{timesheet_str}', [TimesheetController::class, 'detail']);
         Route::post('update/{id}', [TimesheetController::class, 'update']);
@@ -520,7 +520,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('generate-customer-timesheet/{time_sheet_id}', [ImportTimeSheetController::class, 'moveToCustomerTimesheet']);
     });
 
-    Route::group(['prefix'=>'employee-rates'], function () {
+    Route::group(['prefix' => 'employee-rates'], function () {
         Route::post('import-excel', [EmployeeRateController::class, 'importRatesFromExcel']);
         Route::get('all', [EmployeeRateController::class, 'all']);
         Route::get('list', [EmployeeRateController::class, 'list']);
@@ -533,7 +533,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('update/{id}', [EmployeeDepartmentController::class, 'update']);
         Route::post('import-csv', [EmployeeDepartmentController::class, 'importFromCsv']);
     });
-    
+
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('update-self', [UserController::class, 'updateUserSelf']);

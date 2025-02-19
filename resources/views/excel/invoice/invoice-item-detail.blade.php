@@ -185,7 +185,6 @@
             </td>
         </tr>
         <tr></tr>
-        <tr></tr>
     </tbody>
 </table>
 
@@ -365,14 +364,8 @@
             <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">{{ $grandTotalAmount2 }}
             </td>
         </tr>
-        <tr></tr>
-        <tr></tr>
     </tbody>
 </table>
-
-<tr></tr>
-
-<tr></tr>
 
 <tr>
     <td style="border: 4px solid black; font-weight: bold;"colspan="{{ 6 + count($days1) * 3 }}">Grand Total (Total I
@@ -403,4 +396,40 @@
     <td style="border: 2px solid black; font-weight: bold;" colspan="3">Total Invoice</td>
     <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
         {{ $total_eti_bonus + $grandTotalAmount + $grandTotalAmount2 }}</td>
+</tr>
+
+<tr>
+
+</tr>
+
+<tr>
+    <td colspan="25"></td>
+    <td>Prepared by:</td>
+</tr>
+<tr>
+    <td colspan="25"></td>
+    <td>PT. Pan Nusantara Sentosa</td>
+</tr>
+<tr></tr>
+<tr></tr>
+<tr></tr>
+<tr></tr>
+<tr></tr>
+<tr>
+    <td colspan="25"></td>
+    <td>Signature</td>
+    <td></td>
+    <td>:</td>
+</tr>
+<tr>
+    <td colspan="25"></td>
+    <td>Name</td>
+    <td></td>
+    <td colspan="7">: Riana Hutajulu</td>
+</tr>
+<tr>
+    <td colspan="25"></td>
+    <td>Date</td>
+    <td></td>
+    <td colspan="7">:</td>
 </tr>

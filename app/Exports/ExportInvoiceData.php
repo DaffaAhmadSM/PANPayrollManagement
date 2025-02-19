@@ -4,20 +4,23 @@ namespace App\Exports;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyles
+class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyles, ShouldQueue
 {
 
-    use Exportable;
+    use Exportable, SerializesModels;
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     protected $dataKronos;
     protected $dataNonKronos;
     protected $tempTimesheet;
@@ -31,7 +34,8 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyl
         $this->customerData = $customerData;
     }
 
-    public function styles(Worksheet $sheet){
+    public function styles(Worksheet $sheet)
+    {
 
         $sheet->getStyle("A:Z")->getFont()->setName("Calibri");
         $sheet->getStyle("A:Z")->getFont()->setSize(10);
@@ -43,11 +47,12 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyl
                 'name' => 'Times New Roman',
                 'size' => 10
             ]
-            ]);
+        ]);
 
         $sheet->getSheetView()->setView('pageBreakPreview');
         $sheet->getPageSetup()->setFitToWidth(1);
         $sheet->getPageSetup()->setFitToHeight(0);
+        $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
 
     }
 
@@ -62,7 +67,7 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyl
         return view('excel.invoice', compact('dataKronos', 'dataNonKronos', 'customerData', 'tempTimesheet'));
     }
 
-   
+
 
     public function title(): string
     {
