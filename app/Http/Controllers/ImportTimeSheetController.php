@@ -40,7 +40,8 @@ use App\Models\OvertimeMultiplicationSetup;
 class ImportTimeSheetController extends Controller
 {
 
-    public function createTempTimesheet(Request $request) {
+    public function createTempTimesheet(Request $request)
+    {
         $validator = Validator::make(request()->all(), [
             // 'random_string' => 'required|string',
             'from_date' => 'required|date',
@@ -56,7 +57,7 @@ class ImportTimeSheetController extends Controller
             return response()->json([
                 'status' => 400,
                 'message' => $validator->errors()->first()
-            ],400);
+            ], 400);
         }
 
         $temptimesheet = TempTimeSheet::create([
@@ -81,7 +82,8 @@ class ImportTimeSheetController extends Controller
         ]);
     }
 
-    public function importToTempMcd(Request $request) {
+    public function importToTempMcd(Request $request)
+    {
         set_time_limit(300);
         ini_set('memory_limit', '2048M');
 
@@ -110,7 +112,7 @@ class ImportTimeSheetController extends Controller
         $dateHeaders = array_slice($headers, 8);  // Extract date headers
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
-                (double)$value = $row[$index + 8] !== null ? $row[$index + 8] : 0;  // Replace null with 0
+                (double) $value = $row[$index + 8] !== null ? $row[$index + 8] : 0;  // Replace null with 0
                 $flattenedData[] = [
                     "temp_time_sheet_id" => $request->temptimesheet_id,
                     "kronos_job_number" => $row[0] ?? "N/A",
@@ -129,7 +131,7 @@ class ImportTimeSheetController extends Controller
         try {
             $chunk = array_chunk($flattenedData, 1000);
             foreach ($chunk as $data) {
-               TempMcd::insert($data);
+                TempMcd::insert($data);
             }
             $temptimesheet->update([
                 'customer_file_name' => $request->file('csv')->getClientOriginalName(),
@@ -143,12 +145,13 @@ class ImportTimeSheetController extends Controller
         }
 
         return response()->json([
-        'message' => 'Data imported successfully.',
-        "count" => count($flattenedData)
-    ], 200);
+            'message' => 'Data imported successfully.',
+            "count" => count($flattenedData)
+        ], 200);
     }
 
-    public function importToTempPns(Request $request) {
+    public function importToTempPns(Request $request)
+    {
         set_time_limit(300);
         ini_set('memory_limit', '2048M');
         // dd($request->file('csv')->getMimeType(),$request->file('csv')->getClientOriginalExtension() );
@@ -178,7 +181,7 @@ class ImportTimeSheetController extends Controller
         // return $dateHeaders;
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
-                (double)$value = $row[$index + 3] !== null ? $row[$index + 3] : 0;  // Replace null with 0
+                (double) $value = $row[$index + 3] !== null ? $row[$index + 3] : 0;  // Replace null with 0
                 $flattenedData[] = [
                     "temp_time_sheet_id" => $request->temptimesheet_id,
                     "kronos_job_number" => "N/A",
@@ -197,7 +200,7 @@ class ImportTimeSheetController extends Controller
         try {
             $chunk = array_chunk($flattenedData, 1000);
             foreach ($chunk as $data) {
-               TempPns::insert($data);
+                TempPns::insert($data);
             }
             $temptimesheet->update([
                 'employee_file_name' => $request->file('csv')->getClientOriginalName(),
@@ -213,11 +216,12 @@ class ImportTimeSheetController extends Controller
         return response()->json([
             'message' => 'Data imported successfully.',
             "count" => count($flattenedData)
-    ], 200);
+        ], 200);
     }
 
 
-    public function comparePnsMcd(Request $request) {
+    public function comparePnsMcd(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             "random_string" => "required|string",
         ]);
@@ -241,27 +245,29 @@ class ImportTimeSheetController extends Controller
         $pns = TempPns::where('temp_time_sheet_id', $temptimesheet->id)->get();
         $mcd = TempMcd::where('temp_time_sheet_id', $temptimesheet->id)->get();
 
-        $sumPNS = $pns->groupBy(function($item) {
+        $sumPNS = $pns->groupBy(function ($item) {
             return $item['employee_name'] . '_' . $item['date'];
-        })->map(function($items) {
+        })->map(function ($items) {
             return [
                 'employee_name' => $items->first()->employee_name,
                 'date' => $items->first()->date,
                 'ids' => $items->pluck('id'),
                 'value' => $items->sum('value')
-            ];;
+            ];
+            ;
         });
 
-        $sumMCD = $mcd->groupBy(function($item) {
+        $sumMCD = $mcd->groupBy(function ($item) {
             return $item['employee_name'] . '_' . $item['date'];
-        })->map(function($items) use($temptimesheet) {
+        })->map(function ($items) use ($temptimesheet) {
             return [
                 'temp_time_sheet_id' => $temptimesheet->id,
                 'employee_name' => $items->first()->employee_name,
                 'date' => $items->first()->date,
                 'ids' => $items->pluck('id'),
                 'value' => $items->sum('value')
-            ];;
+            ];
+            ;
         });
 
         $differeces = [];
@@ -276,9 +282,9 @@ class ImportTimeSheetController extends Controller
         // ]);
 
         foreach ($sumPNS as $key => $item1) {
-            if($sumMCD->has($key)) {
-               $item2 = $sumMCD[$key];
-               if ($item1['value'] != $item2['value']) {
+            if ($sumMCD->has($key)) {
+                $item2 = $sumMCD[$key];
+                if ($item1['value'] != $item2['value']) {
                     $differeces[] = [
                         'temp_time_sheet_id' => $temptimesheet->id,
                         'employee_name' => $item1['employee_name'],
@@ -289,7 +295,7 @@ class ImportTimeSheetController extends Controller
                         'pns_value' => $item1['value']
                     ];
                 }
-            }else{
+            } else {
                 $differeces[] = [
                     'temp_time_sheet_id' => $temptimesheet->id,
                     'employee_name' => $item1['employee_name'],
@@ -310,7 +316,8 @@ class ImportTimeSheetController extends Controller
         ]);
     }
 
-    public function importPnsMcdQueues(Request $request){
+    public function importPnsMcdQueues(Request $request)
+    {
         ini_set('memory_limit', '2048M');
         $validator = Validator::make($request->all(), [
             'mcd_csv' => 'required|mimes:xlsx,xls,csv,txt',
@@ -335,9 +342,9 @@ class ImportTimeSheetController extends Controller
             ]);
         }
 
-        if($request->file('pns_csv') == null) {
+        if ($request->file('pns_csv') == null) {
             ImportPnsMCD::dispatch($mcdFile, null, $temptimesheet);
-        }else{
+        } else {
             ImportPnsMCD::dispatch($mcdFile, $pnsFile, $temptimesheet);
         }
 
@@ -348,17 +355,19 @@ class ImportTimeSheetController extends Controller
 
     }
 
-    public function list (Request $request) {
+    public function list(Request $request)
+    {
         $page = $request->perpage ?? 75;
         $list = TempTimeSheet::orderBy('id', 'desc')->with('user')->withCount('pnsMcdDiff')->cursorPaginate($page, ['id', 'user_id', 'from_date', 'to_date', 'description', 'filename', 'random_string', 'status']);
         return response()->json([
             'status' => 200,
             'data' => $list,
-            'header' => ['Name',  'Creator','Code', 'From Date', 'To Date', 'Description','Status']
+            'header' => ['Name', 'Creator', 'Code', 'From Date', 'To Date', 'Description', 'Status']
         ]);
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make(request()->all(), [
             // 'random_string' => 'required|string',
             'from_date' => 'date',
@@ -372,7 +381,7 @@ class ImportTimeSheetController extends Controller
             return response()->json([
                 'status' => 400,
                 'message' => $validator->errors()->first()
-            ],400);
+            ], 400);
         }
 
         $data = TempTimeSheet::find($id);
@@ -389,14 +398,15 @@ class ImportTimeSheetController extends Controller
         return response()->json(['message' => 'Data updated successfully.'], 200);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $data = TempTimeSheet::find($id);
 
         if (!$data) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Data not found'
-            ],404);
+            ], 404);
         }
 
         $data->delete();
@@ -405,14 +415,15 @@ class ImportTimeSheetController extends Controller
 
     }
 
-    public function detailTempTimeSheet($slug) {
+    public function detailTempTimeSheet($slug)
+    {
         $data = TempTimeSheet::where('random_string', $slug)->with('user')->first();
 
         if (!$data) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Data not found'
-            ],404);
+            ], 404);
         }
 
         return response()->json([
@@ -421,14 +432,15 @@ class ImportTimeSheetController extends Controller
         ]);
     }
 
-    public function listPnsTemp(Request $request, $temp_timesheet_id) {
+    public function listPnsTemp(Request $request, $temp_timesheet_id)
+    {
         $page = $request->perpage ?? 75;
 
         $pns_data = TempPns::where('temp_time_sheet_id', $temp_timesheet_id)->cursorPaginate($page, ['id', 'employee_name', 'leg_id', 'value', 'date']);
 
         return response()->json([
             'status' => 200,
-            'data' =>  $pns_data,
+            'data' => $pns_data,
             'header' => [
                 'Employee Name',
                 'Leg ID',
@@ -439,7 +451,8 @@ class ImportTimeSheetController extends Controller
 
     }
 
-    public function listMcdTemp($temp_timesheet_id) {
+    public function listMcdTemp($temp_timesheet_id)
+    {
 
         $page = $request->perpage ?? 75;
 
@@ -447,7 +460,7 @@ class ImportTimeSheetController extends Controller
 
         return response()->json([
             'status' => 200,
-            'data' =>  $mcd_data,
+            'data' => $mcd_data,
             'header' => [
                 'Kronos Job Number',
                 'Oracle Job Number',
@@ -463,34 +476,36 @@ class ImportTimeSheetController extends Controller
 
     }
 
-    public function diffList ($temp_timesheet_id) {
+    public function diffList($temp_timesheet_id)
+    {
 
 
 
         $diff_data = PnsMcdDiff::where('temp_time_sheet_id', $temp_timesheet_id)->get();
         $diff_data->map(function ($item) {
-            if($item->mcd_ids != "[]") {
+            if ($item->mcd_ids != "[]") {
                 $item->mcd_ids = TempMcd::whereIn('id', json_decode($item->mcd_ids))->get();
-            }else{
+            } else {
                 $item->mcd_ids = [];
             }
             $item->pns_ids = TempPNS::whereIn('id', json_decode($item->pns_ids))->get();
         });
         return response()->json([
             'status' => 200,
-            'data' =>  $diff_data
+            'data' => $diff_data
         ]);
 
     }
 
-    public function resolveConflict($id) {
+    public function resolveConflict($id)
+    {
 
         $data = PnsMcdDiff::find($id);
         if (!$data) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Data not found'
-            ],404);
+            ], 404);
         }
 
         $data->delete();
@@ -498,7 +513,8 @@ class ImportTimeSheetController extends Controller
         return response()->json(['message' => 'Data resolved.'], 200);
     }
 
-    public function editConflictValue(Request $request) {
+    public function editConflictValue(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'pns_mcd_diff_id' => 'required|integer',
             'side' => 'required|in:pns,mcd',
@@ -519,7 +535,7 @@ class ImportTimeSheetController extends Controller
             return response()->json([
                 'status' => 404,
                 'message' => 'Data not found'
-            ],404);
+            ], 404);
         }
 
         if ($request->side == 'pns') {
@@ -538,7 +554,7 @@ class ImportTimeSheetController extends Controller
                     'message' => "server error"
                 ], 500);
             }
-        }else{
+        } else {
             try {
                 DB::beginTransaction();
                 TempMCD::where('id', $request->id)->update(['value' => $request->value]);
@@ -561,14 +577,15 @@ class ImportTimeSheetController extends Controller
 
     }
 
-    public function getDetailDiff($id) {
+    public function getDetailDiff($id)
+    {
 
         $data = PnsMcdDiff::find($id);
         if (!$data) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Data not found'
-            ],404);
+            ], 404);
         }
 
         $data->pns_ids = TempPNS::whereIn('id', json_decode($data->pns_ids))->get();
@@ -576,11 +593,12 @@ class ImportTimeSheetController extends Controller
 
         return response()->json([
             'status' => 200,
-            'data' =>  $data
+            'data' => $data
         ]);
     }
 
-    public function searchMCD(Request $request, $temp_timesheet_id) {
+    public function searchMCD(Request $request, $temp_timesheet_id)
+    {
 
         $validator = Validator::make($request->all(), [
             'search' => 'string',
@@ -595,11 +613,11 @@ class ImportTimeSheetController extends Controller
             ], 400);
         }
 
-        $data = TempMcd::where('temp_time_sheet_id', $temp_timesheet_id)->where('employee_name', 'like', '%'.$request->search.'%')->orWhere('date', 'like', '%'.$request->search.'%')->paginate($page, ['id', 'kronos_job_number', 'oracle_job_number', 'parent_id', 'employee_name', 'leg_id', 'job_dissipline', 'slo_no', 'value', 'date']);
+        $data = TempMcd::where('temp_time_sheet_id', $temp_timesheet_id)->where('employee_name', 'like', '%' . $request->search . '%')->orWhere('date', 'like', '%' . $request->search . '%')->paginate($page, ['id', 'kronos_job_number', 'oracle_job_number', 'parent_id', 'employee_name', 'leg_id', 'job_dissipline', 'slo_no', 'value', 'date']);
 
         return response()->json([
             'status' => 200,
-            'data' =>  $data,
+            'data' => $data,
             'header' => [
                 'Kronos Job Number',
                 'Oracle Job Number',
@@ -614,7 +632,8 @@ class ImportTimeSheetController extends Controller
         ]);
     }
 
-    public function searchPNS(Request $request, $temp_timesheet_id) {
+    public function searchPNS(Request $request, $temp_timesheet_id)
+    {
 
         $validator = Validator::make($request->all(), [
             'search' => 'string',
@@ -629,11 +648,11 @@ class ImportTimeSheetController extends Controller
             ], 400);
         }
 
-        $data = TempPns::where('temp_time_sheet_id', $temp_timesheet_id)->where('employee_name', 'like', '%'.$request->search.'%')->orWhere('date', 'like', '%'.$request->search.'%')->paginate($page, ['id', 'employee_name', 'leg_id', 'value', 'date']);
+        $data = TempPns::where('temp_time_sheet_id', $temp_timesheet_id)->where('employee_name', 'like', '%' . $request->search . '%')->orWhere('date', 'like', '%' . $request->search . '%')->paginate($page, ['id', 'employee_name', 'leg_id', 'value', 'date']);
 
         return response()->json([
             'status' => 200,
-            'data' =>  $data,
+            'data' => $data,
             'header' => [
                 'Employee Name',
                 'Leg ID',
@@ -643,7 +662,8 @@ class ImportTimeSheetController extends Controller
         ]);
     }
 
-    public function moveToTimesheet($temp_timesheet_id){
+    public function moveToTimesheet($temp_timesheet_id)
+    {
 
         $temptimesheet = TempTimeSheet::find($temp_timesheet_id);
 
@@ -651,7 +671,7 @@ class ImportTimeSheetController extends Controller
             return response()->json([
                 'status' => 404,
                 'message' => 'Data not found'
-            ],404);
+            ], 404);
         }
 
         $dateTime = Carbon::now();
@@ -674,7 +694,7 @@ class ImportTimeSheetController extends Controller
                 'customer_file_name' => $temptimesheet->customer_file_name,
                 'employee_file_name' => $temptimesheet->employee_file_name,
                 'eti_bonus_percentage' => $temptimesheet->eti_bonus_percentage,
-                'file_path' => "timesheet/pns/TSPNS". "_" . $dateTime . '.xlsx'
+                'file_path' => "timesheet/pns/TSPNS" . "_" . $dateTime . '.xlsx'
             ]);
             $temptimesheet->update(['status' => 'moved']);
             DB::commit();
@@ -686,7 +706,7 @@ class ImportTimeSheetController extends Controller
             ], 500);
         }
 
-        (new TempTimesheetExport($real_timesheet->random_string, $real_timesheet))->store("timesheet/pns/TSPNS". "_" . $dateTime . '.xlsx', 'public')->chain([
+        (new TempTimesheetExport($real_timesheet->random_string, $real_timesheet))->store("timesheet/pns/TSPNS" . "_" . $dateTime . '.xlsx', 'public')->chain([
             new UpdateQueueStatus($real_timesheet, 'generated')
         ]);
 
@@ -697,26 +717,27 @@ class ImportTimeSheetController extends Controller
 
     }
 
-    public function moveToCustomerTimesheet($time_sheet_id) {
+    public function moveToCustomerTimesheet($time_sheet_id)
+    {
         $timesheetid = TimeSheet::find($time_sheet_id);
         if (!$timesheetid) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Data not found'
-            ],404);
+            ], 404);
         }
         $checkIfdataMoved = CustomerTimesheet::where('random_string', $timesheetid->random_string)->first();
         if ($checkIfdataMoved) {
             return response()->json([
                 'status' => 400,
                 'message' => 'Data already moved'
-            ],400);
+            ], 400);
         }
 
         $string = Carbon::now();
         // $date = SEP16-OCT15
         $datestr = Carbon::parse($timesheetid->from_date)->format('M') . Carbon::parse($timesheetid->from_date)->format('d') . '-' . Carbon::parse($timesheetid->to_date)->format('M') . Carbon::parse($timesheetid->to_date)->format('d');
-        $string = $datestr. "_" . $string->format('YmdHis');
+        $string = $datestr . "_" . $string->format('YmdHis');
 
         // move to customer timesheet
 
@@ -731,14 +752,14 @@ class ImportTimeSheetController extends Controller
             'customer_file_name' => $timesheetid->customer_file_name,
             'employee_file_name' => $timesheetid->employee_file_name,
             'random_string' => $timesheetid->random_string,
-            'file_path' => "timesheet/customer/TSMI". "_" . $string . '.xlsx'
+            'file_path' => "timesheet/customer/TSMI" . "_" . $string . '.xlsx'
         ]);
 
-        
 
-        (new tempTimesheetExportMI($customer_timesheet->random_string, $customer_timesheet))->store("timesheet/customer/TSMI". "_" . $string . '.xlsx', 'public')->chain([
+
+        (new tempTimesheetExportMI($customer_timesheet->random_string, $customer_timesheet))->store("timesheet/customer/TSMI" . "_" . $string . '.xlsx', 'public')->chain([
             new UpdateQueueStatus($timesheetid, 'moved'),
-            new UpdateQueueStatus($customer_timesheet, 'generated')
+            new UpdateQueueStatus($customer_timesheet, 'draft')
         ]);
 
         return response()->json([
@@ -747,14 +768,15 @@ class ImportTimeSheetController extends Controller
         ]);
     }
 
-    public function cancelTempTimeSheet($temp_timesheet_id) {
+    public function cancelTempTimeSheet($temp_timesheet_id)
+    {
         $temptimesheet = TempTimeSheet::find($temp_timesheet_id);
 
         if (!$temptimesheet) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Data not found'
-            ],404);
+            ], 404);
         }
 
         $temptimesheet->update(['status' => 'cancelled']);
@@ -765,7 +787,8 @@ class ImportTimeSheetController extends Controller
         ]);
     }
 
-    public function importDailyRate(Request $request){
+    public function importDailyRate(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'csv' => 'required|mimes:xlsx,xls,csv,txt',
             'temp_timesheet_id' => 'required|integer',
@@ -798,9 +821,9 @@ class ImportTimeSheetController extends Controller
 
         $random_string_count = 0;
         foreach ($rows as $row) {
-            $daily_rate [] = [
+            $daily_rate[] = [
                 'temptimesheet_string' => $temptimesheet->random_string,
-                'string_id' => $temptimesheet->random_string."-".$random_string_count,
+                'string_id' => $temptimesheet->random_string . "-" . $random_string_count,
                 'work_hours_total' => $row[$buttomIndex + 0] ?? 0,
                 'invoice_hours_total' => $row[$buttomIndex + 1] ?? 0,
                 'amount_total' => $row[$buttomIndex + 3] ?? 0,
@@ -816,9 +839,9 @@ class ImportTimeSheetController extends Controller
                 "oracle_Job_Number" => $row[6] ?? 'N/A',
             ];
             foreach ($dateHeaders as $index => $date) {
-                (double)$value = $row[$index + 7] !== null ? $row[$index + 7] : 0;  // Replace null with 0
+                (double) $value = $row[$index + 7] !== null ? $row[$index + 7] : 0;  // Replace null with 0
                 $flattenedData[] = [
-                    "daily_rate_string" => $temptimesheet->random_string."-".$random_string_count,
+                    "daily_rate_string" => $temptimesheet->random_string . "-" . $random_string_count,
                     "value" => $value,
                     "date" => Carbon::createFromFormat('d/m/Y', $date),
                 ];

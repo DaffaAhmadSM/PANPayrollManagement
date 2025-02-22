@@ -369,7 +369,8 @@
     <tr>
         <td colspan="7" style="border-bottom: 1px solid black;"></td>
         <td></td>
-        <td style="border-right: 1px solid black; border-bottom: 1px solid black;"></td>
+        <td style="border-right: 1px solid black; border-bottom: 1px solid black; font-weight: bold;">
+            Riana Hutajulu</td>
     </tr>
     <tr>
         <td style="word-wrap: break-word; font-weight: bold;" valign="center" align="center" colspan="3"

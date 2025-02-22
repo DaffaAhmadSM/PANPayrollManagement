@@ -11,6 +11,8 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Worksheet\HeaderFooter;
+use PhpOffice\PhpSpreadsheet\Worksheet\HeaderFooterDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -53,6 +55,22 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyl
         $sheet->getPageSetup()->setFitToWidth(1);
         $sheet->getPageSetup()->setFitToHeight(0);
         $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+        $sheet->getPageSetup()->setPrintArea("A:I");
+        $sheet->getPageSetup()->setHorizontalCentered(true);
+
+
+        $sheet->getPageMargins()->setTop(2);
+        $sheet->getPageMargins()->setRight(0.32);
+        $sheet->getPageMargins()->setBottom(0.4);
+        $sheet->getPageMargins()->setLeft(0.32);
+
+        $drawing = new HeaderFooterDrawing();
+        $drawing->setName('kop surat');
+        $drawing->setPath(public_path('images/kop_surat.jpg'));
+        $drawing->setWidth(720);
+
+        $sheet->getHeaderFooter()->addImage($drawing, HeaderFooter::IMAGE_HEADER_CENTER);
+        $sheet->getHeaderFooter()->setOddHeader('&C&G');
 
     }
 
