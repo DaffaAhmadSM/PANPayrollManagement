@@ -4,6 +4,7 @@ namespace App\Exports;
 use Illuminate\Contracts\View\View;
 use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -14,7 +15,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\HeaderFooter;
 use PhpOffice\PhpSpreadsheet\Worksheet\HeaderFooterDrawing;
 
-class InvoiceItemGroup implements FromView, ShouldAutoSize, WithTitle, WithStyles, ShouldQueue
+class InvoiceItemGroup implements FromView, ShouldAutoSize, WithTitle, WithStyles, HasReferencesToOtherSheets
 {
 
     use Exportable, SerializesModels;
@@ -25,13 +26,16 @@ class InvoiceItemGroup implements FromView, ShouldAutoSize, WithTitle, WithStyle
     protected $title = '1';
     protected $prCode;
 
-    public function __construct($data, $tempTimesheet, $customerData, $title, $prCode)
+    protected $count;
+
+    public function __construct($data, $tempTimesheet, $customerData, $title, $prCode, $count)
     {
         $this->data = $data;
         $this->tempTimesheet = $tempTimesheet;
         $this->customerData = $customerData;
         $this->title = $title;
         $this->prCode = $prCode;
+        $this->count = $count;
     }
 
     public function view(): View
@@ -40,7 +44,8 @@ class InvoiceItemGroup implements FromView, ShouldAutoSize, WithTitle, WithStyle
         $tempTimesheet = $this->tempTimesheet;
         $customerData = $this->customerData;
         $prCode = $this->prCode;
-        return view('excel.invoice.invoice-item-group', compact('data', 'tempTimesheet', 'customerData', 'prCode'));
+        $count = $this->count;
+        return view('excel.invoice.invoice-item-group', compact('data', 'tempTimesheet', 'customerData', 'prCode', 'count'));
     }
 
     public function styles(Worksheet $sheet)

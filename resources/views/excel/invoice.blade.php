@@ -1,12 +1,12 @@
 <table>
     <tr>
-
     </tr>
     <tr>
 
     </tr>
-    <tr style="font-weight: bold; font-size: 14rem;">
-        <th colspan="8" height="30" align="center" valign="center" style="font-weight: bold">SUMMARY OF INVOICE</th>
+    <tr style="font-weight: bold;">
+        <th colspan="9" height="30" align="center" valign="center" style="font-weight: bold; font-size: 14rem;">SUMMARY
+            OF INVOICE</th>
     </tr>
     <tr></tr>
     <tr>
@@ -18,7 +18,7 @@
             Contract No. :
         </td>
         <td colspan="2" style="font-weight: bold; border-bottom: 1px solid gray;">
-            #####
+            =Setup!C6
         </td>
     </tr>
     <tr>
@@ -42,7 +42,7 @@
             Date of Invoice :
         </td>
         <td colspan="2" style="font-weight: bold; border-bottom: 1px solid gray;">
-            30/09/2024
+            =Setup!C1
         </td>
     </tr>
 
@@ -93,7 +93,9 @@
                         <td style="border: 1px solid #000000;" rowspan="{{ count($itemGroup) }}" align="center"
                             valign="center">{{ $countItemGroup }}</td>
                         <td style="border: 1px solid #000000;">{{ $i + 1 }}</td>
-                        <td style="border: 1px solid #000000;" colspan="2">###</td>
+                        <td style="border: 1px solid #000000;" colspan="2">=Setup!C5 &amp;
+                            Setup!D5+{{ $countItemGroup - 1 }} &amp; " " &amp; " " &amp; " " &amp; " " &amp; " " &amp;
+                            Setup!C4</td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[0]->parent_id }}</td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[0]->oracle_job_number }}</td>
                         <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[0]->total_hours }}
@@ -101,16 +103,15 @@
                         <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[0]->total_amount }}
                         </td>
                         <td style="border: 1px solid #000000;" data-format="#,##0.00" rowspan="{{ count($itemGroup) }}"
-                            align="center" valign="center">
+                            valign="center">
                             {{ $sumTotalIDR }}</td>
                     </tr>
-                    @php
-                        $countItemGroup++;
-                    @endphp
                 @else
                     <tr>
                         <td style="border: 1px solid #000000;">{{ $i + 1 }}</td>
-                        <td style="border: 1px solid #000000;" colspan="2">###</td>
+                        <td style="border: 1px solid #000000;" colspan="2">=Setup!C5 &amp;
+                            Setup!D5+{{ $countItemGroup - 1 }} &amp; " " &amp;" " &amp;" " &amp;" " &amp;" " &amp;
+                            Setup!C4</td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->parent_id }}</td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->oracle_job_number }}</td>
                         <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup[$i]->total_hours }}
@@ -120,6 +121,9 @@
                     </tr>
                 @endif
             @endfor
+            @php
+                $countItemGroup++;
+            @endphp
         @endforeach
     @endforeach
     <tr>
@@ -162,7 +166,9 @@
                             valign="center">{{ $countItemGroup }}
                         </td>
                         <td style="border: 1px solid #000000;">{{ $i + 1 }}</td>
-                        <td style="border: 1px solid #000000;" colspan="2">###</td>
+                        <td style="border: 1px solid #000000;" colspan="2">=Setup!C5 &amp;
+                            Setup!D5+{{ $countItemGroup - 1 }} &amp; " " &amp;" " &amp;" " &amp;" " &amp;" " &amp;
+                            Setup!C4</td>
                         <td style="border: 1px solid #000000;"></td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[0]->oracle_job_number }}</td>
                         <td style="border: 1px solid #000000;" data-format="#,##0.00">
@@ -175,13 +181,12 @@
                             rowspan="{{ count($itemGroup) }}" align="center" valign="center">
                             {{ $sumTotalIDR }}</td>
                     </tr>
-                    @php
-                        $countItemGroup++;
-                    @endphp
                 @else
                     <tr>
                         <td style="border: 1px solid #000000;">{{ $i + 1 }}</td>
-                        <td style="border: 1px solid #000000;" colspan="2">###</td>
+                        <td style="border: 1px solid #000000;" colspan="2">=Setup!C5 &amp;
+                            Setup!D5+{{ $countItemGroup - 1 }} &amp; " " &amp;" " &amp;" " &amp;" " &amp;" " &amp;
+                            Setup!C4</td>
                         <td style="border: 1px solid #000000;"></td>
                         <td style="border: 1px solid #000000;">{{ $itemGroup[$i]->oracle_job_number }}</td>
                         <td style="border: 1px solid #000000;" data-format="#,##0.00">
@@ -192,6 +197,9 @@
                     </tr>
                 @endif
             @endfor
+            @php
+                $countItemGroup++;
+            @endphp
         @endforeach
     @endforeach
 
@@ -205,7 +213,9 @@
             <td style="border: 1px solid #000000;" align="center" valign="center">{{ $countItemGroup }}
             </td>
             <td style="border: 1px solid #000000;"></td>
-            <td style="border: 1px solid #000000;" colspan="2">###</td>
+            <td style="border: 1px solid #000000;" colspan="2">=Setup!C5 &amp;
+                Setup!D5+{{ $countItemGroup - 1 }} &amp; " " &amp;" " &amp;" " &amp;" " &amp;" " &amp;
+                Setup!C4</td>
             <td style="border: 1px solid #000000;"></td>
             <td style="border: 1px solid #000000;">{{ $itemGroup->oracle_job_number }}</td>
             <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup->total_hours }}
@@ -234,7 +244,9 @@
                     valign="center">{{ $countItemGroup }}
                 </td>
                 <td style="border: 1px solid #000000;"></td>
-                <td style="border: 1px solid #000000;" colspan="2">###</td>
+                <td style="border: 1px solid #000000;" colspan="2">=Setup!C5 &amp;
+                    Setup!D5+{{ $countItemGroup - 1 }} &amp; " " &amp;" " &amp;" " &amp;" " &amp;" " &amp;
+                    Setup!C4</td>
                 <td style="border: 1px solid #000000;"></td>
                 <td style="border: 1px solid #000000;">{{ $itemGroup->oracle_job_number }}</td>
                 <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup->work_hours_total }}
@@ -245,13 +257,12 @@
                     rowspan="{{ count($dataNonKronos['Daily']) }}" align="center" valign="center">
                     {{ $sumTotalIDR }}</td>
             </tr>
-            @php
-                $countItemGroup++;
-            @endphp
         @else
             <tr>
                 <td style="border: 1px solid #000000;"></td>
-                <td style="border: 1px solid #000000;" colspan="2">###</td>
+                <td style="border: 1px solid #000000;" colspan="2">=Setup!C5 &amp;
+                    Setup!D5+{{ $countItemGroup - 1 }} &amp; " " &amp;" " &amp;" " &amp;" " &amp;" " &amp;
+                    Setup!C4</td>
                 <td style="border: 1px solid #000000;"></td>
                 <td style="border: 1px solid #000000;">{{ $itemGroup->oracle_job_number }}</td>
                 <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup->work_hours_total }}
@@ -261,6 +272,9 @@
             </tr>
         @endif
     @endforeach
+    @php
+        $countItemGroup++;
+    @endphp
 
     <tr>
         <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
@@ -370,7 +384,7 @@
         <td colspan="7" style="border-bottom: 1px solid black;"></td>
         <td></td>
         <td style="border-right: 1px solid black; border-bottom: 1px solid black; font-weight: bold;">
-            Riana Hutajulu</td>
+            =Setup!C2</td>
     </tr>
     <tr>
         <td style="word-wrap: break-word; font-weight: bold;" valign="center" align="center" colspan="3"

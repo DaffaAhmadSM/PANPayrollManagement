@@ -10,12 +10,14 @@
 <tr>
     <th colspan="2">Invoice No.</th>
     <th>:</th>
-    <th>#####/#####/##/##</th>
+    <th>=Setup!C5 &amp;
+        Setup!D5+{{ $count - 1 }} &amp; " " &amp;" " &amp;" " &amp;" " &amp;" " &amp;
+        Setup!C4</th>
 </tr>
 <tr>
     <th colspan="2">Period</th>
     <th>:</th>
-    <th>##### ##,####</th>
+    <th>=Setup!C3</th>
 </tr>
 <tr>
     <th colspan="2">Job Charge</th>
@@ -425,11 +427,11 @@
     <td colspan="25"></td>
     <td>Name</td>
     <td></td>
-    <td colspan="7">: Riana Hutajulu</td>
+    <td colspan="7">=":" &amp; Setup!C2</td>
 </tr>
 <tr>
     <td colspan="25"></td>
     <td>Date</td>
     <td></td>
-    <td colspan="7">:</td>
+    <td colspan="7">=":" &amp; Setup!C1</td>
 </tr>

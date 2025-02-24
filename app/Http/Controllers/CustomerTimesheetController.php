@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\InvoiceQueue;
+use Validator;
 use App\Models\Customer;
 use App\Models\DailyRate;
+use App\Jobs\InvoiceQueue;
 use App\Models\GeneralSetup;
 use Illuminate\Http\Request;
 use App\Models\TempTimeSheet;
@@ -18,12 +19,32 @@ use App\Models\InvoiceTotalAmount;
 use Illuminate\Support\Facades\DB;
 use App\Models\CustomerInvoiceLine;
 use App\Models\CustomerTimesheetLine;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerTimesheetController extends Controller
 {
 
-    public function generateInvoice($string_id)
+    public function generateInvoice(Request $request, $string_id)
     {
+
+        // $validator = Validator::make($request->all(), [
+        //     "penanda_tangan" => "required|string",
+        //     "ttd_image" => "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+        //     "kop_surat_image" => "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $validator->errors()->first()
+        //     ], 400);
+        // }
+
+        // $ttdpath = Storage::disk('public')->put('images/ttd/', $request->ttd_image);
+        // $koppath = Storage::disk('public')->put('images/kop_surat/', $request->kop_surat_image);
+
+
+
 
         // set timeout to 360
         ini_set('max_execution_time', 520);

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -16,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\HeaderFooterDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyles, ShouldQueue
+class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyles, HasReferencesToOtherSheets
 {
 
     use Exportable, SerializesModels;
@@ -91,6 +92,7 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyl
     {
         $date = Carbon::parse($this->tempTimesheet->from_date)->format('M Y');
         return 'Summary Invoice ' . $date;
+        // return "test";
     }
 }
 

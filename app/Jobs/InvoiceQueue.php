@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Exports\ExportInvoice;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 

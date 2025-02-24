@@ -35,8 +35,10 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
 
     protected $oracle_job_number;
 
+    protected $count;
 
-    public function __construct(Collection $data1, $tempTimesheet, Collection $data2, string $title, $days1, $days2, &$employee_rate_details, $holiday, $oracle_job_number)
+
+    public function __construct(Collection $data1, $tempTimesheet, Collection $data2, string $title, $days1, $days2, &$employee_rate_details, $holiday, $oracle_job_number, $count)
     {
         $this->data1 = $data1;
         $this->data2 = $data2;
@@ -47,6 +49,7 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
         $this->employee_rate_details = $employee_rate_details;
         $this->holiday = $holiday;
         $this->oracle_job_number = $oracle_job_number;
+        $this->count = $count;
 
         $this->data1 = $this->data1->groupBy("no")
             ->map(function ($item) use (&$employee_rate_details, &$holiday) {
@@ -223,6 +226,7 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
         $days2 = $this->days2;
         $temptimesheet = $this->tempTimesheet;
         $oracle_job_number = $this->oracle_job_number;
+        $count = $this->count;
 
         // data1 from date1 to date1end
         $data1 = $this->data1;
@@ -233,7 +237,7 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
 
 
 
-        return view('excel.invoice.invoice-item-detail', compact('data1', 'data2', 'days1', 'days2', 'temptimesheet', 'oracle_job_number'));
+        return view('excel.invoice.invoice-item-detail', compact('data1', 'data2', 'days1', 'days2', 'temptimesheet', 'oracle_job_number', 'count'));
     }
 
     public function drawings()

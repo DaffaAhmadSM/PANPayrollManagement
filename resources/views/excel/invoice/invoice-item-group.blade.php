@@ -1,6 +1,5 @@
 <table>
     <tr>
-
     </tr>
 
     <tr>
@@ -16,10 +15,11 @@
         <td colspan="2" style="font-weight: bold; border-bottom: 1px solid gray;">
             {{ $customerData->name }}</td>
         <td width="7"></td>
-        <td>Invoice No</td>
+        <td width="25">Invoice No</td>
         <td>:</td>
-        <td>####</td>
-        <td>###/##/###</td>
+        <td width="8">=Setup!C5 &amp;
+            Setup!D5+{{ $count - 1 }}</td>
+        <td>=Setup!C4</td>
         <td width="4"></td>
     </tr>
 
@@ -31,7 +31,7 @@
         <td></td>
         <td>Date of Invoice</td>
         <td>:</td>
-        <td colspan="2">##/##/####</td>
+        <td colspan="2">=Setup!C1</td>
     </tr>
 
     <tr>
@@ -40,7 +40,7 @@
         <td></td>
         <td>Contract No</td>
         <td>:</td>
-        <td colspan="2">###/####/###/###/####</td>
+        <td colspan="2">=Setup!C6</td>
     </tr>
 
     <tr>
@@ -85,7 +85,7 @@
             <td style="border-left: 1px solid black; border-right: 1px solid black"></td>
             <td style="border-right: 1px solid black" colspan="2"></td>
             <td>Period :</td>
-            <td style="border-right: 1px solid black" colspan="2">###</td>
+            <td style="border-right: 1px solid black" colspan="2">=Setup!C3</td>
             <td style="border-right: 1px solid black" colspan="2"></td>
             <td style="border-right: 1px solid black" colspan="2"></td>
         </tr>
@@ -146,7 +146,8 @@
             <td style="border-left: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black;">
             </td>
             <td style="border-right: 1px solid black; border-bottom: 1px solid black;" colspan="2"></td>
-            <td style="border-right: 1px solid black; border-bottom: 1px solid black;" colspan="3">Summary timesheet
+            <td style="border-right: 1px solid black; border-bottom: 1px solid black;" colspan="3">Summary
+                timesheet
                 as per attachment</td>
             <td style="border-right: 1px solid black" colspan="2"></td>
             <td style="border-right: 1px solid black" colspan="2"></td>
