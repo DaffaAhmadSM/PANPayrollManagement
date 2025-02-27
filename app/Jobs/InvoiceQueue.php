@@ -4,12 +4,13 @@ namespace App\Jobs;
 
 use App\Exports\ExportInvoice;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Bus\Batchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class InvoiceQueue implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, Batchable;
 
     /**
      * Create a new job instance.

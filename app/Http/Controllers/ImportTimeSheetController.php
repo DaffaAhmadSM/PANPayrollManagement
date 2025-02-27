@@ -321,7 +321,7 @@ class ImportTimeSheetController extends Controller
         ini_set('memory_limit', '2048M');
         $validator = Validator::make($request->all(), [
             'mcd_csv' => 'required|mimes:xlsx,xls,csv,txt',
-            'pns_csv' => 'mimes:xlsx,xls,csv,txt',
+            'pns_csv' => 'nullable|mimes:xlsx,xls,csv,txt',
             'temptimesheet_id' => 'required|integer',
         ]);
 
@@ -331,8 +331,11 @@ class ImportTimeSheetController extends Controller
                 'message' => $validator->errors()->first()
             ], 400);
         }
-
-        $pnsFile = Storage::disk('local')->putFileAs('pns/', $request->file('pns_csv'), Str::random(3) . strtotime("now") . $request->file('pns_csv')->getClientOriginalName());
+        if ($request->hasFile('pns_csv')) {
+            $pnsFile = Storage::disk('local')->putFileAs('pns/', $request->file('pns_csv'), Str::random(3) . strtotime("now") . $request->file('pns_csv')->getClientOriginalName());
+        } else {
+            $pnsFile = null;
+        }
         $mcdFile = Storage::disk('local')->putFileAs('mcd/', $request->file('mcd_csv'), Str::random(3) . strtotime("now") . $request->file('mcd_csv')->getClientOriginalName());
         $temptimesheet = TempTimeSheet::find($request->temptimesheet_id);
         if (!$temptimesheet) {
@@ -342,7 +345,7 @@ class ImportTimeSheetController extends Controller
             ]);
         }
 
-        if ($request->file('pns_csv') == null) {
+        if (!$request->hasFile('pns_csv')) {
             ImportPnsMCD::dispatch($mcdFile, null, $temptimesheet);
         } else {
             ImportPnsMCD::dispatch($mcdFile, $pnsFile, $temptimesheet);

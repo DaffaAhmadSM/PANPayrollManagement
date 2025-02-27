@@ -133,7 +133,6 @@ class ExportInvoice implements WithMultipleSheets
         $employee_rates = EmployeeRate::where('random_string', $tempTimesheet->rate_id)->first();
         $employee_rate_details = EmployeeRateDetail::where('employee_rate_id', $employee_rates->id)->get();
         unset($employee_rates);
-        // make date into 2 parts
         $sheets = [];
         $count = 1;
 
