@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustomerContract;
-use App\Models\CustomerInvoice;
 use Throwable;
 use Illuminate\Bus\Batch;
 use App\Jobs\InvoiceQueue;
@@ -11,7 +9,11 @@ use Illuminate\Http\Request;
 use App\Models\TempTimeSheet;
 use Illuminate\Support\Carbon;
 use App\Jobs\UpdateQueueStatus;
+use App\Models\CustomerInvoice;
+use App\Jobs\PNSInvoiceJobBatch;
+use App\Models\CustomerContract;
 use App\Models\CustomerTimesheet;
+use App\Models\InvoiceTotalAmount;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use App\Models\CustomerTimesheetLine;
@@ -71,6 +73,68 @@ class CustomerTimesheetController extends Controller
         $batch = Bus::batch(
             [
                 new InvoiceQueue($string_id, $filename),
+            ]
+        )
+            ->then(
+                function (Batch $batch) use ($CustomerTimesheet) {
+                    UpdateQueueStatus::dispatch($CustomerTimesheet, 'exported');
+                }
+
+            )
+            ->catch(
+                function (Batch $batch, Throwable $e) use ($CustomerTimesheet) {
+                    UpdateQueueStatus::dispatch($CustomerTimesheet, 'failed');
+                }
+            )
+            ->name('inv_' . $string_id)->dispatch();
+        return response()->json([
+            "status" => 200,
+            "message" => "Invoice export started"
+        ]);
+    }
+
+    public function generateInvoicePart(Request $request, $string_id)
+    {
+
+        // $dataKronos = InvoiceTotalAmount::where('random_string', $string_id)
+        //     ->where('parent_id', 'not regexp', '^NK')
+        //     ->lazy()->groupBy(['parent_id']);
+
+        // $dataKronos = $dataKronos->map(function ($item) {
+        //     return $item->chunk(15);
+        // });
+
+        // return $dataKronos;
+        // set timeout to 360
+        ini_set('max_execution_time', 520);
+        $tempTimesheet = TempTimeSheet::where('random_string', $string_id)->first();
+        $CustomerTimesheet = CustomerTimesheet::where('random_string', $string_id)->first();
+        $dateTime = Carbon::now();
+        $filename = "INVOICE_" . Carbon::parse($tempTimesheet->from_date)->format("Md") . "-" . Carbon::parse($tempTimesheet->to_date)->format("Md") . "_" . $dateTime->format('YmdHis');
+        $invoice_number = "INV/" . Carbon::parse($tempTimesheet->to_date)->format('m/y');
+        $customerContract = CustomerContract::where('customer_id', $tempTimesheet->customer_id)->first();
+
+        try {
+            CustomerInvoice::create([
+                "invoice_number" => $invoice_number,
+                "customer_id" => $tempTimesheet->customer_id,
+                "document_number" => "INV/",
+                "customer_contract_id" => $customerContract->id,
+                "from_date" => $tempTimesheet->from_date,
+                "to_date" => $tempTimesheet->to_date,
+                "po_number" => "",
+                "status" => "open",
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "message" => "internal server error",
+            ], 500);
+        }
+
+
+        $batch = Bus::batch(
+            [
+                new PNSInvoiceJobBatch($string_id, $filename),
             ]
         )
             ->then(

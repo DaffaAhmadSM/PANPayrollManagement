@@ -460,7 +460,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('list', [CustomerTimesheetController::class, 'list']);
         Route::get('detail/{customer_timesheet_str}', [CustomerTimesheetController::class, 'detail']);
         Route::post('search', [CustomerTimesheetController::class, 'search']);
-        Route::post('generate-invoice/{string_id}', [CustomerTimesheetController::class, 'generateInvoice']);
+        Route::post('generate-invoice/{string_id}', [CustomerTimesheetController::class, 'generateInvoicePart']);
     });
 
     Route::group(['prefix' => 'customer-invoice'], function () {
