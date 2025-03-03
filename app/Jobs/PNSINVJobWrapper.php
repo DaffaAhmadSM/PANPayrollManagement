@@ -2,10 +2,15 @@
 
 namespace App\Jobs;
 
+use App\Exports\PNSINVExportNKronos;
+use Error;
+use Exception;
+use Illuminate\Auth\Events\Failed;
 use Illuminate\Bus\Batchable;
 use App\Exports\PNSINVExportKronos;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Log;
 
 class PNSINVJobWrapper implements ShouldQueue
 {
@@ -70,6 +75,26 @@ class PNSINVJobWrapper implements ShouldQueue
         $type = $this->type;
         $path = $this->path;
 
-        (new PNSINVExportKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $prCode, $days1, $days2))->store((string) $path . (string) $count . '.xlsx');
+        switch ($type) {
+            case 'kronos':
+                (new PNSINVExportKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $prCode, $days1, $days2))->store((string) $path . (string) $count . '.xlsx');
+                break;
+            case 'NK-':
+                (new PNSINVExportNKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "NK", $days1, $days2))->store((string) $path . (string) $count . '.xlsx');
+                break;
+            case 'NK':
+                (new PNSINVExportNKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "NK", $days1, $days2))->store((string) $path . (string) $count . '.xlsx');
+                break;
+            case 'daily':
+                break;
+            default:
+                $this->fail(new Error('Invalid type'));
+                break;
+        }
+    }
+
+    public function failed(Exception $exception)
+    {
+        Log::error($exception->getMessage());
     }
 }

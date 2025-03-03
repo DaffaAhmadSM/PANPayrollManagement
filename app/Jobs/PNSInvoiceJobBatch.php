@@ -12,6 +12,7 @@ use App\Models\TempTimeSheet;
 use Illuminate\Bus\Batchable;
 use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
+use App\Models\tempTimesheetLine;
 use App\Models\EmployeeRateDetail;
 use App\Models\InvoiceTotalAmount;
 use App\Exports\PNSINVExportKronos;
@@ -150,6 +151,20 @@ class PNSInvoiceJobBatch implements ShouldQueue
             }
         }
 
+        foreach ($dataNonKronos["NK-"] as $dataKey => $group) {
+            foreach ($group as $key => $data) {
+                $batch[] = [
+                    (new PNSINVJobWrapper($string_id, $data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $dataKey, $days1, $days2, $path, 'NK-')),
+                ];
+                $count++;
+            }
+        }
+        foreach ($dataNonKronos["NK"] as $dataKey => $data) {
+            $batch[] = [
+                (new PNSINVJobWrapper($string_id, collect([$data]), $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $dataKey, $days1, $days2, $path, 'NK-')),
+            ];
+            $count++;
+        }
         Bus::batch($batch)->dispatch();
     }
 }

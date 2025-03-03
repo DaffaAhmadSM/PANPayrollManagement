@@ -166,7 +166,7 @@ class ExportInvoice implements WithMultipleSheets
 
             foreach ($data as $key => $chunk) {
                 $oracle_job = $chunk->pluck("oracle_job_number")->toArray();
-                $sheets[] = new InvoiceItemGroup($chunk, $tempTimesheet, $customerData, (string) $count, $dataKey, $count);
+                $sheets[] = new InvoiceItemGroup($chunk, $tempTimesheet, $customerData, (string) $count, "", $count);
                 $data1 = $data1 = tempTimesheetLine::where("temp_timesheet_id", $tempTimesheet->id)->with([
                     'overtimeTimesheet' => function ($query) {
                         $query->select('id', 'custom_id', 'hours', 'total_hours');
@@ -245,7 +245,7 @@ class ExportInvoice implements WithMultipleSheets
             ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
 
         foreach ($dataNonKronos["NK"] as $dataKey => $data) {
-            $sheets[] = new InvoiceItemGroup(collect([$data]), $tempTimesheet, $customerData, (string) $count, $dataKey, $count);
+            $sheets[] = new InvoiceItemGroup(collect([$data]), $tempTimesheet, $customerData, (string) $count, "", $count);
 
             $sheets[] = new InvoiceItemDetail($data1[$data->oracle_job_number], $tempTimesheet, $data2[$data->oracle_job_number], (string) $count, $days1, $days2, $employee_rate_details, $holiday, $data->oracle_job_number, $count);
             $count++;
