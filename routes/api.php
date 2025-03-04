@@ -505,6 +505,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'temp-timesheet'], function () {
         Route::get('overtime-list/{temp_timesheet_str}', [TempTimesheetLineController::class, 'overtimeList']);
         Route::post('calculate-overtime/{temp_timesheet_str}', [TempTimesheetLineController::class, 'calculateOvertime']);
+        Route::post('calculate-overtime/queue/{temp_timesheet_str}', [TempTimesheetLineController::class, 'calculateOvertimeQueue']);
         Route::get('calculate-daily-rate/{temp_timesheet_str}', [TempTimesheetLineController::class, 'calculateDailyRate']);
         Route::get('overtime-detail/{id}', [TempTimesheetLineController::class, 'overtimeDetail']);
         Route::post('overtime-verify/{temp_timesheet_str}', [TempTimesheetLineController::class, 'overtimeVerify']);
