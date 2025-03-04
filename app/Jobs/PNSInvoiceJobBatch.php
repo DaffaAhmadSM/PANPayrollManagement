@@ -13,6 +13,7 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
 use App\Models\tempTimesheetLine;
+use App\Exports\ExportInvoiceData;
 use App\Models\EmployeeRateDetail;
 use App\Models\InvoiceTotalAmount;
 use App\Exports\PNSINVExportKronos;
@@ -142,6 +143,9 @@ class PNSInvoiceJobBatch implements ShouldQueue
         $path = 'public/invoice/' . $filename . '/';
 
         $batch = [];
+        $batch[] = [
+            new PNSInvoiceSummaryWrapper($string_id, $date1, $date2, $path)
+        ];
         foreach ($dataKronos as $dataKey => $group) {
             foreach ($group as $key => $data) {
                 $batch[] = [

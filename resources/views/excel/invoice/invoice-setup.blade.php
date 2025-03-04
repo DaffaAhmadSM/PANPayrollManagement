@@ -3,7 +3,7 @@
     <tr>
         <td>Tanggal Invoice</td>
         <td>:</td>
-        <td>30/01/2025</td>
+        <td>{{ $dateNow }}</td>
     </tr>
     {{-- 2 --}}
     <tr>
@@ -15,20 +15,20 @@
     <tr>
         <td>Period</td>
         <td>:</td>
-        <td>December 16, 2024 - January 15, 2025</td>
+        <td>{{ $period }}</td>
     </tr>
     {{-- 4 --}}
     <tr>
         <td>Bulan Invoice</td>
         <td>:</td>
-        <td>/PNS-INV/01/2025</td>
+        <td>{{ $invoiceYear }}</td>
     </tr>
     {{-- 5 --}}
     <tr>
         <td>Invoice Number Start</td>
         <td>:</td>
-        <td>&apos;00</td>
-        <td>10666</td>
+        <td>00</td>
+        <td>10719</td>
     </tr>
     {{-- 6 --}}
     <tr>

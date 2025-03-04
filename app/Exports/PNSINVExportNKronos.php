@@ -76,7 +76,7 @@ class PNSINVExportNKronos implements WithMultipleSheets
 
         $subcount = 1;
 
-        $sheets[] = new InvoiceSetup();
+        $sheets[] = new InvoiceSetup($date1, $date2);
 
         if ($prCode == "NK") {
             $oracle_job = $chunk->pluck("oracle_job_number")->toArray();

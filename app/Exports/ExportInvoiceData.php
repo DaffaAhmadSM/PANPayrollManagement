@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use Carbon\Carbon;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Concerns\FromView;

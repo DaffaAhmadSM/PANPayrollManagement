@@ -10,6 +10,7 @@ use Illuminate\Bus\Batchable;
 use App\Exports\PNSINVExportKronos;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Carbon;
 use Log;
 
 class PNSINVJobWrapper implements ShouldQueue
@@ -33,7 +34,7 @@ class PNSINVJobWrapper implements ShouldQueue
     protected $type;
     protected $path;
 
-    public function __construct($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $prCode, $days1, $days2, $path, string $type)
+    public function __construct($string_id, $chunk_data, $count, $tempTimesheet, $customerData, Carbon $date1, Carbon $date1end, Carbon $date2start, Carbon $date2, $employee_rate_details, $holiday, $prCode, $days1, $days2, $path, string $type)
     {
         $this->string_id = $string_id;
         $this->data_chunk = $chunk_data;

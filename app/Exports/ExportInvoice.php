@@ -136,7 +136,7 @@ class ExportInvoice implements WithMultipleSheets
         $sheets = [];
         $count = 1;
 
-        $sheets[] = new InvoiceSetup();
+        $sheets[] = new InvoiceSetup($date1, $date2);
 
         $sheets[] = new ExportInvoiceData($dataKronos, $dataNonKronos, $tempTimesheet, $customerData);
 

@@ -69,7 +69,7 @@ class PNSINVExportKronos implements WithMultipleSheets
 
         $subcount = 1;
 
-        $sheets[] = new InvoiceSetup();
+        $sheets[] = new InvoiceSetup($date1, $date2);
 
         $oracle_job = $chunk->pluck("oracle_job_number")->toArray();
         $sheets[] = new InvoiceItemGroup($chunk, $tempTimesheet, $customerData, (string) $count, $prCode, $count);
