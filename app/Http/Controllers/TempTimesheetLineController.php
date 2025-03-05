@@ -245,7 +245,11 @@ class TempTimesheetLineController extends Controller
             ], 404);
         }
 
-        OvertimeCalcJob::dispatch($temptimesheet, $request->calculate);
+        $temptimesheet->update([
+            'status' => 'calculating'
+        ]);
+
+        OvertimeCalcJob::dispatch($temptimesheet, $request->recalculate);
 
         return response()->json([
             'status' => 200,

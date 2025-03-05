@@ -45,8 +45,6 @@ class OvertimeCalcJob implements ShouldQueue
             tempTimesheetLine::where('temp_timesheet_id', $temptimesheet->id)->delete();
             tempTimeSheetOvertime::where("random_string", $temptimesheet->random_string)->delete();
             $temptimesheet->update(['status' => 'recalculating']);
-        } else {
-            $temptimesheet->update(['status' => 'calculating']);
         }
 
         $mcd = TempMcd::where('temp_time_sheet_id', $temptimesheet->id)->lazy();
