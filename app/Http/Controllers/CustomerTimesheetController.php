@@ -110,6 +110,9 @@ class CustomerTimesheetController extends Controller
         ini_set('max_execution_time', 520);
         $tempTimesheet = TempTimeSheet::where('random_string', $string_id)->first();
         $CustomerTimesheet = CustomerTimesheet::where('random_string', $string_id)->first();
+        $CustomerTimesheet->update([
+            'status' => 'exporting'
+        ]);
         $dateTime = Carbon::now();
         $filename = "INVOICE_" . Carbon::parse($tempTimesheet->from_date)->format("Md") . "-" . Carbon::parse($tempTimesheet->to_date)->format("Md") . "_" . $dateTime->format('YmdHis');
         $invoice_number = "INV/" . Carbon::parse($tempTimesheet->to_date)->format('m/y');
