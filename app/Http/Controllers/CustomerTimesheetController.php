@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InvoiceExportPath;
 use Throwable;
 use Illuminate\Bus\Batch;
 use App\Jobs\InvoiceQueue;
@@ -158,7 +159,7 @@ class CustomerTimesheetController extends Controller
     public function list(Request $request)
     {
         $page = $request->perpage ?? 75;
-        $list = CustomerTimesheet::orderBy('id', 'desc')->with('customer')->cursorPaginate($page, ['id', 'from_date', 'customer_id', 'to_date', 'description', 'filename', 'random_string', 'status']);
+        $list = CustomerTimesheet::orderBy('id', 'desc')->with('customer')->cursorPaginate($page, ['id', 'from_date', 'customer_id', 'to_date', 'description', 'filename', 'random_string', 'status', 'file_path']);
         return response()->json([
             'status' => 200,
             'data' => $list,
@@ -168,20 +169,13 @@ class CustomerTimesheetController extends Controller
 
     public function detail($customer_timesheet_str)
     {
-        $timesheet = CustomerTimesheet::where('random_string', $customer_timesheet_str)->first();
         $page = $request->perpage ?? 70;
-        $timesheetLine = CustomerTimesheetLine::where('customer_timesheet_id', $timesheet->id)->with("overtimeCustomerTimesheet", "overtimeCustomerTimesheet.multiplicationSetup")->cursorPaginate($page, ['id', 'date', 'basic_hours', 'actual_hours', 'deduction_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', "Kronos_job_number", 'amount']);
+        $invoicePath = InvoiceExportPath::where('invoice_string_id', $customer_timesheet_str)->cursorPaginate($page, ['id', 'filename', 'file_path', 'invoice_string_id']);
         return response()->json([
             'status' => 200,
-            'data' => $timesheetLine,
+            'data' => $invoicePath,
             'header' => [
-                'Date',
-                'Basic Hours',
-                'Actual Hours',
-                'Deduction Hours',
-                'Overtime Hours',
-                'Total Overtime Hours',
-                'Paid Hours'
+                'Name',
             ]
         ]);
     }

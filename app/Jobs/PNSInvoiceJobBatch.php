@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\InvoiceExportPath;
 use DateTime;
 use DatePeriod;
 use DateInterval;
@@ -140,16 +141,23 @@ class PNSInvoiceJobBatch implements ShouldQueue
         $employee_rate_details = EmployeeRateDetail::where('employee_rate_id', $employee_rates->id)->get();
         unset($employee_rates);
         $count = 1;
-        $path = 'public/invoice/' . $filename . '/';
+        $path = 'invoice/' . $filename . '/';
+
+        $inv_path = InvoiceExportPath::where('invoice_string_id', $string_id)->first();
+        if ($inv_path) {
+            InvoiceExportPath::where('invoice_string_id', $string_id)->delete();
+        }
 
         $batch = [];
         $batch[] = [
-            new PNSInvoiceSummaryWrapper($string_id, $date1, $date2, $path)
+            new PNSInvoiceSummaryWrapper($string_id, $date1, $date2, $path),
+            new PNSInvoiceAddPath("summary", $path . 'summary.xlsx', $string_id)
         ];
         foreach ($dataKronos as $dataKey => $group) {
             foreach ($group as $key => $data) {
                 $batch[] = [
                     (new PNSINVJobWrapper($string_id, $data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $dataKey, $days1, $days2, $path, 'kronos')),
+                    new PNSInvoiceAddPath('inv', $path . $count . '.xlsx', $string_id, $count)
                 ];
                 $count++;
             }
@@ -159,6 +167,7 @@ class PNSInvoiceJobBatch implements ShouldQueue
             foreach ($group as $key => $data) {
                 $batch[] = [
                     (new PNSINVJobWrapper($string_id, $data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $dataKey, $days1, $days2, $path, 'NK-')),
+                    new PNSInvoiceAddPath('inv', $path . $count . '.xlsx', $string_id, $count)
                 ];
                 $count++;
             }
@@ -166,6 +175,7 @@ class PNSInvoiceJobBatch implements ShouldQueue
         foreach ($dataNonKronos["NK"] as $dataKey => $data) {
             $batch[] = [
                 (new PNSINVJobWrapper($string_id, collect([$data]), $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $dataKey, $days1, $days2, $path, 'NK-')),
+                new PNSInvoiceAddPath('inv', $path . $count . '.xlsx', $string_id, $count)
             ];
             $count++;
         }

@@ -78,13 +78,13 @@ class PNSINVJobWrapper implements ShouldQueue
 
         switch ($type) {
             case 'kronos':
-                (new PNSINVExportKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $prCode, $days1, $days2))->store((string) $path . (string) $count . '.xlsx');
+                (new PNSINVExportKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, $prCode, $days1, $days2))->store((string) $path . (string) $count . '.xlsx', 'public');
                 break;
             case 'NK-':
-                (new PNSINVExportNKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "NK", $days1, $days2))->store((string) $path . (string) $count . '.xlsx');
+                (new PNSINVExportNKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "NK", $days1, $days2))->store((string) $path . (string) $count . '.xlsx', 'public');
                 break;
             case 'NK':
-                (new PNSINVExportNKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "NK", $days1, $days2))->store((string) $path . (string) $count . '.xlsx');
+                (new PNSINVExportNKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "NK", $days1, $days2))->store((string) $path . (string) $count . '.xlsx', 'public');
                 break;
             case 'daily':
                 break;

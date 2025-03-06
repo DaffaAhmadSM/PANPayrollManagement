@@ -37,6 +37,6 @@ class PNSInvoiceSummaryWrapper implements ShouldQueue
         $date2 = $this->date2;
         $path = $this->path;
         $string_id = $this->string_id;
-        (new PNSInvoiceSummary($string_id, $date1, $date2))->store((string) $path . "Summary" . '.xlsx');
+        (new PNSInvoiceSummary($string_id, $date1, $date2))->store((string) $path . "summary" . '.xlsx', 'public');
     }
 }
