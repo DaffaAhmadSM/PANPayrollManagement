@@ -80,7 +80,7 @@ class ImportPnsMCD implements ShouldQueue
                             continue;
                         }
                         if ($row[3] == null) {
-                            $row[3] = Employee::where('no', $row[4])->first(['name', 'id', 'no'])->name;
+                            $row[3] = Employee::where('no', $row[4])->first(['name', 'id', 'no'])->name ?? "N/A";
                             $err_data[] = [
                                 'name' => "EMPNull",
                                 'identity_number' => $this->temptimesheet->random_string,
