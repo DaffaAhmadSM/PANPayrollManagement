@@ -25,6 +25,10 @@
     <th>{{ $oracle_job_number }}</th>
 </tr>
 
+@php
+    $daycount = count($days1) > count($days2) ? count($days1) : count($days2);
+@endphp
+
 
 
 <table border="1" style="width: 100%; border-collapse: collapse;">
@@ -58,6 +62,10 @@
                         {{ $day['date'] }}</th>
                 @endif
             @endforeach
+            @for ($i = 0; $i < $daycount - count($days1); $i++)
+                <th style="border: 2px solid black; font-weight: bold;" colspan="3" align="center" valign="center">
+                </th>
+            @endfor
             <th style="border: 2px solid black; font-weight: bold; word-wrap: break-word; font-size: 6rem;"
                 rowspan="2" align="center" valign="center" width="9">
                 Actual
@@ -96,6 +104,14 @@
                         valign="center">2</th>
                 @endif
             @endforeach
+            @for ($i = 0; $i < $daycount - count($days1); $i++)
+                <th style="border: 2px solid black; font-weight: bold;" width="5" align="center" valign="center">
+                </th>
+                <th style="border: 2px solid black; font-weight: bold;" width="5" align="center" valign="center">
+                </th>
+                <th style="border: 2px solid black; font-weight: bold;" width="5" align="center" valign="center">
+                </th>
+            @endfor
         </tr>
     </thead>
     <tbody>
@@ -142,6 +158,11 @@
                             @endif
                         @endfor
                     @endforeach
+                    @for ($i = 0; $i < $daycount - count($days1); $i++)
+                        <td style="border: 2px solid black;"></td>
+                        <td style="border: 2px solid black;"></td>
+                        <td style="border: 2px solid black;"></td>
+                    @endfor
                     <td style="border: 2px solid black;" data-format="#,##0.00">
                         {{ $row['actual_hours_total'] }}
                     </td>
@@ -176,7 +197,7 @@
             @endif
         @endforeach
         <tr>
-            <td style="border: 2px solid black; font-weight: bold;" colspan="{{ 6 + count($days1) * 3 }}">Total I
+            <td style="border: 2px solid black; font-weight: bold;" colspan="{{ 6 + $daycount * 3 }}">Total I
             </td>
             <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
                 {{ $grandTotalActualHours }}</td>
@@ -222,7 +243,7 @@
                 @endif
             @endforeach
 
-            @for ($i = 0; $i < count($days1) - count($days2); $i++)
+            @for ($i = 0; $i < $daycount - count($days2); $i++)
                 <th style="border: 2px solid black; font-weight: bold;" colspan="3" align="center"
                     valign="center"></th>
             @endfor
@@ -265,7 +286,7 @@
                 @endif
             @endforeach
 
-            @for ($i = 0; $i < count($days1) - count($days2); $i++)
+            @for ($i = 0; $i < $daycount - count($days2); $i++)
                 <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
                     valign="center"></th>
                 <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
@@ -318,7 +339,7 @@
                             @endif
                         @endfor
                     @endforeach
-                    @for ($i = 0; $i < count($days1) - count($days2); $i++)
+                    @for ($i = 0; $i < $daycount - count($days2); $i++)
                         <td style="border: 2px solid black;"></td>
                         <td style="border: 2px solid black;"></td>
                         <td style="border: 2px solid black;"></td>
@@ -356,7 +377,7 @@
             @endif
         @endforeach
         <tr>
-            <td style="border: 2px solid black; font-weight: bold;" colspan="{{ 6 + count($days1) * 3 }}">Total II
+            <td style="border: 2px solid black; font-weight: bold;" colspan="{{ 6 + $daycount * 3 }}">Total II
             </td>
             <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
                 {{ $grandTotalActualHours2 }}</td>
@@ -370,7 +391,7 @@
 </table>
 
 <tr>
-    <td style="border: 4px solid black; font-weight: bold;"colspan="{{ 6 + count($days1) * 3 }}">Grand Total (Total I
+    <td style="border: 4px solid black; font-weight: bold;"colspan="{{ 6 + $daycount * 3 }}">Grand Total (Total I
         + Total II)</td>
     <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
         {{ $grandTotalActualHours2 + $grandTotalActualHours }}</td>
@@ -387,14 +408,14 @@
 </tr>
 
 <tr>
-    <td colspan="{{ 6 + count($days1) * 3 }}"></td>
+    <td colspan="{{ 6 + $daycount * 3 }}"></td>
     <td style="border: 2px solid black; font-weight: bold;" colspan="3">E T I Bonus
         {{ $temptimesheet->eti_bonus_percentage }}%</td>
     <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">{{ $total_eti_bonus }}</td>
 </tr>
 
 <tr>
-    <td colspan="{{ 6 + count($days1) * 3 }}"></td>
+    <td colspan="{{ 6 + $daycount * 3 }}"></td>
     <td style="border: 2px solid black; font-weight: bold;" colspan="3">Total Invoice</td>
     <td style="border: 2px solid black; font-weight: bold;" data-format="#,##0.00">
         {{ $total_eti_bonus + $grandTotalAmount + $grandTotalAmount2 }}</td>

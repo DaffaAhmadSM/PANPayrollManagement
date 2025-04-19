@@ -231,7 +231,7 @@
         <td></td>
         <td colspan="2" valign="center" align="center"
             style="border-bottom: 1px solid black; font-weight: bold; text-decoration: underline;">
-            Riana Hutajulu</td>
+            =Setup!C2</td>
     </tr>
     <tr>
         <td></td>
