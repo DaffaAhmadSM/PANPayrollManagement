@@ -1,9 +1,4 @@
 <table>
-    <tr>
-    </tr>
-    <tr>
-
-    </tr>
     <tr style="font-weight: bold;">
         <th colspan="9" height="30" align="center" valign="center" style="font-weight: bold; font-size: 14rem;">SUMMARY
             OF INVOICE</th>
@@ -24,7 +19,7 @@
     <tr>
         <td height="30"></td>
         <td height="30"></td>
-        <td style="word-wrap: break-word; height: 30px;" height="30" align="center" colspan="2">
+        <td style="word-wrap: break-word; height: 30px;" height="30" colspan="2">
             {{ $customerData->address }}</td>
     </tr>
     <tr>
@@ -297,17 +292,18 @@
 
     {{-- Grand Total --}}
     <tr>
-        <td colspan="5">Please telegraphycally transfer to :</td>
+        <td colspan="5" style="border-left: 1px solid black;">Please telegraphycally transfer to :</td>
         <td style="font-weight: bold; background-color:#F1C196;">Grand Total</td>
         <td style="font-weight: bold; background-color:#F1C196;" data-format="#,##0.00">
             {{ $totalWorkHours + $totalWorkHoursNK }}</td>
         <td style="font-weight: bold; background-color:#F1C196;" data-format="#,##0.00">
             {{ $totalAmountIDR + $totalAmountIDRNK }}</td>
-        <td style="font-weight: bold; background-color:#F1C196;" data-format="#,##0.00">
+        <td style="font-weight: bold; background-color:#F1C196; border-right: 1px solid black;"
+            data-format="#,##0.00">
             {{ $totalAmountIDR + $totalAmountIDRNK }}</td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" style="border-left: 1px solid black;">
             Acct. Name
         </td>
         <td width="5">
@@ -317,7 +313,7 @@
         <td colspan="4" style="border-right: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" style="border-left: 1px solid black;">
             Acct. No.
         </td>
         <td>
@@ -327,7 +323,7 @@
         <td colspan="4" style="border-right: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="2" style="border-left: 1px solid black;">
             Bank Name
         </td>
         <td>
@@ -337,13 +333,13 @@
         <td colspan="4" style="border-right: 1px solid black;"></td>
     </tr>
     <tr>
-        <td style="border-bottom: 1px solid black;" colspan="2">
+        <td style="border-bottom: 1px solid black; border-left: 1px solid black;" colspan="2" valign="top">
             Address
         </td>
         <td style="border-bottom: 1px solid black;">
 
         </td>
-        <td style="word-wrap: break-word; border-bottom: 1px solid black;" height="30" width="25">: Jln. Raja
+        <td style="word-wrap: break-word; border-bottom: 1px solid black;" height="50" width="25">: Jln. Raja
             Ali Haji, Nagoya
             Batam,
             Kepulauan Riau, Indonesia</td>
@@ -351,53 +347,57 @@
         <td colspan="4" style="border-right: 1px solid black; border-bottom: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="9" style="border-right: 1px solid black;"></td>
+        <td colspan="9" style="border-right: 1px solid black; border-left: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="8" style="font-weight: bold;" valign="center" align="center">
+        <td colspan="8" style="font-weight: bold; border-left: 1px solid black;" valign="center" align="center">
             Approved By
         </td>
         <td style="border-right: 1px solid black;">Prepared by:</td>
     </tr>
     <tr>
-        <td colspan="8" style="font-weight: bold;" valign="center" align="center">
+        <td colspan="8" style="font-weight: bold; border-left: 1px solid black;" valign="center" align="center">
             PTMI
         </td>
         <td style="border-right: 1px solid black;">PT. Pan Nusantara Sentosa</td>
     </tr>
     <tr>
-        <td colspan="9" style="border-right: 1px solid black;"></td>
+        <td colspan="9" style="border-right: 1px solid black; border-left: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="9" style="border-right: 1px solid black;"></td>
+        <td colspan="9" style="border-right: 1px solid black; border-left: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="9" style="border-right: 1px solid black;"></td>
+        <td colspan="9" style="border-right: 1px solid black; border-left: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="9" style="border-right: 1px solid black;"></td>
+        <td colspan="9" style="border-right: 1px solid black; border-left: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="9" style="border-right: 1px solid black;"></td>
+        <td colspan="9" style="border-right: 1px solid black; border-left: 1px solid black;"></td>
     </tr>
     <tr>
-        <td colspan="7" style="border-bottom: 1px solid black;"></td>
-        <td></td>
+        <td colspan="7" style="border-bottom: 1px solid black; border-left: 1px solid black;"></td>
+        <td style="border-bottom: 1px solid black;"></td>
         <td style="border-right: 1px solid black; border-bottom: 1px solid black; font-weight: bold;">
             =Setup!C2</td>
     </tr>
     <tr>
-        <td style="word-wrap: break-word; font-weight: bold;" valign="center" align="center" colspan="3"
-            height="40">Human
+        <td style="word-wrap: break-word; font-weight: bold; border-left: 1px solid black;" valign="center"
+            align="center" colspan="3" height="40">Human
             Resource Team</td>
         <td></td>
         <td style="word-wrap: break-word; font-weight: bold;" valign="center" align="center">Finance Team</td>
         <td></td>
         <td style="word-wrap: break-word; font-weight: bold;" valign="center" align="center">Subcontract Team</td>
         <td></td>
-        <td style="border-right: 1px solid black;" align="top" valign="top">Accounting</td>
+        <td style="border-right: 1px solid black;" align="top" valign="top">Director</td>
     </tr>
     <tr>
-        <td colspan="9" style="border-right: 1px solid black; border-bottom: 1px solid black;"></td>
+        <td colspan="9"
+            style="border-right: 1px solid black; border-bottom: 1px solid black; border-left: 1px solid black;"></td>
+    </tr>
+    <tr>
+        <td></td>
     </tr>
 </table>

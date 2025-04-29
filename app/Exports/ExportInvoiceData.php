@@ -59,12 +59,14 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyl
         $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
         $sheet->getPageSetup()->setPrintArea("A:I");
         $sheet->getPageSetup()->setHorizontalCentered(true);
+        $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(9, 9);
 
 
         $sheet->getPageMargins()->setTop(2);
         $sheet->getPageMargins()->setRight(0.32);
-        $sheet->getPageMargins()->setBottom(0.4);
+        $sheet->getPageMargins()->setBottom(0.6);
         $sheet->getPageMargins()->setLeft(0.32);
+        $sheet->getPageMargins()->setFooter(0.32);
 
         $drawing = new HeaderFooterDrawing();
         $drawing->setName('kop surat');
@@ -73,6 +75,7 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyl
 
         $sheet->getHeaderFooter()->addImage($drawing, HeaderFooter::IMAGE_HEADER_CENTER);
         $sheet->getHeaderFooter()->setOddHeader('&C&G');
+        $sheet->getHeaderFooter()->setOddFooter('&C&P PT. PNS');
 
     }
 

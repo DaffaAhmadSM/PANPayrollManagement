@@ -56,6 +56,10 @@
                     <th colspan="3" align="center" valign="center"
                         style="background-color: #f29a6e; border: 2px solid black; font-weight: bold;">
                         {{ $day['date'] }}</th>
+                @elseif ($day['theday'] == 'Friday')
+                    <th style="background-color: aqua; border: 2px solid aqua; font-weight: bold;" colspan="3"
+                        align="center" valign="center">
+                        {{ $day['date'] }}</th>
                 @else
                     <th style="border: 2px solid black; font-weight: bold;" colspan="3" align="center"
                         valign="center">
@@ -109,7 +113,8 @@
                 </th>
                 <th style="border: 2px solid black; font-weight: bold;" width="5" align="center" valign="center">
                 </th>
-                <th style="border: 2px solid black; font-weight: bold;" width="5" align="center" valign="center">
+                <th style="border: 2px solid black; font-weight: bold;" width="5" align="center"
+                    valign="center">
                 </th>
             @endfor
         </tr>
@@ -235,6 +240,10 @@
                 @if ($day['is_holiday'])
                     <th colspan="3" align="center" valign="center"
                         style="background-color: #f29a6e; border: 2px solid black; font-weight: bold;">
+                        {{ $day['date'] }}</th>
+                @elseif ($day['theday'] == 'Friday')
+                    <th style="background-color: aqua; border: 2px solid black; font-weight: bold;" colspan="3"
+                        align="center" valign="center">
                         {{ $day['date'] }}</th>
                 @else
                     <th style="border: 2px solid black; font-weight: bold;" colspan="3" align="center"

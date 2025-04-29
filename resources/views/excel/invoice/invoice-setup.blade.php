@@ -3,13 +3,13 @@
     <tr>
         <td>Tanggal Invoice</td>
         <td>:</td>
-        <td>{{ $dateNow }}</td>
+        <td>25/04/2025</td>
     </tr>
     {{-- 2 --}}
     <tr>
         <td>Penanda Tangan Invoice</td>
         <td>:</td>
-        <td>Riana Hutajulu</td>
+        <td>Gratcia Natanael Simanjuntak</td>
     </tr>
     {{-- 3 --}}
     <tr>
@@ -28,7 +28,7 @@
         <td>Invoice Number Start</td>
         <td>:</td>
         <td>00</td>
-        <td>10719</td>
+        <td>10972</td>
     </tr>
     {{-- 6 --}}
     <tr>

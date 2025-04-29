@@ -65,7 +65,7 @@ class PNSInvoiceJobBatch implements ShouldQueue
             ->get()->groupBy(['parent_id']);
 
         $dataNonKronosPlus = $dataNonKronosPlus->map(function ($item) {
-            return $item->chunk(15);
+            return $item->chunk(size: 15);
         });
 
         $dataDailyRate = DailyRate::where('temptimesheet_string', $string_id)->get();
@@ -111,7 +111,8 @@ class PNSInvoiceJobBatch implements ShouldQueue
 
             $days1[] = [
                 'date' => $date->format('M d'),
-                'is_holiday' => $isholiday
+                'is_holiday' => $isholiday,
+                'theday' => $date->format('l'),
             ];
         }
 
@@ -132,7 +133,8 @@ class PNSInvoiceJobBatch implements ShouldQueue
 
             $days2[] = [
                 'date' => $date->format('M d'),
-                'is_holiday' => $isholiday
+                'is_holiday' => $isholiday,
+                'theday' => $date->format('l'),
             ];
         }
 

@@ -73,7 +73,7 @@ class PNSINVExportKronos implements WithMultipleSheets
 
         $oracle_job = $chunk->pluck("oracle_job_number")->toArray();
         $sheets[] = new InvoiceItemGroup($chunk, $tempTimesheet, $customerData, (string) $count, $prCode, $count);
-        $data1 = $data1 = tempTimesheetLine::where("temp_timesheet_id", $tempTimesheet->id)->with("overtimeTimesheet")
+        $data1 = tempTimesheetLine::where("temp_timesheet_id", $tempTimesheet->id)->with("overtimeTimesheet")
             ->whereIn("oracle_job_number", $oracle_job)
             ->whereBetween("date", [$date1, $date1end])
             ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");

@@ -46,8 +46,7 @@
     <tr>
         <td style="font-style: italic">Attn</td>
         <td style="font-style: italic">:</td>
-        <td style="font-style: italic" colspan="2">Account Payable Department</td>
-        <td></td>
+        <td style="font-style: italic" colspan="3">Account Payable Department</td>
         <td>Service Order No.</td>
         <td>:</td>
         <td style="font-weight: bold;">Attachment</td>
@@ -55,19 +54,19 @@
     <tr height="6"></tr>
     <thead>
         <tr>
-            <th style="font-weight: bold; border: 1px solid black;">
+            <th style="font-weight: bold; border: 1px solid black;" align="center">
                 N0.
             </th>
-            <th style="font-weight: bold; border: 1px solid black;" colspan="2">
+            <th style="font-weight: bold; border: 1px solid black;" colspan="2" align="center">
                 Qty
             </th>
-            <th style="font-weight: bold; border: 1px solid black;" colspan="3">
+            <th style="font-weight: bold; border: 1px solid black;" colspan="3" align="center">
                 Description
             </th>
-            <th style="font-weight: bold; border: 1px solid black;" colspan="2">
+            <th style="font-weight: bold; border: 1px solid black;" colspan="2" align="center">
                 Unit Price
             </th>
-            <th style="font-weight: bold; border: 1px solid black;" colspan="2">
+            <th style="font-weight: bold; border: 1px solid black;" colspan="2" align="center">
                 Amount IDR
             </th>
         </tr>
@@ -84,8 +83,7 @@
         <tr>
             <td style="border-left: 1px solid black; border-right: 1px solid black"></td>
             <td style="border-right: 1px solid black" colspan="2"></td>
-            <td>Period :</td>
-            <td style="border-right: 1px solid black" colspan="2">=Setup!C3</td>
+            <td style="border-right: 1px solid black" colspan="3">="Period : " &amp; Setup!C3</td>
             <td style="border-right: 1px solid black" colspan="2"></td>
             <td style="border-right: 1px solid black" colspan="2"></td>
         </tr>
@@ -93,8 +91,7 @@
         <tr>
             <td style="border-left: 1px solid black; border-right: 1px solid black"></td>
             <td style="border-right: 1px solid black" colspan="2"></td>
-            <td>Project Code :</td>
-            <td style="border-right: 1px solid black" colspan="2">{{ $prCode }}</td>
+            <td style="border-right: 1px solid black" colspan="3">Project Code : {{ $prCode }}</td>
             <td style="border-right: 1px solid black" colspan="2"></td>
             <td style="border-right: 1px solid black" colspan="2"></td>
         </tr>
@@ -179,10 +176,11 @@
             <td style="border-right: 1px solid black" colspan="2"></td>
         </tr>
         <tr>
-            <td style="border-left: 1px solid black; border-bottom: 1px solid black;" colspan="3" height="40">
+            <td style="border-left: 1px solid black; border-bottom: 1px solid black;" colspan="3" height="40"
+                valign="top" align="top">
                 Address Bank
             </td>
-            <td style="word-wrap: break-word; border-bottom: 1px solid black;" colspan="2" height="60">: Jln.
+            <td style="word-wrap: break-word; border-bottom: 1px solid black;" colspan="2" height="60" valign="top" align="top">: Jln.
                 Raja Ali Haji,
                 Nagoya Batam, Kepulauan
                 Riau, Indonesia</td>
@@ -219,7 +217,12 @@
         <td></td>
         <td colspan="2" valign="center" align="center">Signed by</td>
     </tr>
-    <tr></tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td width="26"></td>
+    </tr>
     <tr></tr>
     <tr></tr>
     <tr></tr>
@@ -240,6 +243,6 @@
         <td></td>
         <td></td>
         <td></td>
-        <td colspan="2" valign="center" align="center">Accounting</td>
+        <td colspan="2" valign="center" align="center">Director</td>
     </tr>
 </table>

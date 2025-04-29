@@ -29,7 +29,7 @@ class InvoiceSetup implements FromView, WithTitle, ShouldAutoSize
 
         $dateNow = Carbon::now()->format("d/m/Y");
         $period = (string) $date1 . " - " . (string) $date2;
-        $invoiceYear = "/PNS-INV/" . $this->date2->format("/m/Y");
+        $invoiceYear = "/PNS-INV" . $this->date2->format("/m/Y");
         return view('excel.invoice.invoice-setup', compact('dateNow', 'period', 'invoiceYear'));
     }
 

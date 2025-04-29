@@ -19,47 +19,48 @@ use App\Models\Customer;
 use App\Models\DailyRate;
 use Illuminate\Support\Facades\View;
 
-// Route::get('invoice', function () {
+Route::get('invoice', function () {
 
-//     // set timeout to 360
-//     ini_set('max_execution_time', 520);
+    // set timeout to 360
+    ini_set('max_execution_time', 520);
 
-//     $tempTimesheet = TempTimeSheet::where('random_string', 'P9PX11737713339')->first();
+    $tempTimesheet = TempTimeSheet::where('random_string', 'AoleD1745490930')->first();
 
-//     $customerData = Customer::where('id', $tempTimesheet->customer_id)->first();
+    $customerData = Customer::where('id', $tempTimesheet->customer_id)->first();
 
-//     $dataKronos = InvoiceTotalAmount::where('random_string', 'P9PX11737713339')
-//     ->where('parent_id','not regexp', '^NK')
-//     ->lazy()->groupBy(['parent_id']);
+    $dataKronos = InvoiceTotalAmount::where('random_string', 'AoleD1745490930')
+    ->where('parent_id','not regexp', '^NK')
+    ->lazy()->groupBy(['parent_id']);
 
-//     $dataKronos = $dataKronos->map(function($item){
-//         return $item->chunk(15);
-//     });
+    $dataKronos = $dataKronos->map(function($item){
+        return $item->chunk(15);
+    });
 
-//     $dataNonKronos = InvoiceTotalAmount::where('random_string', 'P9PX11737713339')
-//     ->where('parent_id','regexp', '^NK$')
-//     ->get()->groupBy(['parent_id']);
+    $dataNonKronos = InvoiceTotalAmount::where('random_string', 'AoleD1745490930')
+    ->where('parent_id','regexp', '^NK$')
+    ->get()->groupBy(['parent_id']);
 
-//     $dataNonKronosPlus = InvoiceTotalAmount::where('random_string', 'P9PX11737713339')
-//     ->where('parent_id','regexp', '^NK-')
-//     ->get()->groupBy(['parent_id']);
+    $dataNonKronosPlus = InvoiceTotalAmount::where('random_string', 'AoleD1745490930')
+    ->where('parent_id','regexp', '^NK-')
+    ->get()->groupBy(['parent_id']);
 
-//     $dataNonKronosPlus = $dataNonKronosPlus->map(function($item){
-//         return $item->chunk(15);
-//     });
+    $dataNonKronosPlus = $dataNonKronosPlus->map(function($item){
+        return $item->chunk(15);
+    });
 
-//     $dataDailyRate = DailyRate::where('temptimesheet_string', 'P9PX11737713339')->get();
+    $dataDailyRate = DailyRate::where('temptimesheet_string', 'AoleD1745490930')->get();
 
-//     $dataNonKronos = [
-//         "NK" => $dataNonKronos->collapse(),
-//         "NK-" => $dataNonKronosPlus,
-//         "Daily"=> $dataDailyRate
-//     ];
+    $dataNonKronos = [
+        "NK" => $dataNonKronos->collapse(),
+        "NK-" => $dataNonKronosPlus,
+        "Daily"=> $dataDailyRate
+    ];
 
+    return $dataNonKronos;
 
-//     $dateTime = Carbon::now();
-//     $filename = "INVOICE_" . Carbon::parse($tempTimesheet->from_date)->format("Md") ."-" . Carbon::parse($tempTimesheet->to_date)->format("Md") . "_" .  $dateTime->format('YmdHis');
+    $dateTime = Carbon::now();
+    $filename = "INVOICE_" . Carbon::parse($tempTimesheet->from_date)->format("Md") ."-" . Carbon::parse($tempTimesheet->to_date)->format("Md") . "_" .  $dateTime->format('YmdHis');
 
-//     return (new ExportInvoice($dataKronos, $dataNonKronos, $tempTimesheet, $customerData))->download((string)$filename . '.xlsx');
+    return (new ExportInvoice($dataKronos, $dataNonKronos, $tempTimesheet, $customerData))->download((string)$filename . '.xlsx');
 
-// });
+});
