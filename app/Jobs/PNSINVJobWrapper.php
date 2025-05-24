@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Exports\PNSINVExportDaily;
 use App\Exports\PNSINVExportNKronos;
 use Error;
 use Exception;
@@ -34,7 +35,9 @@ class PNSINVJobWrapper implements ShouldQueue
     protected $type;
     protected $path;
 
-    public function __construct($string_id, $chunk_data, $count, $tempTimesheet, $customerData, Carbon $date1, Carbon $date1end, Carbon $date2start, Carbon $date2, $employee_rate_details, $holiday, $prCode, $days1, $days2, $path, string $type)
+    protected $days;
+
+    public function __construct($string_id, $chunk_data, $count, $tempTimesheet, $customerData, Carbon $date1, Carbon $date1end, Carbon $date2start, Carbon $date2, $employee_rate_details, $holiday, $prCode, $days1, $days2, $path, string $type, $days=null)
     {
         $this->string_id = $string_id;
         $this->data_chunk = $chunk_data;
@@ -52,6 +55,7 @@ class PNSINVJobWrapper implements ShouldQueue
         $this->days2 = $days2;
         $this->type = $type;
         $this->path = $path;
+        $this->days = $days;
     }
 
     /**
@@ -75,6 +79,7 @@ class PNSINVJobWrapper implements ShouldQueue
         $days2 = $this->days2;
         $type = $this->type;
         $path = $this->path;
+        $days = $this->days;
 
         switch ($type) {
             case 'kronos':
@@ -87,6 +92,7 @@ class PNSINVJobWrapper implements ShouldQueue
                 (new PNSINVExportNKronos($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "NK", $days1, $days2))->store((string) $path . (string) $count . '.xlsx', 'public');
                 break;
             case 'daily':
+                (new PNSINVExportDaily($string_id, $chunk_data, $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "daily", $days))->store((string) $path . (string) $count . '.xlsx', 'public');
                 break;
             default:
                 $this->fail(new Error('Invalid type'));

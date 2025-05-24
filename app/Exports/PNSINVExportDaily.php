@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\DailyRate;
 use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
@@ -50,35 +51,26 @@ class PNSINVExportDaily implements WithMultipleSheets
         $tempTimesheet = $this->temptimesheet;
         $customerData = $this->customerData;
         $date1 = $this->date1;
-        $date1end = $this->date1end;
         $date2 = $this->date2;
-        $date2start = $this->date2start;
-        $employee_rate_details = $this->employee_rate_details;
-        $holiday = $this->holiday;
-        $prCode = $this->prCode;
 
         $subcount = 1;
 
         $sheets[] = new InvoiceSetup($date1, $date2);
 
-        $oracle_job = $chunk->pluck("oracle_job_number")->toArray();
-        $sheets[] = new InvoiceItemGroup($chunk, $tempTimesheet, $customerData, (string) $count, $prCode, $count);
-        $data1 = $data1 = tempTimesheetLine::where("temp_timesheet_id", $tempTimesheet->id)->with("overtimeTimesheet")
-            ->whereIn("oracle_job_number", $oracle_job)
-            ->whereBetween("date", [$date1, $date1end])
-            ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
+        $sheets[] = new InvoiceItemGroup($chunk, $tempTimesheet, $customerData, (string) $count, "", $count);
+        $string_ids = $chunk->pluck("string_id")->toArray();
 
-        $data2 = tempTimesheetLine::where("temp_timesheet_id", $tempTimesheet->id)->with("overtimeTimesheet")
-            ->whereIn("oracle_job_number", $oracle_job)
-            ->whereBetween("date", [$date2start, $date2])
-            ->get()->sortBy(["employee_name"])->groupBy("oracle_job_number");
 
         foreach ($chunk as $key => $value) {
+            $dailyRates = DailyRate::where('string_id', $value->string_id)->with('DailyDetails:daily_rate_string,value,date')->get();
             $name = (string) $count . "." . (string) $subcount;
-            $sheets[] = new InvoiceItemDetail($data1[$value->oracle_job_number], $tempTimesheet, $data2[$value->oracle_job_number], (string) $name, $days1, $days2, $employee_rate_details, $holiday, $value->oracle_job_number, $count);
+            $sheets[] = new InvoiceItemDetailDaily($dailyRates, $tempTimesheet, (string) $count, $this->days, $count, $value->oracle_job_number);
             $subcount++;
         }
 
+        if ($dailyRates->isEmpty()) {
+            $dailyRates = [];
+        }
 
         return $sheets;
     }

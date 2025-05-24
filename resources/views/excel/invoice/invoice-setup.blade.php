@@ -3,7 +3,7 @@
     <tr>
         <td>Tanggal Invoice</td>
         <td>:</td>
-        <td>25/04/2025</td>
+        <td>22/05/2025</td>
     </tr>
     {{-- 2 --}}
     <tr>
@@ -28,7 +28,7 @@
         <td>Invoice Number Start</td>
         <td>:</td>
         <td>00</td>
-        <td>10972</td>
+        <td>11026</td>
     </tr>
     {{-- 6 --}}
     <tr>

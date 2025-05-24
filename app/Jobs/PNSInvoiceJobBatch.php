@@ -68,12 +68,12 @@ class PNSInvoiceJobBatch implements ShouldQueue
             return $item->chunk(size: 15);
         });
 
-        $dataDailyRate = DailyRate::where('temptimesheet_string', $string_id)->get();
+        $dataDailyRate = DailyRate::where('temptimesheet_string', $string_id)->get(['id', 'oracle_job_number', 'temptimesheet_string as random_string', 'grand_total as total_amount', 'parent_id', 'work_hours_total as total_hours', 'string_id']);
 
         $dataNonKronos = [
             "NK" => $dataNonKronos->collapse(),
             "NK-" => $dataNonKronosPlus,
-            "Daily" => $dataDailyRate
+            "Daily" => $dataDailyRate->collect(),
         ];
 
         $date1 = Carbon::parse($tempTimesheet->from_date);
@@ -93,6 +93,12 @@ class PNSInvoiceJobBatch implements ShouldQueue
             new DateTime($date2start),
             new DateInterval('P1D'),
             (new DateTime($date2))->modify('+1 day')
+        );
+
+        $period = new DatePeriod(
+            new DateTime($tempTimesheet->from_date),
+            new DateInterval('P1D'),
+            (new DateTime($tempTimesheet->to_date))->modify('+1 day')
         );
 
         $days1 = [];
@@ -132,6 +138,27 @@ class PNSInvoiceJobBatch implements ShouldQueue
             }
 
             $days2[] = [
+                'date' => $date->format('M d'),
+                'is_holiday' => $isholiday,
+                'theday' => $date->format('l'),
+            ];
+        }
+
+        $days = [];
+        foreach ($period as $date) {
+            $isholiday = false;
+            // check if day is sunday
+            if ($date->format('w') == 0) {
+                $isholiday = true;
+            }
+            // check if day is holiday
+            $holidayCheck = $holiday->firstWhere('date', $date->format('Y-m-d'));
+            if ($holidayCheck) {
+                $isholiday = true;
+            }
+
+
+            $days[] = [
                 'date' => $date->format('M d'),
                 'is_holiday' => $isholiday,
                 'theday' => $date->format('l'),
@@ -181,6 +208,11 @@ class PNSInvoiceJobBatch implements ShouldQueue
             ];
             $count++;
         }
+        $batch[] = [
+            (new PNSINVJobWrapper($string_id, $dataNonKronos["Daily"], $count, $tempTimesheet, $customerData, $date1, $date1end, $date2start, $date2, $employee_rate_details, $holiday, "", $days1, $days2, $path, 'daily', $days)),
+            new PNSInvoiceAddPath('inv', $path . $count . '.xlsx', $string_id, $count)
+        ];
+        $count++;
         Bus::batch($batch)->dispatch();
     }
 }
