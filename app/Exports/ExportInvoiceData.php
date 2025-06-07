@@ -59,7 +59,7 @@ class ExportInvoiceData implements FromView, ShouldAutoSize, WithTitle, WithStyl
         $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
         $sheet->getPageSetup()->setPrintArea("A:I");
         $sheet->getPageSetup()->setHorizontalCentered(true);
-        $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(9, 9);
+        $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(7, 7);
 
 
         $sheet->getPageMargins()->setTop(2);

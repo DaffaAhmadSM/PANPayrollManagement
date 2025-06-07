@@ -57,7 +57,7 @@
                         style="background-color: #f29a6e; border: 2px solid black; font-weight: bold;">
                         {{ $day['date'] }}</th>
                 @elseif ($day['theday'] == 'Friday')
-                    <th style="background-color: aqua; border: 2px solid aqua; font-weight: bold;" colspan="3"
+                    <th style="background-color: aqua; border: 2px solid black; font-weight: bold;" colspan="3"
                         align="center" valign="center">
                         {{ $day['date'] }}</th>
                 @else

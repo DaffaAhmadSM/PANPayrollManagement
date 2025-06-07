@@ -27,7 +27,7 @@
     <tr>
         <td>Invoice Number Start</td>
         <td>:</td>
-        <td>00</td>
+        <td>0</td>
         <td>11026</td>
     </tr>
     {{-- 6 --}}
