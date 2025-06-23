@@ -173,7 +173,7 @@
                             {{ $itemGroup[0]->total_amount }}
                         </td>
                         <td style="border: 1px solid #000000;" data-format="#,##0.00"
-                            rowspan="{{ count($itemGroup) }}" align="center" valign="center">
+                            rowspan="{{ count($itemGroup) }}" valign="center">
                             {{ $sumTotalIDR }}</td>
                     </tr>
                 @else
@@ -249,7 +249,7 @@
                 <td style="border: 1px solid #000000;" data-format="#,##0.00">{{ $itemGroup->grand_total }}
                 </td>
                 <td style="border: 1px solid #000000;" data-format="#,##0.00"
-                    rowspan="{{ count($dataNonKronos['Daily']) }}" align="center" valign="center">
+                    rowspan="{{ count($dataNonKronos['Daily']) }}" valign="center">
                     {{ $sumTotalIDR }}</td>
             </tr>
         @else

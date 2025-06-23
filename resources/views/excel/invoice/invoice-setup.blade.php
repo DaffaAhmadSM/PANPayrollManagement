@@ -3,7 +3,7 @@
     <tr>
         <td>Tanggal Invoice</td>
         <td>:</td>
-        <td>22/05/2025</td>
+        <td>{{ date('d/m/Y') }}</td>
     </tr>
     {{-- 2 --}}
     <tr>
@@ -28,7 +28,7 @@
         <td>Invoice Number Start</td>
         <td>:</td>
         <td>0</td>
-        <td>11026</td>
+        <td>11078</td>
     </tr>
     {{-- 6 --}}
     <tr>
