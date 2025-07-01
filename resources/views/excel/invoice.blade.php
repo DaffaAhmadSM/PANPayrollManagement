@@ -122,11 +122,7 @@
         @endforeach
     @endforeach
     <tr>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0" colspan="2">Total Kronos</td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" colspan="6" align="center">Total Kronos</td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">{{ $totalWorkHours }}
         </td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">{{ $totalAmountIDR }}
@@ -272,11 +268,8 @@
     @endphp
 
     <tr>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0" colspan="2">Total Non Kronos</td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
-        <td style="border: 1px solid #000000; background-color: #DAE4C0"></td>
+        <td style="border: 1px solid #000000; background-color: #DAE4C0" colspan="6" align="center">Total Non
+            Kronos</td>
         <td style="border: 1px solid #000000; background-color: #DAE4C0" data-format="#,##0.00">
             {{ $totalWorkHoursNK }}
         </td>
@@ -339,7 +332,8 @@
         <td style="border-bottom: 1px solid black;">
 
         </td>
-        <td style="word-wrap: break-word; border-bottom: 1px solid black;" height="50" width="25">: Jln. Raja
+        <td style="word-wrap: break-word; border-bottom: 1px solid black;" height="50" width="25"
+            valign="top">: Jln. Raja
             Ali Haji, Nagoya
             Batam,
             Kepulauan Riau, Indonesia</td>
