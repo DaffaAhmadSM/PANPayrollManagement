@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Exports\InvoiceSetup;
 use App\Models\InvoiceExportPath;
 use DateTime;
 use DatePeriod;
@@ -179,6 +180,7 @@ class PNSInvoiceJobBatch implements ShouldQueue
 
         $batch = [];
         $batch[] = [
+            new PNSInvoiceSetupWrapper($date1, $date2, $path),
             new PNSInvoiceSummaryWrapper($string_id, $date1, $date2, $path),
             new PNSInvoiceAddPath("summary", $path . 'summary.xlsx', $string_id)
         ];

@@ -2,12 +2,14 @@
 
 namespace App\Exports;
 use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 class InvoiceSetup implements FromView, WithTitle, ShouldAutoSize
 {
+    use Exportable;
     /**
      * @return \Illuminate\Support\Collection
      */
