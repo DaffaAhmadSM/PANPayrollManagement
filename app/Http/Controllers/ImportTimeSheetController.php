@@ -793,9 +793,15 @@ class ImportTimeSheetController extends Controller
     public function importDailyRate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'csv' => 'required|mimes:xlsx,xls,csv,txt',
+            'csv' => 'nullable|mimes:xlsx,xls,csv,txt',
             'temp_timesheet_id' => 'required|integer',
         ]);
+        if (!$request->hasFile('csv')) {
+            return response()->json([
+                'status' => 200,
+                'message' => 'CSV file is not provided process skipped.'
+            ], 200);
+        }
 
         if ($validator->fails()) {
             return response()->json([
@@ -803,6 +809,8 @@ class ImportTimeSheetController extends Controller
                 'message' => $validator->errors()->first()
             ], 400);
         }
+
+
 
         $temptimesheet = TempTimeSheet::find($request->temp_timesheet_id);
 
