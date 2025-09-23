@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
@@ -92,20 +93,45 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
 
                     // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
                     $date = $date->format('m-d-Y');
-                    $result['dates'][$date] = [
-                        'overtime_timesheet' => $employeeData->overtime_timesheet,
-                        'is_holiday' => $is_holiday,
-                        'basic_hours' => (double) $employeeData['basic_hours'] - (double) $employeeData['deduction_hours'],
-                    ];
-                    //sum total overtime hours per date
-                    // $sum = $employeeData->overtime_timesheet->sum(function ($overtime) {
-                    //     return $overtime;
-                    // }) + (double)$employeeData["basic_hours"] - (double)$employeeData["deduction_hours"];
-                    // if (isset($total['total_overtime_perdate'][$date])) {
-                    //     $total['total_overtime_perdate'][$date] += $sum;
-                    // } else {
-                    //     $total['total_overtime_perdate'][$date] = $sum;
-                    // }
+
+                    // Validate and sanitize basic_hours and deduction_hours
+                    $basicHours = is_numeric($employeeData['basic_hours'] ?? 0) ? (double) $employeeData['basic_hours'] : 0;
+                    $deductionHours = is_numeric($employeeData['deduction_hours'] ?? 0) ? (double) $employeeData['deduction_hours'] : 0;
+
+                    if (!isset($result['dates'][$date])) {
+                        $result['dates'][$date] = [
+                            'overtime_timesheet' => $employeeData->overtime_timesheet ?? collect([]),
+                            'is_holiday' => $is_holiday,
+                            'basic_hours' => $basicHours - $deductionHours,
+                        ];
+                    } else {
+                        try {
+                            // Ensure both collections are valid before converting to arrays
+                            $existingOvertimeArray = [];
+                            $newOvertimeArray = [];
+
+                            if (isset($result['dates'][$date]['overtime_timesheet']) && method_exists($result['dates'][$date]['overtime_timesheet'], 'toArray')) {
+                                $existingOvertimeArray = $result['dates'][$date]['overtime_timesheet']->toArray();
+                            }
+
+                            if (isset($employeeData->overtime_timesheet) && method_exists($employeeData->overtime_timesheet, 'toArray')) {
+                                $newOvertimeArray = $employeeData->overtime_timesheet->toArray();
+                            }
+
+                            $result['dates'][$date]['overtime_timesheet'] = collect($this->sumArraysElementWise($existingOvertimeArray, $newOvertimeArray));
+                            $result['dates'][$date]['basic_hours'] += $basicHours - $deductionHours;
+                        } catch (\Exception $e) {
+                            // Log error and use fallback
+                            Log::warning('Error summing overtime arrays for date ' . $date . ': ' . $e->getMessage());
+                            $result['dates'][$date]['overtime_timesheet'] = $employeeData->overtime_timesheet ?? collect([]);
+                        }
+                    }
+
+                    // $result['dates'][$date] = [
+                    //     'overtime_timesheet' => $employeeData->overtime_timesheet,
+                    //     'is_holiday' => $is_holiday,
+                    //     'basic_hours' => (double) $employeeData['basic_hours'] - (double) $employeeData['deduction_hours'],
+                    // ];
     
 
                 });
@@ -159,11 +185,40 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
 
                     // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
                     $date = $date->format('m-d-Y');
-                    $result['dates'][$date] = [
-                        'overtime_timesheet' => $employeeData->overtime_timesheet,
-                        'is_holiday' => $is_holiday,
-                        'basic_hours' => (double) $employeeData['basic_hours'] - (double) $employeeData['deduction_hours'],
-                    ];
+
+                    // Validate and sanitize basic_hours and deduction_hours
+                    $basicHours = is_numeric($employeeData['basic_hours'] ?? 0) ? (double) $employeeData['basic_hours'] : 0;
+                    $deductionHours = is_numeric($employeeData['deduction_hours'] ?? 0) ? (double) $employeeData['deduction_hours'] : 0;
+
+                    if (!isset($result['dates'][$date])) {
+                        $result['dates'][$date] = [
+                            'overtime_timesheet' => $employeeData->overtime_timesheet ?? collect([]),
+                            'is_holiday' => $is_holiday,
+                            'basic_hours' => $basicHours - $deductionHours,
+                        ];
+                    } else {
+                        try {
+                            // Ensure both collections are valid before converting to arrays
+                            $existingOvertimeArray = [];
+                            $newOvertimeArray = [];
+
+                            if (isset($result['dates'][$date]['overtime_timesheet']) && method_exists($result['dates'][$date]['overtime_timesheet'], 'toArray')) {
+                                $existingOvertimeArray = $result['dates'][$date]['overtime_timesheet']->toArray();
+                            }
+
+                            if (isset($employeeData->overtime_timesheet) && method_exists($employeeData->overtime_timesheet, 'toArray')) {
+                                $newOvertimeArray = $employeeData->overtime_timesheet->toArray();
+                            }
+
+                            $result['dates'][$date]['overtime_timesheet'] = collect($this->sumArraysElementWise($existingOvertimeArray, $newOvertimeArray));
+
+                            $result['dates'][$date]['basic_hours'] += $basicHours - $deductionHours;
+                        } catch (\Exception $e) {
+                            // Log error and use fallback
+                            Log::warning('Error summing overtime arrays for date ' . $date . ': ' . $e->getMessage());
+                            $result['dates'][$date]['overtime_timesheet'] = $employeeData->overtime_timesheet ?? collect([]);
+                        }
+                    }
                     //sum total overtime hours per date
                     // $sum = $employeeData->overtime_timesheet->sum(function ($overtime) {
                     //     return $overtime;
@@ -259,6 +314,17 @@ class InvoiceItemDetail implements FromView, ShouldAutoSize, WithTitle, WithStyl
     public function title(): string
     {
         return $this->title;
+    }
+
+    private function sumArraysElementWise(array ...$arrays): array
+    {
+        $arr = array_map(function (...$numbers) {
+            return array_sum($numbers);
+        }, ...$arrays);
+
+        Log::info('Summed arrays: ' . json_encode($arr));
+
+        return $arr;
     }
 
 }
