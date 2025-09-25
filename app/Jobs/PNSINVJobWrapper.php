@@ -2,17 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Exports\PNSINVExportDaily;
-use App\Exports\PNSINVExportNKronos;
 use Error;
 use Exception;
-use Illuminate\Auth\Events\Failed;
 use Illuminate\Bus\Batchable;
+use Illuminate\Support\Carbon;
+use App\Exports\PNSINVExportDaily;
+use Illuminate\Auth\Events\Failed;
 use App\Exports\PNSINVExportKronos;
+use Illuminate\Support\Facades\Log;
+use App\Exports\PNSINVExportNKronos;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Carbon;
-use Log;
 
 class PNSINVJobWrapper implements ShouldQueue
 {
