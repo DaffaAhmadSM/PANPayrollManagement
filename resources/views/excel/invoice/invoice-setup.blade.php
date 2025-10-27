@@ -9,7 +9,7 @@
     <tr>
         <td>Penanda Tangan Invoice</td>
         <td>:</td>
-        <td>Gratcia Natanael Simanjuntak</td>
+        <td>Rony Prayitno Simeon</td>
     </tr>
     {{-- 3 --}}
     <tr>
