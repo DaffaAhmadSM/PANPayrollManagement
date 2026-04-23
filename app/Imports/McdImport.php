@@ -6,8 +6,9 @@ use App\Models\TempMcd;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 
-class McdImport implements ToModel, WithChunkReading
+class McdImport implements ToModel, WithChunkReading, WithCustomCsvSettings
 {
     use Importable;
     /**
@@ -25,5 +26,13 @@ class McdImport implements ToModel, WithChunkReading
     public function chunkSize(): int
     {
         return 500;
+    }
+
+    public function getCsvSettings(): array
+    {
+        return [
+            'delimiter' => ';',
+            'input_encoding' => 'UTF-8',
+        ];
     }
 }
