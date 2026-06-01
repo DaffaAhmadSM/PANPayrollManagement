@@ -17,7 +17,7 @@ class EmployeeRateController extends Controller
     public function importRatesFromExcel(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:csv,xlsx,xls,txt',
+            'file' => 'required|mimes:csv,txt',
             'name' => 'required|string',
             'from_date' => 'required|date',
             'to_date' => 'required|date',
@@ -63,6 +63,7 @@ class EmployeeRateController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $list,
+            'header' => ['Name', 'From Date', 'To Date'],
         ], 200);
     }
 
@@ -166,47 +167,7 @@ class EmployeeRateController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $list,
-        ], 200);
-    }
-
-    public function importRatesFromExcelNew(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:csv,xlsx,xls,txt',
-            'name' => 'required|string',
-            'from_date' => 'required|date',
-            'to_date' => 'required|date',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => $validator->errors()->first(),
-            ], 400);
-        }
-
-        $randomString = Str::random(5).strtotime(now());
-        $create_employee_rates = EmployeeRate::create([
-            'random_string' => $randomString,
-            'name' => $request->name,
-            'from_date' => Carbon::parse($request->from_date),
-            'to_date' => Carbon::parse($request->to_date),
-        ]);
-
-        // store file to storage
-        $path = Storage::disk('local')->putFileAs('rates', $request->file('file'), $randomString.'.csv');
-        $data = (new ImportEmployeeRate)->toCollection($path, null, Excel::CSV)->collapse();
-
-        $data->map(function ($item) use ($create_employee_rates) {
-            $item['employee_rate_id'] = $create_employee_rates->id;
-
-            return $item;
-        });
-
-        EmployeeRateDetail::insert($data->toArray());
-
-        return response()->json([
-            'message' => 'Rates imported successfully',
-            'data' => $data,
+            'header' => ['Name', 'From Date', 'To Date'],
         ], 200);
     }
 }
