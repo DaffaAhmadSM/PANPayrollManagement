@@ -542,8 +542,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'employee-department'], function () {
         Route::get('list', [EmployeeDepartmentController::class, 'list']);
         Route::get('all', [EmployeeDepartmentController::class, 'all']);
+        Route::get('detail/{id}', [EmployeeDepartmentController::class, 'detail']);
         Route::post('create', [EmployeeDepartmentController::class, 'create']);
         Route::post('update/{id}', [EmployeeDepartmentController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeDepartmentController::class, 'delete']);
+        Route::post('search', [EmployeeDepartmentController::class, 'search']);
         Route::post('import-csv', [EmployeeDepartmentController::class, 'importFromCsv']);
     });
 

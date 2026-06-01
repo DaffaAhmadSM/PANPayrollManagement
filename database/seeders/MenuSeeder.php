@@ -19,6 +19,7 @@ class MenuSeeder extends Seeder
      */
     protected array $menus = [
         [52, 'Employee Rate', '/admin/employee/employee-rate', 26],
+        [54, 'Employee Department', '/admin/employee/employee-department', 26],
     ];
 
     /**
