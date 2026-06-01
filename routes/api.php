@@ -1,56 +1,58 @@
 <?php
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Menu\MenuController;
-use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\Menu\UserMenuController;
-use App\Http\Controllers\Position\GradeControler;
-use App\Http\Controllers\Position\PositionControler;
-use App\Http\Controllers\Customer\CustomerController;
-use App\Http\Controllers\Employee\EmployeeController;
-use App\Http\Controllers\Competency\JobTaskController;
-use App\Http\Controllers\leave\LeaveRequestController;
-use App\Http\Controllers\Company\CompanyInfoController;
-use App\Http\Controllers\Competency\JobSkillController;
-use App\Http\Controllers\Employee\EmploymentController;
-use App\Http\Controllers\leave\LeaveCategoryController;
+
 use App\Http\Controllers\AppSetting\AppSettingController;
-use App\Http\Controllers\Customer\CustomerRateController;
-use App\Http\Controllers\leave\LeaveAdjustmentController;
-use App\Http\Controllers\WorkingHour\WorkingHourController;
-use App\Http\Controllers\Calendar\CalendarHolidayController;
-use App\Http\Controllers\Employee\EmployeeAddressController;
-use App\Http\Controllers\Competency\EducationLevelController;
-use App\Http\Controllers\Customer\CustomerContractController;
-use App\Http\Controllers\Employee\EmployeeCustomerController;
-use App\Http\Controllers\GeneralSetup\GeneralSetupController;
-use App\Http\Controllers\Competency\CertificateTypeController;
-use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
-use App\Http\Controllers\Competency\JobResponsibilityController;
-use App\Http\Controllers\NumberSequence\NumberSequenceController;
-use App\Http\Controllers\Customer\CustomerCalendarHolidayController;
-use App\Http\Controllers\EmployeeCompetencies\EmployeeSkillController;
-use App\Http\Controllers\Competency\CertificateClassificationController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Calculation\MultiplicationCalculationController;
-use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
 use App\Http\Controllers\Calculation\OvertimeMultiplicationSetupController;
+use App\Http\Controllers\Calendar\CalendarHolidayController;
 use App\Http\Controllers\Classification\ClassificationOfTaxPayerController;
+use App\Http\Controllers\Company\CompanyInfoController;
+use App\Http\Controllers\Competency\CertificateClassificationController;
+use App\Http\Controllers\Competency\CertificateTypeController;
+use App\Http\Controllers\Competency\EducationLevelController;
+use App\Http\Controllers\Competency\JobResponsibilityController;
+use App\Http\Controllers\Competency\JobSkillController;
+use App\Http\Controllers\Competency\JobTaskController;
+use App\Http\Controllers\Customer\CustomerCalendarHolidayController;
+use App\Http\Controllers\Customer\CustomerContractController;
+use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\Customer\CustomerRateController;
 use App\Http\Controllers\CustomerInvoiceController;
 use App\Http\Controllers\CustomerTimesheetController;
+use App\Http\Controllers\Employee\EmployeeAddressController;
+use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Employee\EmployeeCustomerController;
+use App\Http\Controllers\Employee\EmploymentController;
 use App\Http\Controllers\Employee\EmploymentTypeController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeCertificateController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeEducationController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProfessionalExperienceController;
 use App\Http\Controllers\EmployeeCompetencies\EmployeeProjectExperienceController;
+use App\Http\Controllers\EmployeeCompetencies\EmployeeSkillController;
 use App\Http\Controllers\EmployeeDepartmentController;
 use App\Http\Controllers\EmployeeRateController;
+use App\Http\Controllers\EmployeeRateDetailController;
+use App\Http\Controllers\GeneralSetup\GeneralSetupController;
 use App\Http\Controllers\ImportTimeSheetController;
+use App\Http\Controllers\leave\LeaveAdjustmentController;
+use App\Http\Controllers\leave\LeaveCategoryController;
+use App\Http\Controllers\leave\LeaveRequestController;
 use App\Http\Controllers\LeaveHistoryController;
+use App\Http\Controllers\Menu\MenuController;
+use App\Http\Controllers\Menu\UserMenuController;
+use App\Http\Controllers\NumberSequence\NumberSequenceController;
+use App\Http\Controllers\Position\GradeControler;
+use App\Http\Controllers\Position\PositionControler;
 use App\Http\Controllers\PositionRateController;
 use App\Http\Controllers\TempTimesheetLineController;
 use App\Http\Controllers\TimesheetController;
+use App\Http\Controllers\UnitOfMeasure\UnitOfMeasureController;
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\WorkingHour\WorkingHourController;
 use App\Http\Controllers\WorkingHour\WorkingHoursDetailController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -372,8 +374,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('search', [EmploymentTypeController::class, 'search']);
     });
 
-
-
     Route::group(['prefix' => 'employee-certificate'], function () {
         Route::post('create', [EmployeeCertificateController::class, 'create']);
         Route::get('list', [EmployeeCertificateController::class, 'list']);
@@ -423,7 +423,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('delete/{id}', [EmployeeProjectExperienceController::class, 'delete']);
         Route::post('search', [EmployeeProjectExperienceController::class, 'search']);
     });
-
 
     Route::group(['prefix' => 'leave-category'], function () {
         Route::post('create', [LeaveCategoryController::class, 'create']);
@@ -523,11 +522,24 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['prefix' => 'employee-rates'], function () {
         Route::post('import-excel', [EmployeeRateController::class, 'importRatesFromExcel']);
-        Route::get('all', [EmployeeRateController::class, 'all']);
         Route::get('list', [EmployeeRateController::class, 'list']);
+        Route::get('detail/{id}', [EmployeeRateController::class, 'detail']);
+        Route::post('create', [EmployeeRateController::class, 'create']);
+        Route::post('update/{id}', [EmployeeRateController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeRateController::class, 'delete']);
+        Route::post('search', [EmployeeRateController::class, 'search']);
     });
 
-    Route::group(["prefix" => "employee-department"], function () {
+    Route::group(['prefix' => 'employee-rate-details'], function () {
+        Route::get('list/{employeeRateId}', [EmployeeRateDetailController::class, 'list']);
+        Route::get('detail/{id}', [EmployeeRateDetailController::class, 'detail']);
+        Route::post('create', [EmployeeRateDetailController::class, 'create']);
+        Route::post('update/{id}', [EmployeeRateDetailController::class, 'update']);
+        Route::post('delete/{id}', [EmployeeRateDetailController::class, 'delete']);
+        Route::post('search', [EmployeeRateDetailController::class, 'search']);
+    });
+
+    Route::group(['prefix' => 'employee-department'], function () {
         Route::get('list', [EmployeeDepartmentController::class, 'list']);
         Route::get('all', [EmployeeDepartmentController::class, 'all']);
         Route::post('create', [EmployeeDepartmentController::class, 'create']);
@@ -535,14 +547,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('import-csv', [EmployeeDepartmentController::class, 'importFromCsv']);
     });
 
-
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('update-self', [UserController::class, 'updateUserSelf']);
 
     Route::get('check-auth', function () {
         return response()->json([
             'message' => 'Success',
-            'data' => 'Authenticated'
+            'data' => 'Authenticated',
         ], 200);
     });
 });
@@ -550,6 +561,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::post('login', [AuthController::class, 'login']);
 Route::get('auth-err', function () {
     return response()->json([
-        "message" => "Unauthenticated",
+        'message' => 'Unauthenticated',
     ], 401);
 })->name('login');

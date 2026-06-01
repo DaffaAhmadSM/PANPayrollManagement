@@ -17,7 +17,9 @@
         "maatwebsite/excel": "^3.1"
     },
     "require-dev": {
+        "andreaselia/laravel-api-to-postman": "^2.3",
         "fakerphp/faker": "^1.23",
+        "laravel/boost": "^2.4",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "laravel/telescope": "^5.0",
