@@ -67,6 +67,14 @@ class EmployeeRateController extends Controller
         ], 200);
     }
 
+    public function all()
+    {
+        return response()->json([
+            'message' => 'Success',
+            'data' => EmployeeRate::all(['id', 'name', 'random_string']),
+        ], 200);
+    }
+
     public function detail(string $id)
     {
         $rate = EmployeeRate::with('details')->find($id);

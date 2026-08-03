@@ -522,6 +522,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['prefix' => 'employee-rates'], function () {
         Route::post('import-excel', [EmployeeRateController::class, 'importRatesFromExcel']);
+        Route::get('all', [EmployeeRateController::class, 'all']);
         Route::get('list', [EmployeeRateController::class, 'list']);
         Route::get('detail/{id}', [EmployeeRateController::class, 'detail']);
         Route::post('create', [EmployeeRateController::class, 'create']);
