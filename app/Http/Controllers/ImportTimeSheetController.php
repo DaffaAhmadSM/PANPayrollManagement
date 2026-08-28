@@ -109,7 +109,15 @@ class ImportTimeSheetController extends Controller
         $rows = $collect->except(0)->values()->toArray();
 
         $flattenedData = [];
-        $dateHeaders = array_slice($headers, 8);  // Extract date headers
+        $dateHeaders = array_map(fn ($date) => (string) $date, array_slice($headers, 8));  // Extract date headers
+        $dateCounts = array_count_values($dateHeaders);
+        $duplicateDates = array_keys(array_filter($dateCounts, fn ($count) => $count > 1));
+        if (!empty($duplicateDates)) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Duplicate date columns detected in file: ' . implode(', ', $duplicateDates) . '. Please remove duplicate date columns and re-upload.'
+            ], 400);
+        }
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {
                 (double) $value = $row[$index + 8] !== null ? $row[$index + 8] : 0;  // Replace null with 0
@@ -177,7 +185,15 @@ class ImportTimeSheetController extends Controller
         $rows = $collect->except(0)->values()->toArray();
 
         $flattenedData = [];
-        $dateHeaders = array_slice($headers, 3);  // Extract date headers
+        $dateHeaders = array_map(fn ($date) => (string) $date, array_slice($headers, 3));  // Extract date headers
+        $dateCounts = array_count_values($dateHeaders);
+        $duplicateDates = array_keys(array_filter($dateCounts, fn ($count) => $count > 1));
+        if (!empty($duplicateDates)) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Duplicate date columns detected in file: ' . implode(', ', $duplicateDates) . '. Please remove duplicate date columns and re-upload.'
+            ], 400);
+        }
         // return $dateHeaders;
         foreach ($rows as $row) {
             foreach ($dateHeaders as $index => $date) {

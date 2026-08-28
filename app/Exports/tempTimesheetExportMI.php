@@ -76,6 +76,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
 
             $days[] = [
                 'date' => $date->format('M d'),
+                'key' => $date->format('Y-m-d'),
                 'is_holiday' => $isholiday
             ];
         }
@@ -91,13 +92,13 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
         ->with('overtimeTimesheet')
 
         // ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
-        ->lazy()->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
+        ->lazy()->sortBy(['parent_id', 'oracle_job_number', 'employee_name', 'date']);
         $data_nk = tempTimesheetLine::where('temp_timesheet_id', $tempTimesheetId)
         ->where('parent_id','regexp', '^NK')
         ->with('overtimeTimesheet')
 
         // ->get(['id', 'no', 'job_dissipline', 'date', 'actual_hours', 'total_overtime_hours', 'paid_hours', 'custom_id', 'basic_hours', 'slo_no', 'oracle_job_number', 'Kronos_job_number', 'parent_id', 'rate', 'employee_name', 'deduction_hours'])->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
-        ->lazy()->sortBy(['parent_id', 'oracle_job_number', 'employee_name']);
+        ->lazy()->sortBy(['parent_id', 'oracle_job_number', 'employee_name', 'date']);
 
         $invoice_total_amounts = [];
 
@@ -150,7 +151,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                                 });
 
                                 // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
-                                $date = $date->format('m-d-Y');
+                                $date = $date->format('Y-m-d');
                                 $result['dates'][$date] = [
                                     'overtime_timesheet' => $employeeData->overtime_timesheet,
                                     'is_holiday' => $is_holiday,
@@ -251,7 +252,7 @@ class tempTimesheetExportMI implements FromView, ShouldQueue, ShouldAutoSize, Wi
                                 });
 
                                 // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
-                                $date = $date->format('m-d-Y');
+                                $date = $date->format('Y-m-d');
                                 $result['dates'][$date] = [
                                     'overtime_timesheet' => $employeeData->overtime_timesheet,
                                     'is_holiday' => $is_holiday,

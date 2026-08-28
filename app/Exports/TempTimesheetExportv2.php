@@ -116,6 +116,7 @@ class TempTimesheetExportv2 implements
 
                 $days[] = [
                     "date" => $date->format("M d"),
+                    "key" => $date->format("Y-m-d"),
                     "is_holiday" => $isholiday,
                 ];
             }
@@ -130,6 +131,7 @@ class TempTimesheetExportv2 implements
                     "employee_name",
                     "Kronos_job_number",
                     "oracle_job_number",
+                    "date",
                 ]);
             // return $data->groupBy(['employee_name', 'Kronos_job_number', 'oracle_job_number']);
 
@@ -220,7 +222,7 @@ class TempTimesheetExportv2 implements
                                         );
 
                                         // $result['total_overtime_hours_total'] += (double) $employeeData["total_overtime_hours"];
-                                        $date = $date->format("m-d-Y");
+                                        $date = $date->format("Y-m-d");
                                         if (!isset($result["dates"][$date])) {
                                             $result["dates"][$date] = [
                                                 "overtime_timesheet" =>

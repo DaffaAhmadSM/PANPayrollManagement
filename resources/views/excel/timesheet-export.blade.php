@@ -94,7 +94,16 @@
                             <td style="border: 2px solid black;">{{ $row['emp'] }}</td>
                             <td style="border: 2px solid black;">{{ $row['classification'] }}</td>
                             <td style="border: 2px solid black;">{{ $row['slo_no'] }}</td>
-                            @foreach ($row['dates'] as $overtime)
+                            @foreach ($days as $day)
+                                @php
+                                    $overtime = $row['dates'][$day['key']] ?? null;
+                                @endphp
+                                @if (!$overtime)
+                                    <td style="border: 2px solid black;"></td>
+                                    <td style="border: 2px solid black;"></td>
+                                    <td style="border: 2px solid black;"></td>
+                                    @continue
+                                @endif
                                 @for ($i = 0; $i < 3; $i++)
                                     @if (!$overtime['is_holiday'] && $i == 0)
                                         @if ($overtime['basic_hours'] > 0)
@@ -151,7 +160,7 @@
                     @for ($i = 0; $i < 7; $i++)
                         <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                     @endfor
-                    @foreach ($data_perParentID['total_overtime_hours'] as $total)
+                    @foreach ($days as $day)
                         <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                         <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                         <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
@@ -208,7 +217,16 @@
                             <td style="border: 2px solid black;">{{ $row['emp'] }}</td>
                             <td style="border: 2px solid black;">{{ $row['classification'] }}</td>
                             <td style="border: 2px solid black;">{{ $row['slo_no'] }}</td>
-                            @foreach ($row['dates'] as $overtime)
+                            @foreach ($days as $day)
+                                @php
+                                    $overtime = $row['dates'][$day['key']] ?? null;
+                                @endphp
+                                @if (!$overtime)
+                                    <td style="border: 2px solid black;"></td>
+                                    <td style="border: 2px solid black;"></td>
+                                    <td style="border: 2px solid black;"></td>
+                                    @continue
+                                @endif
                                 @for ($i = 0; $i < 3; $i++)
                                     @if (!$overtime['is_holiday'] && $i == 0)
                                         @if ($overtime['basic_hours'] > 0)
@@ -265,7 +283,7 @@
                     @for ($i = 0; $i < 7; $i++)
                         <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                     @endfor
-                    @foreach ($data_perParentID['total_overtime_hours'] as $total)
+                    @foreach ($days as $day)
                         <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                         <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
                         <td style="background-color: #d5d5d5; font-weight: bold; border: 2px solid black;"></td>
