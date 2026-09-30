@@ -2,18 +2,18 @@
 
 namespace App\Jobs;
 
-use App\Models\TempMcd;
-use App\Models\Customer;
-use App\Models\PositionRate;
-use Illuminate\Support\Carbon;
 use App\Models\CalendarHoliday;
-use App\Models\tempTimesheetLine;
-use App\Models\WorkingHoursDetail;
-use Illuminate\Support\Facades\DB;
-use App\Models\tempTimeSheetOvertime;
-use Illuminate\Foundation\Queue\Queueable;
+use App\Models\Customer;
 use App\Models\OvertimeMultiplicationSetup;
+use App\Models\PositionRate;
+use App\Models\TempMcd;
+use App\Models\tempTimesheetLine;
+use App\Models\tempTimeSheetOvertime;
+use App\Models\WorkingHoursDetail;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Log;
 use Throwable;
 
@@ -24,8 +24,8 @@ class OvertimeCalcJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-
     protected $temptimesheet;
+
     protected $type;
 
     public function __construct($temptimesheet, $type)
@@ -43,11 +43,13 @@ class OvertimeCalcJob implements ShouldQueue
         $type = $this->type;
         if ($type) {
             tempTimesheetLine::where('temp_timesheet_id', $temptimesheet->id)->delete();
-            tempTimeSheetOvertime::where("random_string", $temptimesheet->random_string)->delete();
+            tempTimeSheetOvertime::where('random_string', $temptimesheet->random_string)->delete();
             $temptimesheet->update(['status' => 'recalculating']);
         }
 
-        $mcd = TempMcd::where('temp_time_sheet_id', $temptimesheet->id)->lazy();
+        $mcd = TempMcd::where('temp_time_sheet_id', $temptimesheet->id)
+            ->lazy()
+            ->sortBy(fn ($item) => str_ends_with(strtolower($item->kronos_job_number), '-idle') ? 0 : 1);
         // return $mcd;
         // $mcd Group by employee name and date
         $mcd = $mcd->groupBy(['leg_id', 'date'])->collapse();
@@ -67,15 +69,15 @@ class OvertimeCalcJob implements ShouldQueue
             foreach ($mcd as $datemcd) {
                 $date = Carbon::parse($datemcd->first()->date);
                 $day = $date->dayName;
-                $working_day = $working_hour_detail->firstWhere("day", $day);
+                $working_day = $working_hour_detail->firstWhere('day', $day);
                 $working_day_hours = $working_day ? $working_day->hours : 0;
-                $is_holiday = $calendar_holiday->firstWhere("date", $date->format('Y-m-d'));
+                $is_holiday = $calendar_holiday->firstWhere('date', $date->format('Y-m-d'));
                 if ($date->dayOfWeek == 0) {
                     $is_holiday = true;
                 }
                 $holiday = $is_holiday ? true : false;
                 $deduction_hour = 0;
-                if (!$working_day || $holiday) {
+                if (! $working_day || $holiday) {
                     $working_day_hours = 0;
                 }
 
@@ -83,16 +85,16 @@ class OvertimeCalcJob implements ShouldQueue
                     $overtime_multiplication = $overtime_multiplication_all
                         ->where('day_type', 'Holiday')->where('day', $day)
                         ->all();
-                    if (!$overtime_multiplication) {
+                    if (! $overtime_multiplication) {
                         $overtime_multiplication = $overtime_multiplication_all
                             ->where('day_type', 'Holiday')
-                            ->where('day', "all")->all();
+                            ->where('day', 'all')->all();
                     }
                 } else {
                     $overtime_multiplication = $overtime_multiplication_all
                         ->where('day_type', 'Normal')
                         ->where('day', $day)->all();
-                    if (!$overtime_multiplication) {
+                    if (! $overtime_multiplication) {
                         $overtime_multiplication = $overtime_multiplication_all
                             ->where('day_type', 'Normal')
                             ->where('day', 'all')->all();
@@ -117,7 +119,6 @@ class OvertimeCalcJob implements ShouldQueue
                     $total_overtime_hours = 0;
                     // return $total_actual_hour;
 
-
                     if ($overtime_hour > 0) {
                         $remaining = $overtime_hour;
                         if ($overtime_multiplication) {
@@ -140,18 +141,19 @@ class OvertimeCalcJob implements ShouldQueue
                                     if ($x['code'] == $multiplication->calculation->code) {
                                         $x['remaining'] -= $range;
                                     }
+
                                     return $x;
                                 });
                                 // $Xremains->whereIn('code', $multiplication->calculation->code)->first()['remaining'] -= $range;
 
                                 // return $range. ' - ' . $remaining. ' - ' . $result . '-'. $from . ' - ' . $to;
                                 $timesheet_overtime[] = [
-                                    "random_string" => $temptimesheet->random_string,
-                                    "multiplication_id" => $multiplication->id,
-                                    "multiplication_code" => $multiplication->calculation->code,
-                                    "hours" => $range,
-                                    "total_hours" => $result,
-                                    "custom_id" => $temptimesheet->random_string . '-' . $count
+                                    'random_string' => $temptimesheet->random_string,
+                                    'multiplication_id' => $multiplication->id,
+                                    'multiplication_code' => $multiplication->calculation->code,
+                                    'hours' => $range,
+                                    'total_hours' => $result,
+                                    'custom_id' => $temptimesheet->random_string.'-'.$count,
                                 ];
 
                                 $total_overtime_hours += $result;
@@ -179,7 +181,7 @@ class OvertimeCalcJob implements ShouldQueue
                         'total_overtime_hours' => $total_overtime_hours,
                         'paid_hours' => $item->value + $total_overtime_hours - $overtime_hour,
                         'rate' => $item->rate,
-                        'custom_id' => $temptimesheet->random_string . '-' . $count++
+                        'custom_id' => $temptimesheet->random_string.'-'.$count++,
                     ];
 
                     if ($item->value > 0) {
@@ -187,7 +189,6 @@ class OvertimeCalcJob implements ShouldQueue
                     }
                 }
             }
-
 
             $chunk = array_chunk($processedMcd, 1000);
             foreach ($chunk as $key => $value) {
@@ -210,6 +211,6 @@ class OvertimeCalcJob implements ShouldQueue
 
     public function failed(?Throwable $exception)
     {
-        Log::info('OvertimeCalc Failed: ' . $exception->getMessage());
+        Log::info('OvertimeCalc Failed: '.$exception->getMessage());
     }
 }

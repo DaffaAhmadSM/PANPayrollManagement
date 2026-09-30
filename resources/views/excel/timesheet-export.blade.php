@@ -348,7 +348,6 @@
         <tr></tr>
     </tbody>
 
-    @if (!empty($dailyRates))
     <thead>
         @php
             $dayCount = count($days);
@@ -387,6 +386,8 @@
             @endforeach
         </tr>
     </thead>
+    @if (!empty($dailyRates))
+
     <tbody>
         @php
             $total_work_hours = 0;
